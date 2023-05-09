@@ -114,7 +114,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b270e61ac23648847945ad75e745a29f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boardSize: 0
+  boardSize: 3
   delayBetweenWinCellAnimations: 0.1
   boardCellPrefab: {fileID: 0}
   boardParentTransform: {fileID: 0}
