@@ -5,18 +5,17 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [System.Serializable]
-public class TicTacToeBoard
+[RequireComponent(typeof(GridLayoutGroup))]
+public class TicTacToeBoard : MonoBehaviour
 {
     [Header("Data")]
-    [SerializeField] private int boardSize;
     [SerializeField] private float delayBetweenWinCellAnimations = 0.1f;
     private List<TicTacToeBoardCell> winCellList;
     private TicTacToeBoardCell[,] board;
 
     [Header("Visual & References")]
     [SerializeField] private TicTacToeBoardCell boardCellPrefab;
-    [SerializeField] private Transform boardParentTransform;
-    [SerializeField] private GridLayoutGroup glGroup;
+    private GridLayoutGroup glGroup;
     [SerializeField] private int cellSize;
     [SerializeField] private float delayBetweenCellSpawns = 0.0f;
 
@@ -88,13 +87,14 @@ public class TicTacToeBoard
         HasChanged = false;
     }
 
-    public IEnumerator Generate()
+    public IEnumerator Generate(int boardSize)
     {
         GameWon = false;
         GameTied = false;
         HasChanged = false;
         winCellList = new List<TicTacToeBoardCell>();
 
+        glGroup = GetComponent<GridLayoutGroup>();
         glGroup.cellSize = new Vector2(cellSize, cellSize);
         glGroup.constraintCount = boardSize;
         glGroup.GetComponent<RectTransform>().sizeDelta = Vector2.one * boardSize * cellSize;
@@ -104,7 +104,7 @@ public class TicTacToeBoard
         {
             for (int p = 0; p < board.GetLongLength(0); p++)
             {
-                TicTacToeBoardCell cell = GameObject.Instantiate(boardCellPrefab, boardParentTransform);
+                TicTacToeBoardCell cell = GameObject.Instantiate(boardCellPrefab, transform);
                 cell.Coordinates = new Vector2Int(i, p);
                 board[i, p] = cell;
                 cell.name += "<" + i + ", " + p + ">";
@@ -275,10 +275,5 @@ public class TicTacToeBoard
             yield return new WaitForSeconds(delayBetweenWinCellAnimations);
         }
         onGameWon.PlayOneShot();
-    }
-
-    public int GetBoardSize()
-    {
-        return boardSize;
     }
 }

@@ -95,4 +95,11 @@ public class UIManager : MonoBehaviour
             TogglePauseState();
         }
     }
+
+    [ContextMenu("ClearPlayerPrefs")]
+    public void ClearPlayerPrefs()
+    {
+        PlayerPrefs.DeleteAll();
+        PlayerPrefs.Save();
+    }
 }

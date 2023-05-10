@@ -21,10 +21,12 @@ public class ManipulateRectTransformOnMouseInput : MonoBehaviour
     // References
     private RectTransform rect;
 
+    [SerializeField] private bool defaultLockPosition = true;
     [SerializeField] private bool lockPosition;
     private string lockPositionKey = "LockPosition";
     [SerializeField] private Image lockPositionActiveState;
 
+    [SerializeField] private bool defaultLockZoom = true;
     [SerializeField] private bool lockZoom;
     private string lockZoomKey = "LockZoom";
     [SerializeField] private Image lockZoomActiveState;
@@ -53,8 +55,10 @@ public class ManipulateRectTransformOnMouseInput : MonoBehaviour
 
         if (!PlayerPrefs.HasKey(lockZoomKey))
         {
-            PlayerPrefs.SetInt(lockZoomKey, 0);
+            lockZoom = defaultLockZoom;
+            PlayerPrefs.SetInt(lockZoomKey, lockZoom ? 1 : 0);
             PlayerPrefs.Save();
+            lockZoomActiveState.gameObject.SetActive(lockZoom);
         }
         else
         {
@@ -64,8 +68,10 @@ public class ManipulateRectTransformOnMouseInput : MonoBehaviour
 
         if (!PlayerPrefs.HasKey(lockPositionKey))
         {
-            PlayerPrefs.SetInt(lockPositionKey, 0);
+            lockPosition = defaultLockPosition;
+            PlayerPrefs.SetInt(lockPositionKey, lockPosition ? 1 : 0);
             PlayerPrefs.Save();
+            lockPositionActiveState.gameObject.SetActive(lockPosition);
         }
         else
         {

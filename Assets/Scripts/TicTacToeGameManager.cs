@@ -9,8 +9,12 @@ public class TicTacToeGameManager : MonoBehaviour
     public static TicTacToeGameManager _Instance { get; private set; }
     private bool gameStarted;
 
+    [SerializeField] private int boardSize;
+
     private GameState gameState;
-    [SerializeField] private TicTacToeBoard board;
+    [SerializeField] private Transform parentBoardTo;
+    [SerializeField] private TicTacToeBoard boardPrefab;
+    private TicTacToeBoard board;
     [SerializeField]
     private SerializableDictionary<TicTacToeBoardCellState, StateDisplayInfo> stateSpriteDict
         = new SerializableDictionary<TicTacToeBoardCellState, StateDisplayInfo>();
@@ -94,7 +98,9 @@ public class TicTacToeGameManager : MonoBehaviour
     private IEnumerator StartSequence()
     {
         // Generate the board
-        yield return StartCoroutine(board.Generate());
+        board = Instantiate(boardPrefab, parentBoardTo);
+
+        yield return StartCoroutine(board.Generate(boardSize));
 
         if (menuScreen.activeInHierarchy)
             playButton.SetActive(true);
