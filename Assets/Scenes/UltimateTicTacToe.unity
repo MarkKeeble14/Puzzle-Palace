@@ -1985,10 +1985,10 @@ GameObject:
   - component: {fileID: 1111374276}
   - component: {fileID: 1111374275}
   - component: {fileID: 1111374274}
-  - component: {fileID: 1111374278}
   - component: {fileID: 1111374280}
   - component: {fileID: 1111374279}
   - component: {fileID: 1111374281}
+  - component: {fileID: 1111374282}
   m_Layer: 5
   m_Name: GameplayCanvas
   m_TagString: Untagged
@@ -2079,34 +2079,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &1111374278
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1111374273}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4718c08bdc392f4489634130922975fd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  boardSize: 3
-  parentBoardTo: {fileID: 1676455327}
-  boardPrefab: {fileID: 5100660330269285045, guid: 0d176db04a29676428290afc4ac64924, type: 3}
-  delayBetweenCellsInRestartSequence: 0.125
-  turnText: {fileID: 1767258815}
-  turnTextAnimator: {fileID: 1767258819}
-  p1Image: {fileID: 2134789900}
-  p2Image: {fileID: 1151818579}
-  winnerText: {fileID: 1613141671}
-  winnerTextString: 'Winner: '
-  turnTextString: '''s Move'
-  menuScreen: {fileID: 124795226}
-  endGameScreen: {fileID: 1430815121}
-  p1ScoreText: {fileID: 478099228}
-  p2ScoreText: {fileID: 2048621273}
-  playButton: {fileID: 963461144}
 --- !u!114 &1111374279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2141,6 +2113,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pauseScreen: {fileID: 2092259455}
 --- !u!114 &1111374281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1111374273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec41bef2d1c075f4a99918ce1ce308d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  numBoards: 3
+  numCells: 3
+  parentBoardTo: {fileID: 1676455327}
+  boardPrefab: {fileID: 8787908919740343152, guid: 275aaa6feb4e0bc4c97bdc05394ce1ba, type: 3}
+  delayBetweenCellsInRestartSequence: 0
+  turnText: {fileID: 1767258815}
+  turnTextAnimator: {fileID: 1767258819}
+  p1Image: {fileID: 2134789900}
+  p2Image: {fileID: 1151818579}
+  winnerText: {fileID: 1613141671}
+  winnerTextString: 'Winner: '
+  turnTextString: '''s Move'
+  menuScreen: {fileID: 124795226}
+  endGameScreen: {fileID: 1430815121}
+  p1ScoreText: {fileID: 478099228}
+  p2ScoreText: {fileID: 2048621273}
+  playButton: {fileID: 963461144}
+--- !u!114 &1111374282
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3017,14 +3018,14 @@ PrefabInstance:
     - target: {fileID: 4798115701876719965, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 1111374278}
+      objectReference: {fileID: 1111374281}
     - target: {fileID: 4798115701876719965, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
       value: Restart
       objectReference: {fileID: 0}
     - target: {fileID: 4798115701876719965, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
-      value: TicTacToeGameManager, Assembly-CSharp
+      value: UltimateTicTacToeGameManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 4798115702626442827, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_Name
@@ -5332,10 +5333,14 @@ PrefabInstance:
     - target: {fileID: 4798115701876719965, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 1111374278}
+      objectReference: {fileID: 1111374281}
     - target: {fileID: 4798115701876719965, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
       value: BeginGame
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115701876719965, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: UltimateTicTacToeGameManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 4798115702626442827, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_Name

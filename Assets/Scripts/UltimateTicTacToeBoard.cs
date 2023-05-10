@@ -5,44 +5,29 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(GridLayoutGroup))]
-public class TicTacToeBoard : MonoBehaviour
+public class UltimateTicTacToeBoard : MonoBehaviour
 {
     [Header("Data")]
-    [SerializeField] private float delayBetweenWinCellAnimations = 0.1f;
-    private List<TicTacToeBoardCell> winCellList;
-    private TicTacToeBoardCell[,] board;
+    private TicTacToeBoard[,] boards;
 
     [Header("Visual & References")]
-    [SerializeField] private TicTacToeBoardCell boardCellPrefab;
+    [SerializeField] private TicTacToeBoard boardPrefab;
+    [SerializeField] private int boardSize;
+    [SerializeField] private float delayBetweenBoardSpawns = 0.0f;
     private GridLayoutGroup glGroup;
-    [SerializeField] private int cellSize;
-    [SerializeField] private float delayBetweenCellSpawns = 0.0f;
-    [SerializeField] private float glGroupSpacing = 5.0f;
-
-    [Header("Audio")]
-    [SerializeField] private SimpleAudioClipContainer onCellChange;
-    [SerializeField] private SimpleAudioClipContainer onGameWon;
-    [SerializeField] private SimpleAudioClipContainer onSpawnCell;
-    [SerializeField] private SimpleAudioClipContainer onDoneSpawningCells;
-
-    [Header("On Reveal Win Cell")]
-    [SerializeField] private SimpleAudioClipContainer onRevealWinCell;
-    [SerializeField] private float pitchIncreasePerCell;
-
-    public Vector2Int Coordinates;
+    [SerializeField] private float glGroupSpacing = 25.0f;
 
     public bool HasChanged { get; private set; }
     public bool GameWon { get; private set; }
     public bool GameTied { get; private set; }
 
-
     public void ActOnEachBoardCell(Action<TicTacToeBoardCell> func)
     {
-        for (int i = 0; i < board.GetLength(0); i++)
+        for (int i = 0; i < boards.GetLength(0); i++)
         {
-            for (int p = 0; p < board.GetLongLength(0); p++)
+            for (int p = 0; p < boards.GetLongLength(0); p++)
             {
-                func(board[i, p]);
+                boards[i, p].ActOnEachBoardCell(func);
             }
         }
     }
@@ -51,22 +36,22 @@ public class TicTacToeBoard : MonoBehaviour
     {
         if (reverseOrder)
         {
-            for (int i = board.GetLength(0) - 1; i >= 0; i--)
+            for (int i = boards.GetLength(0) - 1; i >= 0; i--)
             {
-                for (int p = (int)board.GetLongLength(0) - 1; p >= 0; p--)
+                for (int p = (int)boards.GetLongLength(0) - 1; p >= 0; p--)
                 {
-                    func(board[i, p]);
+                    boards[i, p].ActOnEachBoardCell(func);
                     yield return new WaitForSeconds(delay);
                 }
             }
         }
         else
         {
-            for (int i = 0; i < board.GetLength(0); i++)
+            for (int i = 0; i < boards.GetLength(0); i++)
             {
-                for (int p = 0; p < board.GetLongLength(0); p++)
+                for (int p = 0; p < boards.GetLongLength(0); p++)
                 {
-                    func(board[i, p]);
+                    boards[i, p].ActOnEachBoardCell(func);
                     yield return new WaitForSeconds(delay);
                 }
             }
@@ -89,50 +74,36 @@ public class TicTacToeBoard : MonoBehaviour
         HasChanged = false;
     }
 
-    public IEnumerator Generate(int boardSize)
+    public IEnumerator Generate(int numBoards, int numCells)
     {
         GameWon = false;
         GameTied = false;
         HasChanged = false;
-        winCellList = new List<TicTacToeBoardCell>();
 
         glGroup = GetComponent<GridLayoutGroup>();
-        glGroup.cellSize = new Vector2(cellSize, cellSize);
-        glGroup.constraintCount = boardSize;
+        glGroup.cellSize = new Vector2(boardSize, boardSize);
+        glGroup.constraintCount = numBoards;
         glGroup.spacing = glGroupSpacing * Vector2.one;
-        glGroup.GetComponent<RectTransform>().sizeDelta = Vector2.one * boardSize * cellSize;
+        glGroup.GetComponent<RectTransform>().sizeDelta = Vector2.one * numBoards * boardSize;
 
-        board = new TicTacToeBoardCell[boardSize, boardSize];
-        for (int i = 0; i < board.GetLength(0); i++)
+        boards = new TicTacToeBoard[numBoards, numBoards];
+        for (int i = 0; i < boards.GetLength(0); i++)
         {
-            for (int p = 0; p < board.GetLongLength(0); p++)
+            for (int p = 0; p < boards.GetLongLength(0); p++)
             {
-                TicTacToeBoardCell cell = Instantiate(boardCellPrefab, transform);
-                cell.Coordinates = new Vector2Int(i, p);
-                cell.OwnerOfCell = this;
-                board[i, p] = cell;
-                cell.name += "<" + i + ", " + p + ">";
+                TicTacToeBoard board = Instantiate(boardPrefab, transform);
+                board.Coordinates = new Vector2Int(i, p);
+                StartCoroutine(board.Generate(numCells));
+                boards[i, p] = board;
+                board.name += "<" + i + ", " + p + ">";
             }
         }
-
-        for (int i = 0; i < board.GetLength(0); i++)
-        {
-            for (int p = 0; p < board.GetLongLength(0); p++)
-            {
-                onSpawnCell.PlayOneShot();
-
-                board[i, p].SetAnimatorParameterBool("FadeIn", true);
-
-                yield return new WaitForSeconds(delayBetweenCellSpawns);
-            }
-        }
-
-        onDoneSpawningCells.PlayOneShot();
+        yield return null;
     }
+
 
     public void NotifyOfMove(TicTacToeBoardCell alteredCell)
     {
-        onCellChange.PlayOneShot();
         CheckForWin(alteredCell);
         CheckForTie();
         HasChanged = true;
@@ -140,6 +111,7 @@ public class TicTacToeBoard : MonoBehaviour
 
     private bool CheckForHorizontalWin(TicTacToeBoardCell cellToCheck)
     {
+        /*
         // Check for Row Win
         int row = cellToCheck.Coordinates.x;
         for (int i = 0; i < board.GetLength(0); i++)
@@ -158,10 +130,13 @@ public class TicTacToeBoard : MonoBehaviour
         }
 
         return true;
+        */
+        return false;
     }
 
     private bool CheckForVerticalWin(TicTacToeBoardCell cellToCheck)
     {
+        /*
         // Check for Column Win
         int column = cellToCheck.Coordinates.y;
         for (int i = 0; i < board.GetLength(0); i++)
@@ -178,12 +153,14 @@ public class TicTacToeBoard : MonoBehaviour
         {
             winCellList.Add(board[i, column]);
         }
-
         return true;
+        */
+        return false;
     }
 
     private bool CheckForDiagonalWin(TicTacToeBoardCell cellToCheck)
     {
+        /*
         bool won = true;
         //
         for (int i = 0; i < board.GetLength(0); i++)
@@ -226,19 +203,23 @@ public class TicTacToeBoard : MonoBehaviour
             return true;
         }
         return false;
+        */
+        return false;
     }
 
     private void CheckForTie()
     {
-        for (int i = 0; i < board.GetLength(0); i++)
+        for (int i = 0; i < boards.GetLength(0); i++)
         {
-            for (int p = 0; p < board.GetLongLength(0); p++)
+            for (int p = 0; p < boards.GetLongLength(0); p++)
             {
+                /*
                 // Empty cells exist, therefore not at a stalemate yet
-                if (board[i, p].GetState() == TicTacToeBoardCellState.NULL)
+                if (boards[i, p].GetState() == TicTacToeGameManager.TicTacToeBoardCellState.NULL)
                 {
                     return;
                 }
+                */
             }
         }
         // Successfully looped through all cells without coming across an empty cell, therefore game is tied
@@ -248,36 +229,9 @@ public class TicTacToeBoard : MonoBehaviour
 
     private void CheckForWin(TicTacToeBoardCell cellToCheck)
     {
-        if (CheckForHorizontalWin(cellToCheck))
+        if (cellToCheck.OwnerOfCell.GameWon)
         {
-            GameWon = true;
-            return;
-        };
-        if (CheckForVerticalWin(cellToCheck))
-        {
-            GameWon = true;
-            return;
-        };
-        if (CheckForDiagonalWin(cellToCheck))
-        {
-            GameWon = true;
-            return;
-        };
-    }
-
-    public IEnumerator StartWinCellsAnimation()
-    {
-        float pitchChange = 0;
-        foreach (TicTacToeBoardCell cell in winCellList)
-        {
-            cell.SetAnimatorParameterBool("PartOfWin", true);
-
-            // Audio
-            onRevealWinCell.PlayWithPitchAdjustment(pitchChange);
-            pitchChange += pitchIncreasePerCell;
-
-            yield return new WaitForSeconds(delayBetweenWinCellAnimations);
+            Debug.Log(cellToCheck.OwnerOfCell.ToString() + " Resolved");
         }
-        onGameWon.PlayOneShot();
     }
 }

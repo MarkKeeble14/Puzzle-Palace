@@ -15,10 +15,7 @@ public class TicTacToeGameManager : MonoBehaviour
     [SerializeField] private Transform parentBoardTo;
     [SerializeField] private TicTacToeBoard boardPrefab;
     private TicTacToeBoard board;
-    [SerializeField]
-    private SerializableDictionary<TicTacToeBoardCellState, StateDisplayInfo> stateSpriteDict
-        = new SerializableDictionary<TicTacToeBoardCellState, StateDisplayInfo>();
-    private GameState winner;
+    private WinnerOptions winner;
     [SerializeField] private float delayBetweenCellsInRestartSequence;
 
     [Header("References")]
@@ -38,20 +35,6 @@ public class TicTacToeGameManager : MonoBehaviour
     private int p1Score;
     private int p2Score;
 
-    [System.Serializable]
-    public struct StateDisplayInfo
-    {
-        public Sprite Sprite;
-        public Color Color;
-    }
-
-    public enum TicTacToeBoardCellState
-    {
-        NULL,
-        X,
-        O
-    }
-
     public void Restart()
     {
         StartCoroutine(RestartGame());
@@ -69,9 +52,18 @@ public class TicTacToeGameManager : MonoBehaviour
         yield return new WaitForSeconds(1.0f);
 
         // Reset the game state to player 1's turn
-        gameState = GameState.P1;
+        SetTurn(GameState.P1);
 
         StartCoroutine(StartSequence());
+    }
+
+    private void SetTurn(GameState state)
+    {
+        if (state == GameState.P1 || state == GameState.P2)
+        {
+            TicTacToeDataDealer._Instance.CurrentTurn = state;
+        }
+        gameState = state;
     }
 
     public void BeginGame()
@@ -81,8 +73,9 @@ public class TicTacToeGameManager : MonoBehaviour
 
     public void SetImageInfo(Image i, TicTacToeBoardCellState state)
     {
-        i.sprite = stateSpriteDict[state].Sprite;
-        i.color = stateSpriteDict[state].Color;
+        TicTacToeBoardCellStateVisualInfo info = GetStateDisplayInfo(state);
+        i.sprite = info.Sprite;
+        i.color = info.Color;
     }
 
     private void Awake()
@@ -139,48 +132,48 @@ public class TicTacToeGameManager : MonoBehaviour
                     menuScreen.SetActive(false);
                     break;
                 case GameState.P1:
-                    board.SetUnsetBoardSpritesToSprite(stateSpriteDict[TicTacToeBoardCellState.O].Sprite);
+                    board.SetUnsetBoardSpritesToSprite(GetStateDisplayInfo(TicTacToeBoardCellState.O).Sprite);
                     yield return new WaitUntil(() => board.HasChanged);
                     if (board.GameWon)
                     {
                         StartCoroutine(board.StartWinCellsAnimation());
-                        winner = gameState;
-                        gameState = GameState.END;
+                        winner = WinnerOptions.P1;
+                        SetTurn(GameState.END);
                     }
                     else if (board.GameTied)
                     {
-                        winner = GameState.END;
-                        gameState = GameState.END;
+                        winner = WinnerOptions.NEITHER;
+                        SetTurn(GameState.END);
                     }
                     else
                     {
                         board.ResetHasChanged();
-                        gameState = GameState.P2;
+                        SetTurn(GameState.P2);
                     }
                     break;
                 case GameState.P2:
-                    board.SetUnsetBoardSpritesToSprite(stateSpriteDict[TicTacToeBoardCellState.X].Sprite);
+                    board.SetUnsetBoardSpritesToSprite(GetStateDisplayInfo(TicTacToeBoardCellState.X).Sprite);
                     yield return new WaitUntil(() => board.HasChanged);
                     if (board.GameWon)
                     {
                         StartCoroutine(board.StartWinCellsAnimation());
-                        winner = gameState;
-                        gameState = GameState.END;
+                        winner = WinnerOptions.P2;
+                        SetTurn(GameState.END);
                     }
                     else if (board.GameTied)
                     {
-                        winner = GameState.END;
-                        gameState = GameState.END;
+                        winner = WinnerOptions.NEITHER;
+                        SetTurn(GameState.END);
                     }
                     else
                     {
                         board.ResetHasChanged();
-                        gameState = GameState.P1;
+                        SetTurn(GameState.P1);
                     }
                     break;
                 case GameState.END:
                     endGameScreen.SetActive(true);
-                    if (winner == GameState.END)
+                    if (winner == WinnerOptions.NEITHER)
                     {
                         // Tie Game
                         winnerText.text = "Tie Game!";
@@ -191,11 +184,11 @@ public class TicTacToeGameManager : MonoBehaviour
                     {
                         // A player won
                         winnerText.text = winnerTextString + winner.ToString();
-                        if (winner == GameState.P1)
+                        if (winner == WinnerOptions.P1)
                         {
                             p1Score++;
                         }
-                        else if (winner == GameState.P2)
+                        else if (winner == WinnerOptions.P2)
                         {
                             p2Score++;
                         }
@@ -204,28 +197,11 @@ public class TicTacToeGameManager : MonoBehaviour
                     }
                     yield break;
             }
-
         }
     }
 
-    public TicTacToeBoardCellState GetCurrentPlayerSymbol()
+    private TicTacToeBoardCellStateVisualInfo GetStateDisplayInfo(TicTacToeBoardCellState state)
     {
-        if (gameState == GameState.P1)
-        {
-            return TicTacToeBoardCellState.O;
-        }
-        else if (gameState == GameState.P2)
-        {
-            return TicTacToeBoardCellState.X;
-        }
-        else
-        {
-            return TicTacToeBoardCellState.NULL;
-        }
-    }
-
-    public StateDisplayInfo GetStateDisplayInfo(TicTacToeBoardCellState state)
-    {
-        return stateSpriteDict[state];
+        return TicTacToeDataDealer._Instance.GetStateDisplayInfo(state);
     }
 }

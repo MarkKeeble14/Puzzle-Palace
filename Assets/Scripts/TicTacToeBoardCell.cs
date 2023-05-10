@@ -4,7 +4,10 @@ using UnityEngine.UI;
 
 public class TicTacToeBoardCell : MonoBehaviour
 {
-    private TicTacToeGameManager.TicTacToeBoardCellState currentState;
+    private TicTacToeBoardCellState currentState;
+    public Vector2Int Coordinates;
+    public TicTacToeBoard OwnerOfCell;
+
 
     // References
     [SerializeField] private Image image;
@@ -20,26 +23,25 @@ public class TicTacToeBoardCell : MonoBehaviour
         return image;
     }
 
-    public Vector2Int Coordinates;
 
     public void SetNull()
     {
-        ChangeState(TicTacToeGameManager.TicTacToeBoardCellState.NULL);
+        ChangeState(TicTacToeBoardCellState.NULL);
     }
 
     public void SetToCurrentPlayerSymbol()
     {
-        if (currentState != TicTacToeGameManager.TicTacToeBoardCellState.NULL) return;
-        ChangeState(TicTacToeGameManager._Instance.GetCurrentPlayerSymbol());
+        if (currentState != TicTacToeBoardCellState.NULL) return;
+        ChangeState(TicTacToeDataDealer._Instance.GetCurrentPlayerSymbol());
         TicTacToeGameManager._Instance.NotifyOfMove(this);
     }
 
-    public TicTacToeGameManager.TicTacToeBoardCellState GetState()
+    public TicTacToeBoardCellState GetState()
     {
         return currentState;
     }
 
-    public void ChangeState(TicTacToeGameManager.TicTacToeBoardCellState state)
+    public void ChangeState(TicTacToeBoardCellState state)
     {
         currentState = state;
         UpdateSprite();
