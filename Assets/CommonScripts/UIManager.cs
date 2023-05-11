@@ -53,19 +53,9 @@ public class UIManager : MonoBehaviour
         pauseScreen.SetActive(false);
     }
 
-    public void PlayGame()
-    {
-        TransitionManager._Instance.FadeOut(() => SceneManager.LoadScene("Tutorial"));
-    }
-
-    public void Simulate()
-    {
-        TransitionManager._Instance.FadeOut(() => SceneManager.LoadScene("Simulation"));
-    }
-
     public void GoToMainMenu()
     {
-        TransitionManager._Instance.FadeOut(() => SceneManager.LoadScene(0));
+        GoToLevel(0);
     }
 
     public void Exit()
@@ -73,14 +63,24 @@ public class UIManager : MonoBehaviour
         TransitionManager._Instance.FadeOut(() => Application.Quit());
     }
 
-    public void GoToLevelSelect()
-    {
-        TransitionManager._Instance.FadeOut(() => SceneManager.LoadScene(1));
-    }
-
     public void GoToLevel(int buildIndex)
     {
-        TransitionManager._Instance.FadeOut(() => SceneManager.LoadScene(buildIndex));
+        TransitionManager._Instance.FadeOut(delegate
+        {
+            if (paused)
+                Unpause();
+            SceneManager.LoadScene(buildIndex);
+        });
+    }
+
+    public void GoToLevel(string sceneName)
+    {
+        TransitionManager._Instance.FadeOut(delegate
+        {
+            if (paused)
+                Unpause();
+            SceneManager.LoadScene(sceneName);
+        });
     }
 
     public void SavePlayerPrefs()

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(GridLayoutGroup))]
 public class TicTacToeBoard : MonoBehaviour
 {
     [Header("Data")]
@@ -14,10 +13,18 @@ public class TicTacToeBoard : MonoBehaviour
 
     [Header("Visual & References")]
     [SerializeField] private TicTacToeBoardCell boardCellPrefab;
-    private GridLayoutGroup glGroup;
+    [SerializeField] private Transform parentCellSpawnsTo;
+    [SerializeField] private GridLayoutGroup glGroup;
     [SerializeField] private int cellSize;
     [SerializeField] private float delayBetweenCellSpawns = 0.0f;
+    [SerializeField] private float pitchIncreasePerCell;
     [SerializeField] private float glGroupSpacing = 5.0f;
+    [SerializeField] private RectTransform mainTransform;
+    [SerializeField] private CanvasGroup mainCanvasGroup;
+    [SerializeField] private float coverImageAlphaGainRate = 5.0f;
+    [SerializeField] private float changeAlphaRate = 5.0f;
+    [SerializeField] private float changeColorRate = 5.0f;
+    [SerializeField] private float changeScaleRate = 5.0f;
 
     [Header("Audio")]
     [SerializeField] private SimpleAudioClipContainer onCellChange;
@@ -27,14 +34,33 @@ public class TicTacToeBoard : MonoBehaviour
 
     [Header("On Reveal Win Cell")]
     [SerializeField] private SimpleAudioClipContainer onRevealWinCell;
-    [SerializeField] private float pitchIncreasePerCell;
+
+    private bool useCoverImageOnWin;
 
     public Vector2Int Coordinates;
 
     public bool HasChanged { get; private set; }
     public bool GameWon { get; private set; }
     public bool GameTied { get; private set; }
+    public WinnerOptions WinnerState { get; private set; }
+    private bool interactable;
 
+    [SerializeField] private Image coverImage;
+    private CanvasGroup coverImageCanvasGroup;
+
+    public void SetInteractable(bool v)
+    {
+        interactable = v;
+        foreach (TicTacToeBoardCell cell in board)
+        {
+            cell.SetInteractable(interactable);
+        }
+    }
+
+    public void SetWinnerState(WinnerOptions winnerState)
+    {
+        WinnerState = winnerState;
+    }
 
     public void ActOnEachBoardCell(Action<TicTacToeBoardCell> func)
     {
@@ -79,7 +105,7 @@ public class TicTacToeBoard : MonoBehaviour
         {
             if (cell.GetState() == TicTacToeBoardCellState.NULL)
             {
-                cell.GetImage().sprite = s;
+                cell.GetSymbolImage().sprite = s;
             }
         });
     }
@@ -89,25 +115,27 @@ public class TicTacToeBoard : MonoBehaviour
         HasChanged = false;
     }
 
-    public IEnumerator Generate(int boardSize)
+    public IEnumerator Generate(int boardSize, bool useCoverImageOnWin)
     {
+        this.useCoverImageOnWin = useCoverImageOnWin;
         GameWon = false;
         GameTied = false;
         HasChanged = false;
         winCellList = new List<TicTacToeBoardCell>();
 
-        glGroup = GetComponent<GridLayoutGroup>();
         glGroup.cellSize = new Vector2(cellSize, cellSize);
         glGroup.constraintCount = boardSize;
         glGroup.spacing = glGroupSpacing * Vector2.one;
         glGroup.GetComponent<RectTransform>().sizeDelta = Vector2.one * boardSize * cellSize;
+
+        coverImageCanvasGroup = coverImage.GetComponent<CanvasGroup>();
 
         board = new TicTacToeBoardCell[boardSize, boardSize];
         for (int i = 0; i < board.GetLength(0); i++)
         {
             for (int p = 0; p < board.GetLongLength(0); p++)
             {
-                TicTacToeBoardCell cell = Instantiate(boardCellPrefab, transform);
+                TicTacToeBoardCell cell = Instantiate(boardCellPrefab, parentCellSpawnsTo);
                 cell.Coordinates = new Vector2Int(i, p);
                 cell.OwnerOfCell = this;
                 board[i, p] = cell;
@@ -115,27 +143,24 @@ public class TicTacToeBoard : MonoBehaviour
             }
         }
 
+        yield return null;
+
         for (int i = 0; i < board.GetLength(0); i++)
         {
             for (int p = 0; p < board.GetLongLength(0); p++)
             {
                 onSpawnCell.PlayOneShot();
 
-                board[i, p].SetAnimatorParameterBool("FadeIn", true);
+                TicTacToeBoardCell cell = board[i, p];
+
+                StartCoroutine(cell.ChangeScale(.9f));
+                StartCoroutine(cell.ChangeTotalAlpha(1));
 
                 yield return new WaitForSeconds(delayBetweenCellSpawns);
             }
         }
 
         onDoneSpawningCells.PlayOneShot();
-    }
-
-    public void NotifyOfMove(TicTacToeBoardCell alteredCell)
-    {
-        onCellChange.PlayOneShot();
-        CheckForWin(alteredCell);
-        CheckForTie();
-        HasChanged = true;
     }
 
     private bool CheckForHorizontalWin(TicTacToeBoardCell cellToCheck)
@@ -265,12 +290,51 @@ public class TicTacToeBoard : MonoBehaviour
         };
     }
 
-    public IEnumerator StartWinCellsAnimation()
+    public IEnumerator CheckMoveResult(GameState moveOccurredOn, TicTacToeBoardCell alteredCell)
     {
+        onCellChange.PlayOneShot();
+
+        CheckForWin(alteredCell);
+        CheckForTie();
+
+        if (GameWon)
+        {
+            yield return StartCoroutine(AnimateWinningCells());
+
+            SetWinnerState(moveOccurredOn == GameState.P1 ? WinnerOptions.P1 : WinnerOptions.P2);
+
+            if (useCoverImageOnWin)
+            {
+                StartCoroutine(ChangeCoverAlpha(1));
+                yield return StartCoroutine(ChangeCoverColor(TicTacToeDataDealer._Instance.GetPlayerColor(WinnerState)));
+            }
+        }
+
+        HasChanged = true;
+    }
+
+    public bool HasEmptySpace()
+    {
+        foreach (TicTacToeBoardCell cell in board)
+        {
+            if (cell.GetState() == TicTacToeBoardCellState.NULL) return true;
+        }
+        return false;
+    }
+
+    public IEnumerator AnimateWinningCells()
+    {
+        // Hide all Symbols
+        foreach (TicTacToeBoardCell cell in board)
+        {
+            StartCoroutine(cell.LockSymbolAlpha(0));
+        }
+
         float pitchChange = 0;
         foreach (TicTacToeBoardCell cell in winCellList)
         {
-            cell.SetAnimatorParameterBool("PartOfWin", true);
+            cell.SetCoverColor(TicTacToeDataDealer._Instance.GetWinCellColor());
+            StartCoroutine(cell.ChangeCoverAlpha(1));
 
             // Audio
             onRevealWinCell.PlayWithPitchAdjustment(pitchChange);
@@ -278,6 +342,49 @@ public class TicTacToeBoard : MonoBehaviour
 
             yield return new WaitForSeconds(delayBetweenWinCellAnimations);
         }
+
+        // Audio
         onGameWon.PlayOneShot();
+    }
+
+    public IEnumerator ChangeCoverAlpha(float target)
+    {
+        while (coverImageCanvasGroup.alpha != target)
+        {
+            coverImageCanvasGroup.alpha = Mathf.MoveTowards(coverImageCanvasGroup.alpha, target, Time.deltaTime * coverImageAlphaGainRate);
+            yield return null;
+        }
+    }
+
+    public IEnumerator ChangeScale(Vector3 target)
+    {
+        while (mainTransform.localScale != target)
+        {
+            mainTransform.localScale = Vector3.MoveTowards(mainTransform.localScale, target, Time.deltaTime * changeScaleRate);
+            yield return null;
+        }
+    }
+
+    public IEnumerator ChangeScale(float target)
+    {
+        yield return StartCoroutine(ChangeScale(new Vector3(target, target, target)));
+    }
+
+    public IEnumerator ChangeTotalAlpha(float target)
+    {
+        while (mainCanvasGroup.alpha != target)
+        {
+            mainCanvasGroup.alpha = Mathf.MoveTowards(mainCanvasGroup.alpha, target, Time.deltaTime * changeAlphaRate);
+            yield return null;
+        }
+    }
+
+    public IEnumerator ChangeCoverColor(Color target)
+    {
+        while (coverImage.color != target)
+        {
+            coverImage.color = Vector4.MoveTowards(coverImage.color, target, changeColorRate * Time.deltaTime);
+            yield return null;
+        }
     }
 }
