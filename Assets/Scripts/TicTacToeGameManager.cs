@@ -126,7 +126,6 @@ public abstract class TicTacToeGameManager : MonoBehaviour
             else
             {
                 turnTextAnimator.SetBool("In", false);
-                turnText.text = "";
             }
 
             // Act depending on turn

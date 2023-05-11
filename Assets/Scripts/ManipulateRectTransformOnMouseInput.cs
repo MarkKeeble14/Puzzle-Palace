@@ -110,15 +110,12 @@ public class ManipulateRectTransformOnMouseInput : MonoBehaviour
         {
             rect.anchoredPosition = Vector2.Lerp(rect.anchoredPosition, Vector2.zero, moveRTRate / 10 * Time.deltaTime);
         }
-    }
-
-    public void MouseDrag()
-    {
-        if (lockPosition) return;
-        Vector2 prevRTPosition = rect.anchoredPosition;
-        rect.anchoredPosition = new Vector2(
-            prevRTPosition.x + (deltaMousePosition.x * Time.deltaTime * moveRTRate),
-            prevRTPosition.y + (deltaMousePosition.y * Time.deltaTime * moveRTRate));
-
+        else if (Input.GetMouseButton(0))
+        {
+            Vector2 prevRTPosition = rect.anchoredPosition;
+            rect.anchoredPosition = new Vector2(
+                prevRTPosition.x + (deltaMousePosition.x * Time.deltaTime * moveRTRate),
+                prevRTPosition.y + (deltaMousePosition.y * Time.deltaTime * moveRTRate));
+        }
     }
 }

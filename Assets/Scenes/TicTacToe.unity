@@ -786,6 +786,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -50
       objectReference: {fileID: 0}
+    - target: {fileID: 31236585391360834, guid: 946fdfa67a0cff34ba2beb9acc29e584, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 774841430}
+    - target: {fileID: 31236585391360834, guid: 946fdfa67a0cff34ba2beb9acc29e584, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetMusicVolume
+      objectReference: {fileID: 0}
     - target: {fileID: 31236585596110021, guid: 946fdfa67a0cff34ba2beb9acc29e584, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -938,6 +946,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -50
       objectReference: {fileID: 0}
+    - target: {fileID: 3589971832060183393, guid: 946fdfa67a0cff34ba2beb9acc29e584, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 774841430}
+    - target: {fileID: 3589971832060183393, guid: 946fdfa67a0cff34ba2beb9acc29e584, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetSFXVolume
+      objectReference: {fileID: 0}
     - target: {fileID: 3589971832060183394, guid: 946fdfa67a0cff34ba2beb9acc29e584, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -957,6 +973,26 @@ PrefabInstance:
     - target: {fileID: 3589971832523593798, guid: 946fdfa67a0cff34ba2beb9acc29e584, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4169879794182423738, guid: 946fdfa67a0cff34ba2beb9acc29e584, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 876116572857615866}
+    - target: {fileID: 4169879794182423738, guid: 946fdfa67a0cff34ba2beb9acc29e584, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: Unpause
+      objectReference: {fileID: 0}
+    - target: {fileID: 4863998090051742239, guid: 946fdfa67a0cff34ba2beb9acc29e584, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 876116572857615866}
+    - target: {fileID: 4863998090051742239, guid: 946fdfa67a0cff34ba2beb9acc29e584, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: Unpause
+      objectReference: {fileID: 0}
+    - target: {fileID: 4863998090051742239, guid: 946fdfa67a0cff34ba2beb9acc29e584, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: UIManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 5325626562633604226, guid: 946fdfa67a0cff34ba2beb9acc29e584, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
@@ -1212,6 +1248,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2024888848177691018, guid: 71f8df093bae0b6448858a08f1765b1c, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527247283427002456, guid: 71f8df093bae0b6448858a08f1765b1c, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527247283427002456, guid: 71f8df093bae0b6448858a08f1765b1c, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527247283427002456, guid: 71f8df093bae0b6448858a08f1765b1c, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527247283427002456, guid: 71f8df093bae0b6448858a08f1765b1c, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
