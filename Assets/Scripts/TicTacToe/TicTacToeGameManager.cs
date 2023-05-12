@@ -7,10 +7,12 @@ public abstract class TicTacToeGameManager : MonoBehaviour
 {
     public static TicTacToeGameManager _Instance { get; private set; }
     protected bool gameStarted;
-    protected GameState gameState;
+    protected TicTacToeGameState gameState;
     protected WinnerOptions winner;
 
     [Header("References")]
+    [SerializeField] private ScreenAnimationController eogScreenAnimationHelper;
+    [SerializeField] private ScreenAnimationController beginGameScreenAnimationHelper;
     [SerializeField] protected Transform parentSpawnedTo;
     [SerializeField] protected TextMeshProUGUI turnText;
     [SerializeField] protected Animator turnTextAnimator;
@@ -25,8 +27,6 @@ public abstract class TicTacToeGameManager : MonoBehaviour
 
     [SerializeField] protected float delayOnRestart = 1.0f;
     [SerializeField] protected int numCells;
-    [SerializeField] private ScreenAnimationController eogScreenAnimationHelper;
-    [SerializeField] private ScreenAnimationController beginGameScreenAnimationHelper;
 
     public bool AllowMove { get; protected set; }
 
@@ -78,7 +78,7 @@ public abstract class TicTacToeGameManager : MonoBehaviour
     protected virtual IEnumerator HandleMenu()
     {
         yield return new WaitUntil(() => gameStarted);
-        SetTurn(GameState.P1);
+        SetTurn(TicTacToeGameState.P1);
         beginGameScreenAnimationHelper.Fade(true);
     }
 
@@ -118,7 +118,7 @@ public abstract class TicTacToeGameManager : MonoBehaviour
         while (true)
         {
             // Set turn text
-            if (gameState == GameState.P1 || gameState == GameState.P2)
+            if (gameState == TicTacToeGameState.P1 || gameState == TicTacToeGameState.P2)
             {
                 turnText.text = gameState.ToString() + turnTextString;
                 turnTextAnimator.SetBool("In", true);
@@ -131,18 +131,18 @@ public abstract class TicTacToeGameManager : MonoBehaviour
             // Act depending on turn
             switch (gameState)
             {
-                case GameState.MENU:
+                case TicTacToeGameState.MENU:
                     yield return StartCoroutine(HandleMenu());
                     break;
-                case GameState.P1:
+                case TicTacToeGameState.P1:
                     AllowMove = true;
                     yield return StartCoroutine(HandleP1Turn());
                     break;
-                case GameState.P2:
+                case TicTacToeGameState.P2:
                     AllowMove = true;
                     yield return StartCoroutine(HandleP2Turn());
                     break;
-                case GameState.END:
+                case TicTacToeGameState.END:
                     yield return StartCoroutine(HandleEOG());
                     yield break;
             }
@@ -150,16 +150,16 @@ public abstract class TicTacToeGameManager : MonoBehaviour
         }
     }
 
-    protected void SetTurn(GameState state)
+    protected void SetTurn(TicTacToeGameState state)
     {
-        if (state == GameState.P1 || state == GameState.P2)
+        if (state == TicTacToeGameState.P1 || state == TicTacToeGameState.P2)
         {
             TicTacToeDataDealer._Instance.CurrentTurn = state;
         }
         gameState = state;
     }
 
-    protected abstract IEnumerator CheckMoveResult(GameState moveOccurredOn, TicTacToeBoardCell alteredCell);
+    protected abstract IEnumerator CheckMoveResult(TicTacToeGameState moveOccurredOn, TicTacToeBoardCell alteredCell);
 
     public IEnumerator NotifyOfMove(TicTacToeBoardCell alteredCell)
     {

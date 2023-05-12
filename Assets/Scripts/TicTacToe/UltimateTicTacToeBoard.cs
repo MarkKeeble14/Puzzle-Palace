@@ -224,7 +224,8 @@ public class UltimateTicTacToeBoard : MonoBehaviour
             for (int p = 0; p < boards.GetLongLength(0); p++)
             {
                 // Empty cells exist, therefore not at a stalemate yet
-                if (boards[i, p].HasEmptySpace())
+                TicTacToeBoard checkingBoard = boards[i, p];
+                if (!checkingBoard.GameWon && checkingBoard.HasEmptySpace())
                 {
                     return;
                 }
@@ -234,7 +235,7 @@ public class UltimateTicTacToeBoard : MonoBehaviour
         GameTied = true;
     }
 
-    public IEnumerator CheckMoveResult(GameState moveOccurredOn, TicTacToeBoardCell alteredCell)
+    public IEnumerator CheckMoveResult(TicTacToeGameState moveOccurredOn, TicTacToeBoardCell alteredCell)
     {
         yield return StartCoroutine(alteredCell.OwnerOfCell.CheckMoveResult(moveOccurredOn, alteredCell));
 
@@ -272,7 +273,7 @@ public class UltimateTicTacToeBoard : MonoBehaviour
         }
         else
         {
-            SetWinnerState(moveOccurredOn == GameState.P1 ? WinnerOptions.P1 : WinnerOptions.P2);
+            SetWinnerState(moveOccurredOn == TicTacToeGameState.P1 ? WinnerOptions.P1 : WinnerOptions.P2);
 
             yield return StartCoroutine(AnimateWinningBoards());
         }
@@ -320,5 +321,15 @@ public class UltimateTicTacToeBoard : MonoBehaviour
 
         // Audio
         onGameWon.PlayOneShot();
+    }
+
+    [ContextMenu("FillBoard")]
+    public void FillBoard()
+    {
+        ActOnEachBoardCell(cell =>
+        {
+            cell.HardSetToSymbol(TicTacToeBoardCellState.X);
+        });
+        CheckForTie();
     }
 }

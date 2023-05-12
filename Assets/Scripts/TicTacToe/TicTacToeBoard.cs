@@ -290,7 +290,7 @@ public class TicTacToeBoard : MonoBehaviour
         };
     }
 
-    public IEnumerator CheckMoveResult(GameState moveOccurredOn, TicTacToeBoardCell alteredCell)
+    public IEnumerator CheckMoveResult(TicTacToeGameState moveOccurredOn, TicTacToeBoardCell alteredCell)
     {
         onCellChange.PlayOneShot();
 
@@ -301,7 +301,7 @@ public class TicTacToeBoard : MonoBehaviour
         {
             yield return StartCoroutine(AnimateWinningCells());
 
-            SetWinnerState(moveOccurredOn == GameState.P1 ? WinnerOptions.P1 : WinnerOptions.P2);
+            SetWinnerState(moveOccurredOn == TicTacToeGameState.P1 ? WinnerOptions.P1 : WinnerOptions.P2);
 
             if (useCoverImageOnWin)
             {
@@ -374,6 +374,7 @@ public class TicTacToeBoard : MonoBehaviour
     {
         while (mainCanvasGroup.alpha != target)
         {
+            if (mainCanvasGroup == null) yield break;
             mainCanvasGroup.alpha = Mathf.MoveTowards(mainCanvasGroup.alpha, target, Time.deltaTime * changeAlphaRate);
             yield return null;
         }

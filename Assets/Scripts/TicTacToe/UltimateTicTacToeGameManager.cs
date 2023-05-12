@@ -1,29 +1,27 @@
-﻿using System.Collections;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
-using System;
 
-public class StandardTicTacToeGameManager : TicTacToeGameManager
+public class UltimateTicTacToeGameManager : TicTacToeGameManager
 {
-    [SerializeField] private TicTacToeBoard boardPrefab;
-    private TicTacToeBoard board;
-    [SerializeField] private float delayBetweenCellsInRestartSequence;
+    [SerializeField] private int numBoards;
+    [SerializeField] private UltimateTicTacToeBoard boardPrefab;
+    private UltimateTicTacToeBoard board;
 
     protected override IEnumerator RestartGame()
     {
-        yield return StartCoroutine(board.ActOnEachBoardCellWithDelay(cell =>
+        board.ActOnEachBoard(board =>
         {
-            StartCoroutine(cell.ChangeScale(0));
-            StartCoroutine(cell.ChangeTotalAlpha(0));
-        }, delayBetweenCellsInRestartSequence, true));
+            StartCoroutine(board.ChangeScale(0));
+            StartCoroutine(board.ChangeTotalAlpha(0));
+        });
 
         yield return new WaitForSeconds(delayOnRestart);
 
         Destroy(board.gameObject);
 
         // Reset the game state to player 1's turn
-        SetTurn(GameState.P1);
+        SetTurn(TicTacToeGameState.P1);
 
         StartCoroutine(StartSequence());
     }
@@ -33,7 +31,7 @@ public class StandardTicTacToeGameManager : TicTacToeGameManager
         // Generate the board
         board = Instantiate(boardPrefab, parentSpawnedTo);
 
-        yield return StartCoroutine(board.Generate(numCells, false));
+        yield return StartCoroutine(board.Generate(numBoards, numCells));
 
         playButton.SetActive(true);
     }
@@ -45,17 +43,17 @@ public class StandardTicTacToeGameManager : TicTacToeGameManager
         if (board.GameWon)
         {
             winner = WinnerOptions.P1;
-            SetTurn(GameState.END);
+            SetTurn(TicTacToeGameState.END);
         }
         else if (board.GameTied)
         {
             winner = WinnerOptions.NEITHER;
-            SetTurn(GameState.END);
+            SetTurn(TicTacToeGameState.END);
         }
         else
         {
             board.ResetHasChanged();
-            SetTurn(GameState.P2);
+            SetTurn(TicTacToeGameState.P2);
         }
     }
 
@@ -66,21 +64,21 @@ public class StandardTicTacToeGameManager : TicTacToeGameManager
         if (board.GameWon)
         {
             winner = WinnerOptions.P2;
-            SetTurn(GameState.END);
+            SetTurn(TicTacToeGameState.END);
         }
         else if (board.GameTied)
         {
             winner = WinnerOptions.NEITHER;
-            SetTurn(GameState.END);
+            SetTurn(TicTacToeGameState.END);
         }
         else
         {
             board.ResetHasChanged();
-            SetTurn(GameState.P1);
+            SetTurn(TicTacToeGameState.P1);
         }
     }
 
-    protected override IEnumerator CheckMoveResult(GameState moveOccurredOn, TicTacToeBoardCell alteredCell)
+    protected override IEnumerator CheckMoveResult(TicTacToeGameState moveOccurredOn, TicTacToeBoardCell alteredCell)
     {
         yield return StartCoroutine(board.CheckMoveResult(moveOccurredOn, alteredCell));
     }

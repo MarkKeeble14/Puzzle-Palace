@@ -102,6 +102,11 @@ public class TicTacToeBoardCell : MonoBehaviour
         StartCoroutine(TicTacToeGameManager._Instance.NotifyOfMove(this));
     }
 
+    public void HardSetToSymbol(TicTacToeBoardCellState symbol)
+    {
+        ChangeState(symbol);
+    }
+
     public TicTacToeBoardCellState GetState()
     {
         return currentState;

@@ -23,7 +23,7 @@ public class TicTacToeDataDealer : MonoBehaviour
 
     [SerializeField]
     private SerializableDictionary<Player, PlayerRepresentationInformation> playerRepresentingDict = new SerializableDictionary<Player, PlayerRepresentationInformation>();
-    private Dictionary<GameState, Player> playerGameStateLinker = new Dictionary<GameState, Player>();
+    private Dictionary<TicTacToeGameState, Player> playerGameStateLinker = new Dictionary<TicTacToeGameState, Player>();
     private Dictionary<TicTacToeBoardCellState, Player> playerCellStateLinker = new Dictionary<TicTacToeBoardCellState, Player>();
     private Dictionary<WinnerOptions, Player> winnerOptionsPlayerLinker = new Dictionary<WinnerOptions, Player>();
 
@@ -32,7 +32,7 @@ public class TicTacToeDataDealer : MonoBehaviour
     [SerializeField] private Color uninteractableCellColor;
     [SerializeField] private Color interactableCellColor;
 
-    public GameState CurrentTurn { get; set; }
+    public TicTacToeGameState CurrentTurn { get; set; }
 
     [SerializeField] private Image p1Image;
     [SerializeField] private Image p2Image;
@@ -41,8 +41,8 @@ public class TicTacToeDataDealer : MonoBehaviour
     {
         _Instance = this;
 
-        playerGameStateLinker.Add(GameState.P1, Player.PLAYER1);
-        playerGameStateLinker.Add(GameState.P2, Player.PLAYER2);
+        playerGameStateLinker.Add(TicTacToeGameState.P1, Player.PLAYER1);
+        playerGameStateLinker.Add(TicTacToeGameState.P2, Player.PLAYER2);
 
         playerCellStateLinker.Add(playerRepresentingDict[Player.PLAYER1].CellState, Player.PLAYER1);
         playerCellStateLinker.Add(playerRepresentingDict[Player.PLAYER2].CellState, Player.PLAYER2);
@@ -71,7 +71,7 @@ public class TicTacToeDataDealer : MonoBehaviour
         return playerRepresentingDict[winnerOptionsPlayerLinker[player]].VisualInfo.Color;
     }
 
-    public Color GetPlayerColor(GameState gameState)
+    public Color GetPlayerColor(TicTacToeGameState gameState)
     {
         return playerRepresentingDict[playerGameStateLinker[gameState]].VisualInfo.Color;
     }
