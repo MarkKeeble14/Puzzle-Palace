@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(RectTransform))]
 public class ManipulateRectTransformOnMouseInput : MonoBehaviour
 {
+    // References
+    [SerializeField] private RectTransform rect;
+
     [Header("Zooming")]
     [SerializeField] private float defaultScale;
     private float scaleSizeChange;
@@ -18,9 +20,6 @@ public class ManipulateRectTransformOnMouseInput : MonoBehaviour
     private Vector2 deltaMousePosition;
     private Vector2 prevMousePosition;
 
-    // References
-    private RectTransform rect;
-
     [SerializeField] private bool defaultLockPosition = true;
     [SerializeField] private bool lockPosition;
     private string lockPositionKey = "LockPosition";
@@ -31,14 +30,15 @@ public class ManipulateRectTransformOnMouseInput : MonoBehaviour
     private string lockZoomKey = "LockZoom";
     [SerializeField] private Image lockZoomActiveState;
 
+    private bool scaleHasBeenSet;
+    private float scaleSetTo;
+
     public void ToggleLockPosition()
     {
         lockPosition = !lockPosition;
         PlayerPrefs.SetInt(lockPositionKey, lockPosition ? 1 : 0);
         PlayerPrefs.Save();
         lockPositionActiveState.gameObject.SetActive(lockPosition);
-
-
     }
 
     public void ToggleLockZoom()
@@ -51,8 +51,6 @@ public class ManipulateRectTransformOnMouseInput : MonoBehaviour
 
     private void Awake()
     {
-        rect = GetComponent<RectTransform>();
-
         if (!PlayerPrefs.HasKey(lockZoomKey))
         {
             lockZoom = defaultLockZoom;
@@ -80,6 +78,14 @@ public class ManipulateRectTransformOnMouseInput : MonoBehaviour
         }
     }
 
+    public void SetScale(float scale)
+    {
+        // 
+        defaultScale = 0;
+        scaleHasBeenSet = true;
+        scaleSetTo = scale;
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -87,20 +93,27 @@ public class ManipulateRectTransformOnMouseInput : MonoBehaviour
         deltaMousePosition = currentMousePosition - prevMousePosition;
         prevMousePosition = currentMousePosition;
 
-        if (lockZoom)
+        if (scaleHasBeenSet)
         {
-            scaleSizeChange = Mathf.Lerp(scaleSizeChange, 0, scaleSizeChangeRate * Time.deltaTime);
+            scaleSizeChange = Mathf.Lerp(scaleSizeChange, scaleSetTo, scaleSizeChangeRate * Time.deltaTime);
         }
         else
         {
-            scaleSizeChange += Input.mouseScrollDelta.y * scaleSizeChangeRate * Time.deltaTime;
-            if (scaleSizeChange > minMaxScaleSizeChange.y)
+            if (lockZoom)
             {
-                scaleSizeChange = minMaxScaleSizeChange.y;
+                scaleSizeChange = Mathf.Lerp(scaleSizeChange, 0, scaleSizeChangeRate * Time.deltaTime);
             }
-            if (scaleSizeChange < minMaxScaleSizeChange.x)
+            else
             {
-                scaleSizeChange = minMaxScaleSizeChange.x;
+                scaleSizeChange += Input.mouseScrollDelta.y * scaleSizeChangeRate * Time.deltaTime;
+                if (scaleSizeChange > minMaxScaleSizeChange.y)
+                {
+                    scaleSizeChange = minMaxScaleSizeChange.y;
+                }
+                if (scaleSizeChange < minMaxScaleSizeChange.x)
+                {
+                    scaleSizeChange = minMaxScaleSizeChange.x;
+                }
             }
         }
         currentScale = scaleSizeChange + defaultScale;

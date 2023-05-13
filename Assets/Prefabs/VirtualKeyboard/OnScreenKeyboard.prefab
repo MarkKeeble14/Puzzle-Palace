@@ -37,8 +37,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 150}
-  m_SizeDelta: {x: 0, y: 300}
+  m_AnchoredPosition: {x: 0, y: 175}
+  m_SizeDelta: {x: 0, y: 350}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &4866995181161698100
 MonoBehaviour:
@@ -120,8 +120,8 @@ MonoBehaviour:
     - Type: 0
       Shown: L
   - Data:
-    - Type: 1
-      Shown: Enter
+    - Type: 2
+      Shown: Back
     - Type: 0
       Shown: Z
     - Type: 0
@@ -136,8 +136,8 @@ MonoBehaviour:
       Shown: N
     - Type: 0
       Shown: M
-    - Type: 2
-      Shown: Back
+    - Type: 1
+      Shown: Enter
   parentTo: {fileID: 4866995181161698101}
   keyVirtualKeyboardButtonPrefab: {fileID: 733730244671483557, guid: f07930b7f9b03f84abc1c99e70f187ae, type: 3}
   enterVirtualKeyboardButtonPrefab: {fileID: 7655725600279678564, guid: 7cc50bc3f0fa5524ebcf54ff33993be0, type: 3}

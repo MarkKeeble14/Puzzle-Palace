@@ -17,12 +17,12 @@ public class KeyVirtualKeyboardButton : VirtualKeyboardButton
 
     public override void OnPress()
     {
-        ((WordoGameManager)MiniGameManager._Instance).KeyPressed(value);
+        ((UsesVirtualKeyboardMiniGameManager)MiniGameManager._Instance).KeyPressed(value);
     }
 
     public void Blackout(bool v)
     {
         StartCoroutine(Utils.ChangeColor(image, v ? blackedOutColor : activeColor, changeColorRate));
-        cv.blocksRaycasts = !v;
+        // cv.blocksRaycasts = !v;
     }
 }

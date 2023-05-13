@@ -1,56 +1,71 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class WordoGameManager : MiniGameManager
+public class WordoGameManager : UsesVirtualKeyboardMiniGameManager
 {
+    [Header("Game Settings")]
+    [SerializeField] private bool useWordLengthSpecifier;
+    [SerializeField] private int minWordLength = 3;
+    [SerializeField] private int maxWordLength = 5;
+    [SerializeField] private TextAsset wordList;
+
+    [Header("UI Settings")]
+    [SerializeField] private float changeAlphaOfInvalidWordTextRate;
+    [SerializeField] private float showInvalidWordTextDuration = 3.0f;
+    [SerializeField] private float delayBetweenCellSpawns = .0125f;
+
+    [Header("Spawning")]
     [SerializeField] private Transform parentSpawnedTo;
     [SerializeField] private WordoCell wordoCellPrefab;
     [SerializeField] private WordoRow wordoCellRowPrefab;
 
-    private WordoCell selectedCell;
+    // Data
+    private string[] allWordData;
+    private List<string> possibleWords;
+    private List<WordoRow> spawnedRows;
     private WordoCell[] spawnedCells;
+    private WordoCell selectedCell;
     private int currentIndex;
-
     private int sentinelValue = -1;
+    private string currentWord;
+    private int numGuesses;
+    private float showInvalidWordTextTimer;
 
+    [Header("References")]
     [SerializeField] private TextMeshProUGUI winText;
     [SerializeField] private TextMeshProUGUI wordText;
     [SerializeField] private TextMeshProUGUI numGuessesText;
-
     [SerializeField] private TextMeshProUGUI invalidWordText;
+    [SerializeField] private CanvasGroup invalidWordTextCV;
+    [SerializeField] private ManipulateRectTransformOnMouseInput manipGamePlace;
+    [SerializeField] private RectTransform scrollViewRect;
+    private ScrollRect scrollView;
 
-    private List<WordoRow> spawnedRows;
 
-    [SerializeField] private TextAsset wordList;
-    private List<string> possibleWords;
-
-    private string word;
-    private int numGuesses;
-
-    [SerializeField] private VirtualKeyboard virtualKeyboard;
-
-    private bool enterPressed;
-    private bool backPressed;
-    private bool keyPressed;
-    private string key;
-
+    [Header("Audio")]
     [SerializeField] private SimpleAudioClipContainer onInput;
     [SerializeField] private SimpleAudioClipContainer onInvalidWordInput;
     [SerializeField] private SimpleAudioClipContainer onSuccess;
 
-    [SerializeField] private CanvasGroup invalidWordTextCV;
-
-    private float showInvalidWordTextTimer;
-    [SerializeField] private float changeAlphaOfInvalidWordTextRate;
-    [SerializeField] private float showInvalidWordTextDuration = 3.0f;
-
-
     private new void Start()
     {
         LoadWordList();
+
+        if (useWordLengthSpecifier)
+        {
+            SetPossibleWords(s => s.Length >= minWordLength && s.Length <= maxWordLength);
+        }
+        else
+        {
+            SetPossibleWords(s => true);
+        }
+
+        // Get reference and store it
+        scrollView = scrollViewRect.GetComponent<ScrollRect>();
 
         base.Start();
     }
@@ -75,7 +90,7 @@ public class WordoGameManager : MiniGameManager
 
     protected override IEnumerator GameWon()
     {
-        wordText.text = "The Word was " + Utils.CapitalizeFirstLetter(word);
+        wordText.text = "The Word was " + Utils.CapitalizeFirstLetter(currentWord);
         numGuessesText.text = "You Guessed the Word in " + numGuesses + " Guess" + (numGuesses > 1 ? "es" : "");
         yield return null;
     }
@@ -105,9 +120,18 @@ public class WordoGameManager : MiniGameManager
     protected override IEnumerator GameLoop()
     {
         // Choose Word
-        word = GetRandomWord();
+        currentWord = GetRandomWord();
         spawnedRows = new List<WordoRow>();
+
+        // Adjust scroll view so that top & bottoms don't cut off game area due to scaling
+        if (currentWord.Length > 5)
+        {
+            manipGamePlace.SetScale((float)(1.0 - (0.1 * (currentWord.Length - 5))));
+        }
+
         virtualKeyboard.Generate();
+
+        // Debug.Log("The Word is: " + currentWord);
 
         while (true)
         {
@@ -116,14 +140,19 @@ public class WordoGameManager : MiniGameManager
             StartCoroutine(spawnedRow.ChangeAlpha(1));
             spawnedRows.Add(spawnedRow);
 
-            spawnedCells = new WordoCell[word.Length];
-            for (int i = 0; i < word.Length; i++)
+            spawnedCells = new WordoCell[currentWord.Length];
+            for (int i = 0; i < currentWord.Length; i++)
             {
+                // Debug.Log(currentWord[i]);
                 WordoCell spawned = Instantiate(wordoCellPrefab, spawnedRow.transform);
                 spawnedCells[i] = spawned;
-                spawned.Set(word, word[i]);
+                spawned.Set(currentWord, currentWord[i]);
                 spawned.AddOnPressedAction(SelectCell);
+                yield return new WaitForSeconds(delayBetweenCellSpawns);
             }
+
+            // Set Scroll View to show new row
+            scrollView.verticalNormalizedPosition = 0;
 
             currentIndex = 0;
             SelectCellBasedOnIndex();
@@ -133,6 +162,8 @@ public class WordoGameManager : MiniGameManager
 
             string inputtedWord;
             string currentFrameString;
+
+            ResetVirtualKeyboardFuncs();
 
             while (true)
             {
@@ -228,7 +259,7 @@ public class WordoGameManager : MiniGameManager
                 }
             }
 
-            if (inputtedWord.Equals(word))
+            if (inputtedWord.Equals(currentWord))
             {
                 // Done 
                 // Debug.Log("Successfully Guessed Word");
@@ -269,12 +300,12 @@ public class WordoGameManager : MiniGameManager
     {
         // Inputted word is now entered into s
         // Check if this is an accepted word
-        return possibleWords.Contains(s.ToLower());
+        return possibleWords.Contains(s);
     }
 
     private string GetRandomWord()
     {
-        return possibleWords[RandomHelper.RandomIntExclusive(0, possibleWords.Count)].ToUpper();
+        return possibleWords[RandomHelper.RandomIntExclusive(0, possibleWords.Count)];
     }
 
     private void LoadWordList()
@@ -282,33 +313,27 @@ public class WordoGameManager : MiniGameManager
         // Load word list
         if (wordList != null)
         {
-            possibleWords = new List<string>();
-            possibleWords.AddRange(wordList.text.Split('\n'));
+            allWordData = wordList.text.Split('\n');
         }
     }
 
-    public void SimulateEnter()
+    protected void SetPossibleWords(Func<string, bool> acceptedWord)
     {
-        // Debug.Log("Enter");
-        enterPressed = true;
-    }
-
-    public void SimulateBack()
-    {
-        // Debug.Log("Back");
-        backPressed = true;
-    }
-
-    public void KeyPressed(string s)
-    {
-        Debug.Log(s);
-        key = s;
-        keyPressed = true;
+        possibleWords = new List<string>();
+        string treatedString;
+        foreach (string s in allWordData)
+        {
+            treatedString = s.ToUpper().Trim();
+            if (acceptedWord(treatedString))
+            {
+                // Debug.Log(treatedString + ", " + treatedString.Length);
+                possibleWords.Add(treatedString);
+            }
+        }
     }
 
     private void Update()
     {
-
         invalidWordTextCV.alpha = Mathf.MoveTowards(invalidWordTextCV.alpha, showInvalidWordTextTimer > 0 ? 1 : 0, Time.deltaTime * changeAlphaOfInvalidWordTextRate);
         if (showInvalidWordTextTimer > 0)
         {
