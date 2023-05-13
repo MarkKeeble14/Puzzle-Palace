@@ -1,9 +1,16 @@
 ﻿using System;
+using System.Collections;
 using System.Globalization;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Utils
 {
+    public static string CapitalizeFirstLetter(string s)
+    {
+        return s[0].ToString().ToUpper() + s.Substring(1, s.Length - 1).ToLower();
+    }
+
     public static string ConvVector3ToString(Vector3 v)
     {
         return "<" + v.x + ", " + v.y + ", " + v.z + ">";
@@ -98,5 +105,32 @@ public class Utils
         if (z > max)
             max = z;
         return max;
+    }
+
+    public static IEnumerator ChangeScale(Transform t, Vector3 target, float changeRate)
+    {
+        while (t.localScale != target)
+        {
+            t.localScale = Vector3.MoveTowards(t.localScale, target, Time.deltaTime * changeRate);
+            yield return null;
+        }
+    }
+
+    public static IEnumerator ChangeCanvasGroupAlpha(CanvasGroup cv, float target, float changeRate)
+    {
+        while (cv.alpha != target)
+        {
+            cv.alpha = Mathf.MoveTowards(cv.alpha, target, Time.deltaTime * changeRate);
+            yield return null;
+        }
+    }
+
+    public static IEnumerator ChangeColor(Image image, Color target, float changeRate)
+    {
+        while (image.color != target)
+        {
+            image.color = Vector4.MoveTowards(image.color, target, changeRate * Time.deltaTime);
+            yield return null;
+        }
     }
 }

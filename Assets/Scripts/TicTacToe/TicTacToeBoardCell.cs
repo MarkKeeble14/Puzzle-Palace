@@ -25,46 +25,40 @@ public class TicTacToeBoardCell : MonoBehaviour
     [SerializeField] private Image cover;
     [SerializeField] private CanvasGroup coverCV;
 
+    bool symbolAlphaLocked;
+
     private void Awake()
     {
         SetInteractable(true);
     }
 
+    private void Update()
+    {
+        mainImage.color = Color.Lerp(mainImage.color, mainImageTargetColor, changeColorSpeed * Time.deltaTime);
+        if (!symbolAlphaLocked)
+        {
+            symbolCV.alpha = Mathf.Lerp(symbolCV.alpha, symbolTargetAlpha, adjustAlphaSpeed * Time.deltaTime);
+        };
+    }
+
     public IEnumerator ChangeScale(Vector3 targetScale)
     {
-        while (mainTransform.localScale != targetScale)
-        {
-            mainTransform.localScale = Vector3.MoveTowards(mainTransform.localScale, targetScale, Time.deltaTime * adjustScaleSpeed);
-            yield return null;
-        }
+        yield return StartCoroutine(Utils.ChangeScale(mainTransform, targetScale, adjustScaleSpeed));
     }
 
     public IEnumerator ChangeScale(float targetScale)
     {
-        yield return StartCoroutine(ChangeScale(new Vector3(targetScale, targetScale, targetScale)));
-    }
-
-    public void SetCoverColor(Color color)
-    {
-        cover.color = color;
+        yield return StartCoroutine(ChangeScale(Vector3.one * targetScale));
     }
 
     public IEnumerator ChangeCoverColor(Color color)
     {
-        while (cover.color != color)
-        {
-            cover.color = Color.Lerp(cover.color, color, Time.deltaTime * changeColorSpeed);
-            yield return null;
-        }
+        yield return StartCoroutine(Utils.ChangeColor(cover, color, changeColorSpeed));
     }
 
     private IEnumerator ChangeAlpha(CanvasGroup cv, float target)
     {
-        while (cv.alpha != target)
-        {
-            cv.alpha = Mathf.MoveTowards(cv.alpha, target, Time.deltaTime * adjustAlphaSpeed);
-            yield return null;
-        }
+        yield return StartCoroutine(Utils.ChangeCanvasGroupAlpha(cv, target, adjustAlphaSpeed));
     }
 
     public IEnumerator ChangeCoverAlpha(float target)
@@ -72,21 +66,21 @@ public class TicTacToeBoardCell : MonoBehaviour
         yield return StartCoroutine(ChangeAlpha(coverCV, target));
     }
 
-    bool symbolAlphaLocked;
-    public IEnumerator LockSymbolAlpha(float target)
-    {
-        symbolAlphaLocked = true;
-        yield return StartCoroutine(ChangeAlpha(symbolCV, target));
-    }
 
     public IEnumerator ChangeTotalAlpha(float target)
     {
         yield return StartCoroutine(ChangeAlpha(mainCV, target));
     }
 
-    public Image GetSymbolImage()
+    public IEnumerator LockSymbolAlpha(float target)
     {
-        return symbol;
+        symbolAlphaLocked = true;
+        yield return StartCoroutine(ChangeAlpha(symbolCV, target));
+    }
+
+    public void SetCoverColor(Color color)
+    {
+        cover.color = color;
     }
 
     public void SetNull()
@@ -123,11 +117,6 @@ public class TicTacToeBoardCell : MonoBehaviour
         TicTacToeGameManager._Instance.SetImageInfo(symbol, currentState);
     }
 
-    public override string ToString()
-    {
-        return "<" + Coordinates.x + ", " + Coordinates.y + ">: " + base.ToString();
-    }
-
     public void SetInteractable(bool v)
     {
         symbol.raycastTarget = v;
@@ -140,10 +129,13 @@ public class TicTacToeBoardCell : MonoBehaviour
         }
     }
 
-    private void Update()
+    public Image GetSymbolImage()
     {
-        mainImage.color = Color.Lerp(mainImage.color, mainImageTargetColor, changeColorSpeed * Time.deltaTime);
-        if (symbolAlphaLocked) return;
-        symbolCV.alpha = Mathf.Lerp(symbolCV.alpha, symbolTargetAlpha, adjustAlphaSpeed * Time.deltaTime);
+        return symbol;
+    }
+
+    public override string ToString()
+    {
+        return "<" + Coordinates.x + ", " + Coordinates.y + ">: " + base.ToString();
     }
 }

@@ -144,7 +144,7 @@ GameObject:
   - component: {fileID: 8040785637917832941}
   - component: {fileID: 8040785637917832937}
   m_Layer: 5
-  m_Name: GameOverCanvas
+  m_Name: EndGameCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1216,7 +1216,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4798115701701436105, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_hasFontAssetChanged
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4798115701876719963, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_Name
@@ -1225,14 +1225,14 @@ PrefabInstance:
     - target: {fileID: 4798115701876719965, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 3381363802765330866}
     - target: {fileID: 4798115701876719965, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: Restart
+      value: RestartGame
       objectReference: {fileID: 0}
     - target: {fileID: 4798115701876719965, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
-      value: UltimateTicTacToeGameManager, Assembly-CSharp
+      value: RestartMiniGameButton, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 4798115702626442827, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_Name
@@ -1324,6 +1324,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+--- !u!1 &3242819471223849465 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4798115701876719963, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+  m_PrefabInstance: {fileID: 8040785637874499746}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3381363802765330866
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3242819471223849465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a858e26fd930de446a6cfd89e341699e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &3242819471589990126 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}

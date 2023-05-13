@@ -349,20 +349,12 @@ public class TicTacToeBoard : MonoBehaviour
 
     public IEnumerator ChangeCoverAlpha(float target)
     {
-        while (coverImageCanvasGroup.alpha != target)
-        {
-            coverImageCanvasGroup.alpha = Mathf.MoveTowards(coverImageCanvasGroup.alpha, target, Time.deltaTime * coverImageAlphaGainRate);
-            yield return null;
-        }
+        yield return StartCoroutine(Utils.ChangeCanvasGroupAlpha(coverImageCanvasGroup, target, coverImageAlphaGainRate));
     }
 
     public IEnumerator ChangeScale(Vector3 target)
     {
-        while (mainTransform.localScale != target)
-        {
-            mainTransform.localScale = Vector3.MoveTowards(mainTransform.localScale, target, Time.deltaTime * changeScaleRate);
-            yield return null;
-        }
+        yield return StartCoroutine(Utils.ChangeScale(mainTransform, target, changeScaleRate));
     }
 
     public IEnumerator ChangeScale(float target)
@@ -372,20 +364,11 @@ public class TicTacToeBoard : MonoBehaviour
 
     public IEnumerator ChangeTotalAlpha(float target)
     {
-        while (mainCanvasGroup.alpha != target)
-        {
-            if (mainCanvasGroup == null) yield break;
-            mainCanvasGroup.alpha = Mathf.MoveTowards(mainCanvasGroup.alpha, target, Time.deltaTime * changeAlphaRate);
-            yield return null;
-        }
+        yield return StartCoroutine(Utils.ChangeCanvasGroupAlpha(mainCanvasGroup, target, changeAlphaRate));
     }
 
     public IEnumerator ChangeCoverColor(Color target)
     {
-        while (coverImage.color != target)
-        {
-            coverImage.color = Vector4.MoveTowards(coverImage.color, target, changeColorRate * Time.deltaTime);
-            yield return null;
-        }
+        yield return StartCoroutine(Utils.ChangeColor(coverImage, target, changeColorRate));
     }
 }

@@ -397,6 +397,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4718c08bdc392f4489634130922975fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  eogScreenAnimationHelper: {fileID: 1430815126}
+  beginGameScreenAnimationHelper: {fileID: 8908782002247169646}
   parentSpawnedTo: {fileID: 8978390134319232887}
   turnText: {fileID: 1767258815}
   turnTextAnimator: {fileID: 1767258819}
@@ -408,8 +410,6 @@ MonoBehaviour:
   playButton: {fileID: 963461144}
   delayOnRestart: 1
   numCells: 3
-  eogScreenAnimationHelper: {fileID: 1430815126}
-  beginGameScreenAnimationHelper: {fileID: 8908782002247169646}
   boardPrefab: {fileID: 5100660330269285045, guid: 0d176db04a29676428290afc4ac64924, type: 3}
   delayBetweenCellsInRestartSequence: 0.1
 --- !u!114 &1430815126 stripped
