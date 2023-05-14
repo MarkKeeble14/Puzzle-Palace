@@ -5,6 +5,21 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+public class WordoMaxGameManager : WordoGameManager
+{
+
+}
+
+public class WordoRandoGameManager : WordoGameManager
+{
+
+}
+
+public class WordoFivesGameManager : WordoGameManager
+{
+
+}
+
 public class WordoGameManager : UsesVirtualKeyboardMiniGameManager
 {
     [Header("Game Settings")]
@@ -19,6 +34,9 @@ public class WordoGameManager : UsesVirtualKeyboardMiniGameManager
     [SerializeField] private float changeAlphaOfInvalidWordTextRate;
     [SerializeField] private float showInvalidWordTextDuration = 3.0f;
     [SerializeField] private float delayBetweenCellSpawns = .0125f;
+
+    [SerializeField] private string partialWinText = "Level ";
+    [SerializeField] private string fullWinText = "Success!";
 
     [Header("Spawning")]
     [SerializeField] private Transform parentSpawnedTo;
@@ -66,14 +84,17 @@ public class WordoGameManager : UsesVirtualKeyboardMiniGameManager
         base.Start();
     }
 
-    private void Update()
+    private new void Update()
     {
+        base.Update();
+
         invalidWordTextCV.alpha = Mathf.MoveTowards(invalidWordTextCV.alpha, showInvalidWordTextTimer > 0 ? 1 : 0, Time.deltaTime * changeAlphaOfInvalidWordTextRate);
         if (showInvalidWordTextTimer > 0)
         {
             showInvalidWordTextTimer -= Time.deltaTime;
         }
     }
+
     protected override IEnumerator Restart()
     {
         // 
@@ -99,14 +120,12 @@ public class WordoGameManager : UsesVirtualKeyboardMiniGameManager
         }
     }
 
-    [SerializeField] private string partialWinText = "Level ";
-    [SerializeField] private string fullWinText = "Success!";
     protected override IEnumerator GameWon()
     {
         winText.text = "Success!";
         if (changePossibleWordsOnComplete == WordoOnCompleteGameModifier.INCREMENT && currentWordLength <= hardLimitsWordLength.y)
         {
-            winText.text = partialWinText + (currentWordLength - (hardLimitsWordLength.x + 1)) + " " + fullWinText;
+            winText.text = partialWinText + (currentWordLength - hardLimitsWordLength.x) + " " + fullWinText;
         }
         wordText.text = "The Word was " + Utils.CapitalizeFirstLetter(currentWord);
         numGuessesText.text = "You Guessed the Word in " + numGuesses + " Guess" + (numGuesses > 1 ? "es" : "");

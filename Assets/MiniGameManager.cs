@@ -7,10 +7,31 @@ public abstract class MiniGameManager : MonoBehaviour
     public static MiniGameManager _Instance { get; private set; }
 
     protected bool gameStarted;
+    protected float timer;
 
     [Header("References")]
     [SerializeField] protected ScreenAnimationController endGameScreen;
     [SerializeField] protected ScreenAnimationController beginGameScreen;
+
+    [SerializeField] private string miniGameLabel;
+
+    protected void SetHighScore(string key, float v)
+    {
+        PlayerPrefs.SetFloat(miniGameLabel + key, v);
+        PlayerPrefs.Save();
+    }
+
+    protected void SetHighScore(string key, int v)
+    {
+        PlayerPrefs.SetInt(miniGameLabel + key, v);
+        PlayerPrefs.Save();
+    }
+
+    protected void Update()
+    {
+        if (gameStarted)
+            timer += Time.deltaTime;
+    }
 
     protected void Awake()
     {
