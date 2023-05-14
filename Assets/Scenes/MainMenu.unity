@@ -553,7 +553,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4798115701701436105, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_text
-      value: Wordo Rando
+      value: Wordo Mix
       objectReference: {fileID: 0}
     - target: {fileID: 4798115701701436105, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_fontSize
@@ -581,11 +581,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4798115701876719965, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_StringArgument
-      value: WordoRando
+      value: WordoMix
       objectReference: {fileID: 0}
     - target: {fileID: 4798115702626442827, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_Name
-      value: WordoRando
+      value: WordoMix
       objectReference: {fileID: 0}
     - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_Pivot.x
@@ -2009,7 +2009,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4798115701701436105, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_text
-      value: Wordo Fives
+      value: Wordo
       objectReference: {fileID: 0}
     - target: {fileID: 4798115701701436105, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_fontSize
@@ -2037,11 +2037,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4798115701876719965, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_StringArgument
-      value: WordoFives
+      value: WordoStandard
       objectReference: {fileID: 0}
     - target: {fileID: 4798115702626442827, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_Name
-      value: WordoFives
+      value: StandardWordo
       objectReference: {fileID: 0}
     - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_Pivot.x

@@ -27,13 +27,11 @@ public class TicTacToeBoard : MonoBehaviour
     [SerializeField] private float changeScaleRate = 5.0f;
 
     [Header("Audio")]
-    [SerializeField] private SimpleAudioClipContainer onCellChange;
-    [SerializeField] private SimpleAudioClipContainer onGameWon;
-    [SerializeField] private SimpleAudioClipContainer onSpawnCell;
-    [SerializeField] private SimpleAudioClipContainer onDoneSpawningCells;
-
-    [Header("On Reveal Win Cell")]
-    [SerializeField] private SimpleAudioClipContainer onRevealWinCell;
+    [SerializeField] private string onCellChanged = "tttBoard_onCellChanged";
+    [SerializeField] private string onGameWon = "tttBoard_onGameWon";
+    [SerializeField] private string onCellSpawned = "tttBoard_onCellSpawned";
+    [SerializeField] private string onFinishedSpawningCells = "tttBoard_onFinishedSpawningCells";
+    [SerializeField] private string onRevealWinningCell = "tttBoard_onRevealWinningCell";
 
     private bool useCoverImageOnWin;
 
@@ -149,7 +147,7 @@ public class TicTacToeBoard : MonoBehaviour
         {
             for (int p = 0; p < board.GetLongLength(0); p++)
             {
-                onSpawnCell.PlayOneShot();
+                AudioManager._Instance.PlayFromSFXDict(onCellSpawned);
 
                 TicTacToeBoardCell cell = board[i, p];
 
@@ -160,7 +158,7 @@ public class TicTacToeBoard : MonoBehaviour
             }
         }
 
-        onDoneSpawningCells.PlayOneShot();
+        AudioManager._Instance.PlayFromSFXDict(onFinishedSpawningCells);
     }
 
     private bool CheckForHorizontalWin(TicTacToeBoardCell cellToCheck)
@@ -292,7 +290,7 @@ public class TicTacToeBoard : MonoBehaviour
 
     public IEnumerator CheckMoveResult(TicTacToeGameState moveOccurredOn, TicTacToeBoardCell alteredCell)
     {
-        onCellChange.PlayOneShot();
+        AudioManager._Instance.PlayFromSFXDict(onCellChanged);
 
         CheckForWin(alteredCell);
         CheckForTie();
@@ -337,14 +335,15 @@ public class TicTacToeBoard : MonoBehaviour
             StartCoroutine(cell.ChangeCoverAlpha(1));
 
             // Audio
-            onRevealWinCell.PlayWithPitchAdjustment(pitchChange);
+            AudioManager._Instance.PlayFromSFXDict(onRevealWinningCell, pitchChange);
+
             pitchChange += pitchIncreasePerCell;
 
             yield return new WaitForSeconds(delayBetweenWinCellAnimations);
         }
 
         // Audio
-        onGameWon.PlayOneShot();
+        AudioManager._Instance.PlayFromSFXDict(onGameWon);
     }
 
     public IEnumerator ChangeCoverAlpha(float target)

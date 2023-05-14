@@ -76,51 +76,11 @@ MonoBehaviour:
   changeAlphaRate: 1
   changeColorRate: 1
   changeScaleRate: 0.1
-  onCellChange:
-    volume: 0.2
-    pitch: 1
-    source: {fileID: 5572447250801290265}
-    randomizeVolume: 0
-    minMaxVolume: {x: 0, y: 0}
-    randomizePitch: 1
-    minMaxPitch: {x: 0.9, y: 1.1}
-    clip: {fileID: 8300000, guid: 4873d65ccb3d79b459f1a144eba4d459, type: 3}
-  onGameWon:
-    volume: 0.2
-    pitch: 1
-    source: {fileID: 5572447250801290265}
-    randomizeVolume: 0
-    minMaxVolume: {x: 0, y: 0}
-    randomizePitch: 1
-    minMaxPitch: {x: 1, y: 1.1}
-    clip: {fileID: 8300000, guid: 89ecdaacbd4555e4e83f9c38e41b1e3a, type: 3}
-  onSpawnCell:
-    volume: 1
-    pitch: 1
-    source: {fileID: 5572447250801290265}
-    randomizeVolume: 0
-    minMaxVolume: {x: 0, y: 0}
-    randomizePitch: 0
-    minMaxPitch: {x: 0, y: 0}
-    clip: {fileID: 0}
-  onDoneSpawningCells:
-    volume: 1
-    pitch: 1
-    source: {fileID: 5572447250801290265}
-    randomizeVolume: 0
-    minMaxVolume: {x: 0, y: 0}
-    randomizePitch: 0
-    minMaxPitch: {x: 0, y: 0}
-    clip: {fileID: 0}
-  onRevealWinCell:
-    volume: 0.2
-    pitch: 1
-    source: {fileID: 5572447250801290265}
-    randomizeVolume: 0
-    minMaxVolume: {x: 0, y: 0}
-    randomizePitch: 0
-    minMaxPitch: {x: 0, y: 0}
-    clip: {fileID: 8300000, guid: 9dc144b3730047540b1d041c5fdc7706, type: 3}
+  onCellChanged: tttBoard_onCellChanged
+  onGameWon: tttBoard_onGameWon
+  onCellSpawned: tttBoard_onCellSpawned
+  onFinishedSpawningCells: tttBoard_onFinishedSpawningCells
+  onRevealWinningCell: tttBoard_onRevealWinningCell
   Coordinates: {x: 0, y: 0}
   coverImage: {fileID: 5674421449835358933}
 --- !u!82 &5572447250801290265

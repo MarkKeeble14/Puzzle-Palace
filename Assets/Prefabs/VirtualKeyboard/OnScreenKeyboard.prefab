@@ -142,6 +142,7 @@ MonoBehaviour:
   keyVirtualKeyboardButtonPrefab: {fileID: 733730244671483557, guid: f07930b7f9b03f84abc1c99e70f187ae, type: 3}
   enterVirtualKeyboardButtonPrefab: {fileID: 7655725600279678564, guid: 7cc50bc3f0fa5524ebcf54ff33993be0, type: 3}
   backVirtualKeyboardButtonPrefab: {fileID: -4630235468919075664, guid: 03026c7f74d4a8a429dca3203648f062, type: 3}
+  additionalFuncVirtualKeyboardButtonPrefab: {fileID: 5468411061356300274, guid: efa4d5399dc41454383cc9e0d890053a, type: 3}
   virtualKeyboardRowPrefab: {fileID: 7370092874077221746, guid: b453c3285962b15468788afb1deb524a, type: 3}
 --- !u!222 &4565872697056697796
 CanvasRenderer:

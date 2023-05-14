@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4470123084086374768}
   - component: {fileID: 2673910383657738769}
   - component: {fileID: 927236848201810833}
-  - component: {fileID: 575465480918864298}
+  - component: {fileID: -117558112534372390}
   m_Layer: 5
   m_Name: BoxButton
   m_TagString: Untagged
@@ -93,9 +93,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 575465480918864298}
-        m_TargetAssemblyTypeName: TemporaryAudioSourceSpawner, Assembly-CSharp
-        m_MethodName: PlayOneShot
+      - m_Target: {fileID: -117558112534372390}
+        m_TargetAssemblyTypeName: AudioCaller, Assembly-CSharp
+        m_MethodName: Play
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -117,7 +117,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &575465480918864298
+--- !u!114 &-117558112534372390
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -126,18 +126,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 4594335416260300085}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dce07233be49c7f4095ff7ae9eb73ce7, type: 3}
+  m_Script: {fileID: 11500000, guid: ac35d19f339ee6241aa2f514ef983adf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toPlay:
-    volume: 0.2
-    pitch: 1
-    source: {fileID: 0}
-    randomizeVolume: 0
-    minMaxVolume: {x: 0, y: 0}
-    randomizePitch: 1
-    minMaxPitch: {x: 0.7, y: 0.8}
-    clip: {fileID: 8300000, guid: 4873d65ccb3d79b459f1a144eba4d459, type: 3}
+  key: gm_onInput
 --- !u!1 &5729032156245211026
 GameObject:
   m_ObjectHideFlags: 0

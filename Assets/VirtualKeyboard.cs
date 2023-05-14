@@ -5,10 +5,12 @@ public class VirtualKeyboard : MonoBehaviour
 {
     [SerializeField] private List<VirtualKeyboardContent> Content = new List<VirtualKeyboardContent>();
     private Dictionary<string, KeyVirtualKeyboardButton> spawnedKeysDict = new Dictionary<string, KeyVirtualKeyboardButton>();
+    private Dictionary<string, AdditionalFuncVirtualKeyboardButton> additionalFuncKeysDict = new Dictionary<string, AdditionalFuncVirtualKeyboardButton>();
     [SerializeField] private Transform parentTo;
     [SerializeField] private KeyVirtualKeyboardButton keyVirtualKeyboardButtonPrefab;
     [SerializeField] private EnterVirtualKeyboardButton enterVirtualKeyboardButtonPrefab;
     [SerializeField] private BackVirtualKeyboardButton backVirtualKeyboardButtonPrefab;
+    [SerializeField] private AdditionalFuncVirtualKeyboardButton additionalFuncVirtualKeyboardButtonPrefab;
     [SerializeField] private Transform virtualKeyboardRowPrefab;
 
     private bool generated;
@@ -45,6 +47,10 @@ public class VirtualKeyboard : MonoBehaviour
                     case VirtualKeyboardContentType.BACK_FUNCTION:
                         spawned = Instantiate(backVirtualKeyboardButtonPrefab, t);
                         break;
+                    case VirtualKeyboardContentType.ADDITIONAL_FUNCTION:
+                        additionalFuncKeysDict.Add(current.Shown.ToUpper(), Instantiate(additionalFuncVirtualKeyboardButtonPrefab, t));
+                        spawned = additionalFuncKeysDict[current.Shown.ToUpper()];
+                        break;
                     default:
                         throw new UnhandledSwitchCaseException();
                 }
@@ -56,5 +62,18 @@ public class VirtualKeyboard : MonoBehaviour
     public void BlackoutKey(string s, bool v)
     {
         spawnedKeysDict[s].Blackout(v);
+    }
+
+    public void ClearBlackoutKeys()
+    {
+        foreach (KeyValuePair<string, KeyVirtualKeyboardButton> kvp in spawnedKeysDict)
+        {
+            kvp.Value.Blackout(false);
+        }
+    }
+
+    public AdditionalFuncVirtualKeyboardButton GetAdditionalFuncButton(string key)
+    {
+        return additionalFuncKeysDict[key];
     }
 }

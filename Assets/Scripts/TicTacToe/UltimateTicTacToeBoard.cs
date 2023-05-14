@@ -25,10 +25,10 @@ public class UltimateTicTacToeBoard : MonoBehaviour
     public WinnerOptions WinnerState { get; private set; }
 
     [Header("Audio")]
-    [SerializeField] private SimpleAudioClipContainer onGameWon;
+    [SerializeField] private string onGameWon = "u_tttBoard_onGameWon";
+    [SerializeField] private string onRevealWinningBoard = "u_tttBoard_onRevealWinningBoard";
 
     [Header("On Reveal Win Cell")]
-    [SerializeField] private SimpleAudioClipContainer onRevealWinCell;
     private List<TicTacToeBoard> winBoardList;
     [SerializeField] private float delayAfterBoardWin = .5f;
 
@@ -314,14 +314,14 @@ public class UltimateTicTacToeBoard : MonoBehaviour
             StartCoroutine(board.ChangeCoverColor(TicTacToeDataDealer._Instance.GetWinCellColor()));
 
             // Audio
-            onRevealWinCell.PlayWithPitchAdjustment(pitchChange);
+            AudioManager._Instance.PlayFromSFXDict(onRevealWinningBoard, pitchChange);
             pitchChange += pitchIncreasePerCell;
 
             yield return new WaitForSeconds(delayBetweenWinBoardAnimations);
         }
 
         // Audio
-        onGameWon.PlayOneShot();
+        AudioManager._Instance.PlayFromSFXDict(onGameWon);
     }
 
     [ContextMenu("FillBoard")]

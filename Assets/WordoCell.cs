@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,6 +11,9 @@ public class WordoCell : MonoBehaviour
     private char correctChar;
 
     private char inputtedChar;
+    private List<char> pencilledChars = new List<char>();
+    [SerializeField] private List<TextMeshProUGUI> pencilledCharTexts = new List<TextMeshProUGUI>();
+    private Dictionary<char, TextMeshProUGUI> assignedCharTextsDict = new Dictionary<char, TextMeshProUGUI>();
     [SerializeField] private float changeColorRate;
 
     [SerializeField] private Color correctColor;
@@ -27,9 +31,10 @@ public class WordoCell : MonoBehaviour
     private Action<WordoCell> OnPressed;
     private bool isSelected;
 
-    [SerializeField] private SimpleAudioClipContainer onSuccess;
-    [SerializeField] private SimpleAudioClipContainer onPartialSuccess;
-    [SerializeField] private SimpleAudioClipContainer onFail;
+    [SerializeField] private string onCorrect = "wc_onCorrect";
+    [SerializeField] private string onPartialSuccess = "wc_onPartiallyCorrect";
+    [SerializeField] private string onIncorrect = "wc_onIncorrect";
+
 
     public void OnPress()
     {
@@ -66,8 +71,51 @@ public class WordoCell : MonoBehaviour
 
     public void SetInputtedChar(char s)
     {
+        ClearPencilledChars();
         inputtedChar = s.ToString().ToUpper().ToCharArray()[0];
         text.text = inputtedChar.ToString();
+    }
+
+    public void TryPencilChar(char s)
+    {
+        s = s.ToString().ToUpper().ToCharArray()[0];
+
+        // First check if the char has already been pencilled in
+        if (pencilledChars.Contains(s))
+        {
+            // if so, instead of adding the char, we will remove it
+            pencilledChars.Remove(s);
+            assignedCharTextsDict[s].gameObject.SetActive(false);
+            assignedCharTextsDict.Remove(s);
+            return;
+        }
+
+        // Char has not already been pencilled in, find first empty text and do so
+        if (pencilledChars.Count < pencilledCharTexts.Count)
+        {
+            foreach (TextMeshProUGUI text in pencilledCharTexts)
+            {
+                if (!text.gameObject.activeInHierarchy)
+                {
+                    text.gameObject.SetActive(true);
+                    text.text = s.ToString();
+                    pencilledChars.Add(s);
+                    assignedCharTextsDict.Add(s, text);
+                    return;
+                }
+            }
+        }
+    }
+
+    private void ClearPencilledChars()
+    {
+        while (pencilledChars.Count > 0)
+        {
+            char c = pencilledChars[0];
+            pencilledChars.Remove(c);
+            assignedCharTextsDict[c].gameObject.SetActive(false);
+            assignedCharTextsDict.Remove(c);
+        }
     }
 
     public bool IsEmpty()
@@ -99,19 +147,19 @@ public class WordoCell : MonoBehaviour
     {
         if (IsCorrectGuess())
         {
-            onSuccess.PlayOneShot();
+            AudioManager._Instance.PlayFromSFXDict(onCorrect);
             // if correct character, green
             yield return StartCoroutine(ChangeBackgroundColor(correctColor));
         }
         else if (IsPartiallyCorrectGuess())
         {
-            onPartialSuccess.PlayOneShot();
+            AudioManager._Instance.PlayFromSFXDict(onPartialSuccess);
             // if incorrect character, but character exists in word, yellow
             yield return StartCoroutine(ChangeBackgroundColor(partiallyCorrectColor));
         }
         else
         {
-            onFail.PlayOneShot();
+            AudioManager._Instance.PlayFromSFXDict(onIncorrect);
             // if incorrect character, and character does not exist in word, red
             yield return StartCoroutine(ChangeBackgroundColor(incorrectColor));
         }

@@ -397,8 +397,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4718c08bdc392f4489634130922975fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  endGameScreen: {fileID: 1430815126}
   beginGameScreen: {fileID: 8908782002247169646}
+  endGameScreen: {fileID: 1430815126}
+  miniGameLabel: 
   eogScreenAnimationHelper: {fileID: 1430815126}
   beginGameScreenAnimationHelper: {fileID: 8908782002247169646}
   parentSpawnedTo: {fileID: 8978390134319232887}

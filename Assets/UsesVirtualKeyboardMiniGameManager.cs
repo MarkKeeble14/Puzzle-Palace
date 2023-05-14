@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 public abstract class UsesVirtualKeyboardMiniGameManager : MiniGameManager
 {
@@ -8,6 +10,8 @@ public abstract class UsesVirtualKeyboardMiniGameManager : MiniGameManager
     protected string key;
 
     [SerializeField] protected VirtualKeyboard virtualKeyboard;
+
+    protected Dictionary<string, Action> additionalFunctionsDict = new Dictionary<string, Action>();
 
     public void SimulateEnter()
     {
@@ -26,6 +30,11 @@ public abstract class UsesVirtualKeyboardMiniGameManager : MiniGameManager
         // Debug.Log(s);
         key = s;
         keyPressed = true;
+    }
+
+    public void CallAdditionalFunction(string key)
+    {
+        additionalFunctionsDict[key]?.Invoke();
     }
 
     public void ResetVirtualKeyboardFuncs()

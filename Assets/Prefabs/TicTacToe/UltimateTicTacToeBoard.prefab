@@ -116,26 +116,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boardPrefab: {fileID: 5100660330269285045, guid: 0d176db04a29676428290afc4ac64924, type: 3}
   boardSize: 300
-  delayBetweenBoardSpawns: 0.1
   glGroupSpacing: 25
   delayBetweenWinBoardAnimations: 0.375
   pitchIncreasePerCell: 0.2
-  onGameWon:
-    volume: 0.2
-    pitch: 1
-    source: {fileID: 0}
-    randomizeVolume: 0
-    minMaxVolume: {x: 0, y: 0}
-    randomizePitch: 1
-    minMaxPitch: {x: 1, y: 1.1}
-    clip: {fileID: 8300000, guid: 2567deeb80bb6154797c9a6fc2236a0b, type: 3}
-  onRevealWinCell:
-    volume: 0.3
-    pitch: 0.9
-    source: {fileID: 0}
-    randomizeVolume: 0
-    minMaxVolume: {x: 0, y: 0}
-    randomizePitch: 0
-    minMaxPitch: {x: 0, y: 0}
-    clip: {fileID: 8300000, guid: 89ecdaacbd4555e4e83f9c38e41b1e3a, type: 3}
+  onGameWon: u_tttBoard_onGameWon
+  onRevealWinningBoard: u_tttBoard_onRevealWinningBoard
   delayAfterBoardWin: 0.5

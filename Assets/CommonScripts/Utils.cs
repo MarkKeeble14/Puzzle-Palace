@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class Utils
 {
+    public static int StandardSentinalValue => -1;
+
     public static string CapitalizeFirstLetter(string s)
     {
         return s[0].ToString().ToUpper() + s.Substring(1, s.Length - 1).ToLower();
@@ -32,6 +34,11 @@ public class Utils
         float y = v.y > minValue ? v.y : 0;
         float z = v.z > minValue ? v.z : 0;
         return string.Format(format, RoundTo(x, roundTo), RoundTo(y, roundTo), RoundTo(z, roundTo));
+    }
+
+    public static string GetPluralization(int num)
+    {
+        return num > 1 ? "es" : "";
     }
 
     public static string ConvVector3ToStringAbs(Vector3 v, int roundTo, string format, float minValue)
@@ -77,6 +84,13 @@ public class Utils
             v = 0;
             return false;
         }
+    }
+
+    public static string ParseDuration(int time)
+    {
+        int minutes = Mathf.FloorToInt(time / 60);
+        int seconds = time - (minutes * 60);
+        return minutes + "m:" + seconds + "s";
     }
 
     public static string GetRepeatingString(string s, int repeat)

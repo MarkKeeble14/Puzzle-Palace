@@ -30,6 +30,10 @@ public abstract class AudioClipContainer
         {
             volume = RandomHelper.RandomFloat(minMaxVolume);
         }
+        else
+        {
+            source.volume = volume;
+        }
     }
 
     public void PlayOneShot()
@@ -49,5 +53,14 @@ public abstract class AudioClipContainer
         source.pitch += pitchChange;
         source.PlayOneShot(Clip, volume);
         source.pitch = defaultPitch;
+    }
+
+    public void Play()
+    {
+        if (!source) return;
+        if (!Clip) return;
+        SetRandoms();
+        source.clip = Clip;
+        source.Play();
     }
 }

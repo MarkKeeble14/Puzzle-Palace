@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public abstract class MiniGameManager : MonoBehaviour
@@ -10,27 +11,73 @@ public abstract class MiniGameManager : MonoBehaviour
     protected float timer;
 
     [Header("References")]
-    [SerializeField] protected ScreenAnimationController endGameScreen;
     [SerializeField] protected ScreenAnimationController beginGameScreen;
+    [SerializeField] protected ScreenAnimationController endGameScreen;
 
     [SerializeField] private string miniGameLabel;
+    private string hsLead = "hs_";
 
-    protected void SetHighScore(string key, float v)
+    private string timeTakenHSKey = "Duration";
+
+    private string ConstructHighScoreString(string key)
     {
-        PlayerPrefs.SetFloat(miniGameLabel + key, v);
+        return hsLead + miniGameLabel + "_" + key;
+    }
+
+    protected bool TrySetHighScore(string key, float v, Func<float, float, bool> comparisonOperator)
+    {
+        key = ConstructHighScoreString(key);
+
+        if (PlayerPrefs.HasKey(key))
+        {
+            float prevHS = PlayerPrefs.GetFloat(key);
+            if (comparisonOperator(v, prevHS))
+            {
+                SaveFloatToPlayerPrefs(key, v);
+                return true;
+            }
+        }
+        else
+        {
+            SaveFloatToPlayerPrefs(key, v);
+            return true;
+        }
+
+        PlayerPrefs.Save();
+        return false;
+    }
+
+    protected bool HasHighScore(string key)
+    {
+        return PlayerPrefs.HasKey(ConstructHighScoreString(key));
+    }
+
+    protected float GetHighScore(string key)
+    {
+        return PlayerPrefs.GetFloat(ConstructHighScoreString(key));
+    }
+
+    private void SaveFloatToPlayerPrefs(string key, float v)
+    {
+        PlayerPrefs.SetFloat(key, v);
         PlayerPrefs.Save();
     }
 
-    protected void SetHighScore(string key, int v)
+    protected void SetTimerHighScore(TextMeshProUGUI text)
     {
-        PlayerPrefs.SetInt(miniGameLabel + key, v);
-        PlayerPrefs.Save();
+        if (TrySetHighScore(timeTakenHSKey, timer, (x, y) => x < y))
+        {
+            text.text = "New High Score!: " + Utils.ParseDuration((int)timer);
+        }
+        else
+        {
+            text.text = "High Score: " + Utils.ParseDuration((int)GetHighScore(timeTakenHSKey));
+        }
     }
 
-    protected void Update()
+    protected void DeleteHighScore(string key)
     {
-        if (gameStarted)
-            timer += Time.deltaTime;
+        PlayerPrefs.DeleteKey(ConstructHighScoreString(key));
     }
 
     protected void Awake()
@@ -41,6 +88,12 @@ public abstract class MiniGameManager : MonoBehaviour
     protected void Start()
     {
         StartCoroutine(GameFlow());
+    }
+
+    protected void Update()
+    {
+        if (gameStarted)
+            timer += Time.deltaTime;
     }
 
     public void BeginGame()
