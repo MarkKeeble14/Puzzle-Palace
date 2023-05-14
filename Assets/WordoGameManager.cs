@@ -11,7 +11,9 @@ public class WordoGameManager : UsesVirtualKeyboardMiniGameManager
     [SerializeField] private bool useWordLengthSpecifier;
     [SerializeField] private int minWordLength = 3;
     [SerializeField] private int maxWordLength = 5;
+    [SerializeField] private WordoOnCompleteGameModifier changePossibleWordsOnComplete;
     [SerializeField] private TextAsset wordList;
+    [SerializeField] private Vector2 hardLimitsWordLength = new Vector2(3, 8);
 
     [Header("UI Settings")]
     [SerializeField] private float changeAlphaOfInvalidWordTextRate;
@@ -34,6 +36,7 @@ public class WordoGameManager : UsesVirtualKeyboardMiniGameManager
     private string currentWord;
     private int numGuesses;
     private float showInvalidWordTextTimer;
+    private int currentWordLength;
 
     [Header("References")]
     [SerializeField] private TextMeshProUGUI winText;
@@ -43,8 +46,9 @@ public class WordoGameManager : UsesVirtualKeyboardMiniGameManager
     [SerializeField] private CanvasGroup invalidWordTextCV;
     [SerializeField] private ManipulateRectTransformOnMouseInput manipGamePlace;
     [SerializeField] private RectTransform scrollViewRect;
+    [SerializeField] private GameObject playButton;
+    [SerializeField] private GameObject emergencyMainMenuButton;
     private ScrollRect scrollView;
-
 
     [Header("Audio")]
     [SerializeField] private SimpleAudioClipContainer onInput;
@@ -54,15 +58,7 @@ public class WordoGameManager : UsesVirtualKeyboardMiniGameManager
     private new void Start()
     {
         LoadWordList();
-
-        if (useWordLengthSpecifier)
-        {
-            SetPossibleWords(s => s.Length >= minWordLength && s.Length <= maxWordLength);
-        }
-        else
-        {
-            SetPossibleWords(s => true);
-        }
+        SetupPossibleWords();
 
         // Get reference and store it
         scrollView = scrollViewRect.GetComponent<ScrollRect>();
@@ -70,6 +66,14 @@ public class WordoGameManager : UsesVirtualKeyboardMiniGameManager
         base.Start();
     }
 
+    private void Update()
+    {
+        invalidWordTextCV.alpha = Mathf.MoveTowards(invalidWordTextCV.alpha, showInvalidWordTextTimer > 0 ? 1 : 0, Time.deltaTime * changeAlphaOfInvalidWordTextRate);
+        if (showInvalidWordTextTimer > 0)
+        {
+            showInvalidWordTextTimer -= Time.deltaTime;
+        }
+    }
     protected override IEnumerator Restart()
     {
         // 
@@ -77,7 +81,14 @@ public class WordoGameManager : UsesVirtualKeyboardMiniGameManager
 
         for (int i = 0; i < spawnedRows.Count; i++)
         {
-            yield return StartCoroutine(spawnedRows[i].ChangeAlpha(0));
+            if (i == spawnedRows.Count - 1)
+            {
+                yield return StartCoroutine(spawnedRows[i].ChangeAlpha(0));
+            }
+            else
+            {
+                StartCoroutine(spawnedRows[i].ChangeAlpha(0));
+            }
         }
 
         while (spawnedRows.Count > 0)
@@ -88,8 +99,15 @@ public class WordoGameManager : UsesVirtualKeyboardMiniGameManager
         }
     }
 
+    [SerializeField] private string partialWinText = "Level ";
+    [SerializeField] private string fullWinText = "Success!";
     protected override IEnumerator GameWon()
     {
+        winText.text = "Success!";
+        if (changePossibleWordsOnComplete == WordoOnCompleteGameModifier.INCREMENT && currentWordLength <= hardLimitsWordLength.y)
+        {
+            winText.text = partialWinText + (currentWordLength - (hardLimitsWordLength.x + 1)) + " " + fullWinText;
+        }
         wordText.text = "The Word was " + Utils.CapitalizeFirstLetter(currentWord);
         numGuessesText.text = "You Guessed the Word in " + numGuesses + " Guess" + (numGuesses > 1 ? "es" : "");
         yield return null;
@@ -122,12 +140,7 @@ public class WordoGameManager : UsesVirtualKeyboardMiniGameManager
         // Choose Word
         currentWord = GetRandomWord();
         spawnedRows = new List<WordoRow>();
-
-        // Adjust scroll view so that top & bottoms don't cut off game area due to scaling
-        if (currentWord.Length > 5)
-        {
-            manipGamePlace.SetScale((float)(1.0 - (0.1 * (currentWord.Length - 5))));
-        }
+        currentWordLength = currentWord.Length;
 
         virtualKeyboard.Generate();
 
@@ -140,8 +153,16 @@ public class WordoGameManager : UsesVirtualKeyboardMiniGameManager
             StartCoroutine(spawnedRow.ChangeAlpha(1));
             spawnedRows.Add(spawnedRow);
 
+
+            // Adjust scroll view so that top & bottoms don't cut off game area due to scaling
+            if (currentWord.Length > 5)
+            {
+                float scale = (float)(1.0 - (0.1 * (currentWordLength - 5)));
+                spawnedRow.transform.localScale = new Vector3(scale, scale, 1);
+            }
+
             spawnedCells = new WordoCell[currentWord.Length];
-            for (int i = 0; i < currentWord.Length; i++)
+            for (int i = 0; i < currentWordLength; i++)
             {
                 // Debug.Log(currentWord[i]);
                 WordoCell spawned = Instantiate(wordoCellPrefab, spawnedRow.transform);
@@ -264,6 +285,29 @@ public class WordoGameManager : UsesVirtualKeyboardMiniGameManager
                 // Done 
                 // Debug.Log("Successfully Guessed Word");
                 onSuccess.PlayOneShot();
+
+                switch (changePossibleWordsOnComplete)
+                {
+                    case WordoOnCompleteGameModifier.INCREMENT:
+                        currentWordLength++;
+                        SetPossibleWords(s => s.Length == currentWordLength);
+
+                        if (currentWordLength > hardLimitsWordLength.y)
+                        {
+                            // Player has won this version of the game
+                            playButton.SetActive(false);
+                            emergencyMainMenuButton.SetActive(true);
+                            yield break;
+                        }
+
+                        break;
+                    case WordoOnCompleteGameModifier.RANDOMIZE:
+                        SetupPossibleWords();
+                        break;
+                    default:
+                        break;
+                }
+
                 yield break;
             }
             else
@@ -332,12 +376,15 @@ public class WordoGameManager : UsesVirtualKeyboardMiniGameManager
         }
     }
 
-    private void Update()
+    private void SetupPossibleWords()
     {
-        invalidWordTextCV.alpha = Mathf.MoveTowards(invalidWordTextCV.alpha, showInvalidWordTextTimer > 0 ? 1 : 0, Time.deltaTime * changeAlphaOfInvalidWordTextRate);
-        if (showInvalidWordTextTimer > 0)
+        if (useWordLengthSpecifier)
         {
-            showInvalidWordTextTimer -= Time.deltaTime;
+            SetPossibleWords(s => s.Length >= minWordLength && s.Length <= maxWordLength);
+        }
+        else
+        {
+            SetPossibleWords(s => true);
         }
     }
 }

@@ -15,6 +15,12 @@ EditorBuildSettings:
     path: Assets/Scenes/UltimateTicTacToe.unity
     guid: 6638325b49d0d344ba88c08f1102cb58
   - enabled: 1
-    path: Assets/Scenes/Wordo.unity
+    path: Assets/Scenes/WordoFives.unity
+    guid: c83ccff2c95dcb341afe70509e056dc3
+  - enabled: 1
+    path: Assets/Scenes/WordoMax.unity
     guid: 8afd6debdc859ed4386a384024401c36
+  - enabled: 1
+    path: Assets/Scenes/WordoRando.unity
+    guid: a8cd1fe09781de34d87831960600bf39
   m_configObjects: {}

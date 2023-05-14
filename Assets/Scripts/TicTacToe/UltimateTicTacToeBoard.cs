@@ -120,6 +120,7 @@ public class UltimateTicTacToeBoard : MonoBehaviour
                 StartCoroutine(board.Generate(numCells, true));
                 boards[i, p] = board;
                 board.name += "<" + i + ", " + p + ">";
+                yield return new WaitForSeconds(delayBetweenBoardSpawns);
             }
         }
         yield return null;
