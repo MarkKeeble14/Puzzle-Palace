@@ -10,7 +10,7 @@ public class WordoGameManager : UsesVirtualKeyboardMiniGameManager
     [Header("Game Settings")]
     [SerializeField] private bool useWordLengthSpecifier;
     [SerializeField] private int minWordLength = 3;
-    [SerializeField] private int maxWordLength = 5;
+    [SerializeField] private int maxWordLength = 8;
     [SerializeField] private WordoOnCompleteGameModifier changePossibleWordsOnComplete;
     [SerializeField] private TextAsset wordList;
     [SerializeField] private Vector2 hardLimitsWordLength = new Vector2(3, 8);

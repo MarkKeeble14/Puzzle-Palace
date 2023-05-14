@@ -13,7 +13,7 @@ public class UltimateTicTacToeBoard : MonoBehaviour
     [Header("Visual & References")]
     [SerializeField] private TicTacToeBoard boardPrefab;
     [SerializeField] private int boardSize;
-    [SerializeField] private float delayBetweenBoardSpawns = 0.0f;
+    // [SerializeField] private float delayBetweenBoardSpawns = 0.0f;
     private GridLayoutGroup glGroup;
     [SerializeField] private float glGroupSpacing = 25.0f;
     [SerializeField] private float delayBetweenWinBoardAnimations = 0.0f;
@@ -120,7 +120,7 @@ public class UltimateTicTacToeBoard : MonoBehaviour
                 StartCoroutine(board.Generate(numCells, true));
                 boards[i, p] = board;
                 board.name += "<" + i + ", " + p + ">";
-                yield return new WaitForSeconds(delayBetweenBoardSpawns);
+                // yield return new WaitForSeconds(delayBetweenBoardSpawns);
             }
         }
         yield return null;

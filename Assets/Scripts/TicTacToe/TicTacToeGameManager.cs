@@ -3,10 +3,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public abstract class TicTacToeGameManager : MonoBehaviour
+public abstract class TicTacToeGameManager : MiniGameManager
 {
-    public static TicTacToeGameManager _Instance { get; private set; }
-    protected bool gameStarted;
     protected TicTacToeGameState gameState;
     protected WinnerOptions winner;
 
@@ -30,24 +28,6 @@ public abstract class TicTacToeGameManager : MonoBehaviour
 
     public bool AllowMove { get; protected set; }
 
-    private void Awake()
-    {
-        _Instance = this;
-    }
-
-    public void Restart()
-    {
-        eogScreenAnimationHelper.Fade(false);
-        StartCoroutine(RestartGame());
-    }
-
-    protected abstract IEnumerator RestartGame();
-
-    public void BeginGame()
-    {
-        gameStarted = true;
-    }
-
     public void SetImageInfo(Image i, TicTacToeBoardCellState state)
     {
         TicTacToeBoardCellStateVisualInfo info = GetStateDisplayInfo(state);
@@ -60,21 +40,6 @@ public abstract class TicTacToeGameManager : MonoBehaviour
         return TicTacToeDataDealer._Instance.GetStateVisualInfo(state);
     }
 
-    private void Start()
-    {
-        StartCoroutine(StartSequence());
-    }
-
-    protected IEnumerator StartSequence()
-    {
-        yield return StartCoroutine(Setup());
-
-        // Start the Game
-        StartCoroutine(GameLoop());
-    }
-
-    protected abstract IEnumerator Setup();
-
     protected virtual IEnumerator HandleMenu()
     {
         yield return new WaitUntil(() => gameStarted);
@@ -82,9 +47,8 @@ public abstract class TicTacToeGameManager : MonoBehaviour
         beginGameScreenAnimationHelper.Fade(true);
     }
 
-    protected virtual IEnumerator HandleEOG()
+    protected override IEnumerator GameWon()
     {
-        eogScreenAnimationHelper.Fade(true);
         if (winner == WinnerOptions.NEITHER)
         {
             // Tie Game
@@ -113,7 +77,7 @@ public abstract class TicTacToeGameManager : MonoBehaviour
     protected abstract IEnumerator HandleP1Turn();
     protected abstract IEnumerator HandleP2Turn();
 
-    private IEnumerator GameLoop()
+    protected override IEnumerator GameLoop()
     {
         while (true)
         {
@@ -143,7 +107,6 @@ public abstract class TicTacToeGameManager : MonoBehaviour
                     yield return StartCoroutine(HandleP2Turn());
                     break;
                 case TicTacToeGameState.END:
-                    yield return StartCoroutine(HandleEOG());
                     yield break;
             }
 

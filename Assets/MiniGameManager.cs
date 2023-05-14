@@ -12,10 +12,14 @@ public abstract class MiniGameManager : MonoBehaviour
     [SerializeField] protected ScreenAnimationController endGameScreen;
     [SerializeField] protected ScreenAnimationController beginGameScreen;
 
-
     protected void Awake()
     {
         _Instance = this;
+    }
+
+    protected void Start()
+    {
+        StartCoroutine(GameFlow());
     }
 
     public void BeginGame()
@@ -44,13 +48,10 @@ public abstract class MiniGameManager : MonoBehaviour
 
     protected abstract IEnumerator GameWon();
 
-    protected void Start()
-    {
-        StartCoroutine(GameFlow());
-    }
-
     private IEnumerator GameFlow()
     {
+        yield return StartCoroutine(Setup());
+
         yield return new WaitUntil(() => gameStarted);
 
         yield return StartCoroutine(GameLoop());
@@ -59,4 +60,8 @@ public abstract class MiniGameManager : MonoBehaviour
     }
 
     protected abstract IEnumerator GameLoop();
+    protected virtual IEnumerator Setup()
+    {
+        yield return null;
+    }
 }

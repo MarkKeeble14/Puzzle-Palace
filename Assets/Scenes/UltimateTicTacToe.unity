@@ -1445,18 +1445,6 @@ PrefabInstance:
       propertyPath: m_hasFontAssetChanged
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3242819471223849471, guid: 5050e7b40ae1fa3489e133a8299e40c3, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
-      value: 
-      objectReference: {fileID: 8978390134319232888}
-    - target: {fileID: 3242819471223849471, guid: 5050e7b40ae1fa3489e133a8299e40c3, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: Restart
-      objectReference: {fileID: 0}
-    - target: {fileID: 3242819471223849471, guid: 5050e7b40ae1fa3489e133a8299e40c3, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
-      value: TicTacToeGameManager, Assembly-CSharp
-      objectReference: {fileID: 0}
     - target: {fileID: 8040785637735505035, guid: 5050e7b40ae1fa3489e133a8299e40c3, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1714,6 +1702,15 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2452328822360128974, guid: 2c2498dc2afdfe642a80cd0510de4aea, type: 3}
+      propertyPath: m_text
+      value: '- Win three boards of Tic Tac Toe in a row (Horizontal, Vertical, or
+        Diagonal) to win the game.
+
+        - You may only make a move in the board
+        which shares the same coordinates as the space your opponant just modified.
+        If that board is already complete, you may make a move anywhere.'
+      objectReference: {fileID: 0}
     - target: {fileID: 8908782001314932159, guid: 2c2498dc2afdfe642a80cd0510de4aea, type: 3}
       propertyPath: m_text
       value: Ultimate Tic Tac Toe
@@ -1838,6 +1835,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 8978390132676926164, guid: d7b80b392d87e94489ab9c8b32e3ad16, type: 3}
+      propertyPath: rect
+      value: 
+      objectReference: {fileID: 8978390134319232889}
     - target: {fileID: 8978390132676926164, guid: d7b80b392d87e94489ab9c8b32e3ad16, type: 3}
       propertyPath: defaultScale
       value: 0.5
@@ -1997,6 +1998,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec41bef2d1c075f4a99918ce1ce308d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  endGameScreen: {fileID: 1430815126}
+  beginGameScreen: {fileID: 8908782002247169646}
+  eogScreenAnimationHelper: {fileID: 1430815126}
+  beginGameScreenAnimationHelper: {fileID: 8908782002247169646}
   parentSpawnedTo: {fileID: 8978390134319232889}
   turnText: {fileID: 1767258815}
   turnTextAnimator: {fileID: 1767258819}
@@ -2008,8 +2013,6 @@ MonoBehaviour:
   playButton: {fileID: 963461144}
   delayOnRestart: 1
   numCells: 3
-  eogScreenAnimationHelper: {fileID: 1430815126}
-  beginGameScreenAnimationHelper: {fileID: 8908782002247169646}
   numBoards: 3
   boardPrefab: {fileID: 8787908919740343152, guid: 275aaa6feb4e0bc4c97bdc05394ce1ba, type: 3}
 --- !u!224 &8978390134319232889 stripped

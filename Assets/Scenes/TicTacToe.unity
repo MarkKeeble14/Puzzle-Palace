@@ -397,6 +397,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4718c08bdc392f4489634130922975fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  endGameScreen: {fileID: 1430815126}
+  beginGameScreen: {fileID: 8908782002247169646}
   eogScreenAnimationHelper: {fileID: 1430815126}
   beginGameScreenAnimationHelper: {fileID: 8908782002247169646}
   parentSpawnedTo: {fileID: 8978390134319232887}
@@ -1485,18 +1487,6 @@ PrefabInstance:
       propertyPath: m_hasFontAssetChanged
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3242819471223849471, guid: 5050e7b40ae1fa3489e133a8299e40c3, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
-      value: 
-      objectReference: {fileID: 1266582876}
-    - target: {fileID: 3242819471223849471, guid: 5050e7b40ae1fa3489e133a8299e40c3, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: Restart
-      objectReference: {fileID: 0}
-    - target: {fileID: 3242819471223849471, guid: 5050e7b40ae1fa3489e133a8299e40c3, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
-      value: TicTacToeGameManager, Assembly-CSharp
-      objectReference: {fileID: 0}
     - target: {fileID: 8040785637735505035, guid: 5050e7b40ae1fa3489e133a8299e40c3, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1754,6 +1744,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2452328822360128974, guid: 2c2498dc2afdfe642a80cd0510de4aea, type: 3}
+      propertyPath: m_text
+      value: '- Players take turns placing their respective symbol in a space on
+        the board.
+
+        - Place three of your respective symbol in a row (horizontal,
+        vertical, or diagonal) to win.'
+      objectReference: {fileID: 0}
     - target: {fileID: 8908782001314932159, guid: 2c2498dc2afdfe642a80cd0510de4aea, type: 3}
       propertyPath: m_text
       value: Tic Tac Toe
@@ -1878,6 +1876,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 8978390132676926164, guid: d7b80b392d87e94489ab9c8b32e3ad16, type: 3}
+      propertyPath: rect
+      value: 
+      objectReference: {fileID: 8978390134319232887}
     - target: {fileID: 8978390132676926164, guid: d7b80b392d87e94489ab9c8b32e3ad16, type: 3}
       propertyPath: defaultScale
       value: 1

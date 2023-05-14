@@ -3865,7 +3865,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8908782001314932159, guid: 2c2498dc2afdfe642a80cd0510de4aea, type: 3}
       propertyPath: m_text
-      value: Wordo Fives
+      value: Wordo Rando
       objectReference: {fileID: 0}
     - target: {fileID: 8908782002327899955, guid: 2c2498dc2afdfe642a80cd0510de4aea, type: 3}
       propertyPath: m_Pivot.x

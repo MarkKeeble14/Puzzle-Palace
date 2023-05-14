@@ -8,7 +8,7 @@ public class UltimateTicTacToeGameManager : TicTacToeGameManager
     [SerializeField] private UltimateTicTacToeBoard boardPrefab;
     private UltimateTicTacToeBoard board;
 
-    protected override IEnumerator RestartGame()
+    protected override IEnumerator Restart()
     {
         board.ActOnEachBoard(board =>
         {
@@ -22,8 +22,6 @@ public class UltimateTicTacToeGameManager : TicTacToeGameManager
 
         // Reset the game state to player 1's turn
         SetTurn(TicTacToeGameState.P1);
-
-        StartCoroutine(StartSequence());
     }
 
     protected override IEnumerator Setup()

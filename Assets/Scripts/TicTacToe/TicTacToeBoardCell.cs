@@ -25,6 +25,17 @@ public class TicTacToeBoardCell : MonoBehaviour
     [SerializeField] private Image cover;
     [SerializeField] private CanvasGroup coverCV;
 
+    private TicTacToeGameManager activeTicTacToeManager;
+    private TicTacToeGameManager activeManager
+    {
+        get
+        {
+            if (activeTicTacToeManager == null)
+                activeTicTacToeManager = (TicTacToeGameManager)MiniGameManager._Instance;
+            return activeTicTacToeManager;
+        }
+    }
+
     bool symbolAlphaLocked;
 
     private void Awake()
@@ -90,10 +101,10 @@ public class TicTacToeBoardCell : MonoBehaviour
 
     public void SetToCurrentPlayerSymbol()
     {
-        if (!TicTacToeGameManager._Instance.AllowMove) return;
+        if (!activeManager.AllowMove) return;
         if (currentState != TicTacToeBoardCellState.NULL) return;
         ChangeState(TicTacToeDataDealer._Instance.GetCurrentPlayerSymbol());
-        StartCoroutine(TicTacToeGameManager._Instance.NotifyOfMove(this));
+        StartCoroutine(activeManager.NotifyOfMove(this));
     }
 
     public void HardSetToSymbol(TicTacToeBoardCellState symbol)
@@ -114,7 +125,7 @@ public class TicTacToeBoardCell : MonoBehaviour
 
     private void UpdateSprite()
     {
-        TicTacToeGameManager._Instance.SetImageInfo(symbol, currentState);
+        activeManager.SetImageInfo(symbol, currentState);
     }
 
     public void SetInteractable(bool v)

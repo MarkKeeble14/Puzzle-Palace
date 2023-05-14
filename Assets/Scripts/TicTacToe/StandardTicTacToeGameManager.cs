@@ -10,7 +10,7 @@ public class StandardTicTacToeGameManager : TicTacToeGameManager
     private TicTacToeBoard board;
     [SerializeField] private float delayBetweenCellsInRestartSequence;
 
-    protected override IEnumerator RestartGame()
+    protected override IEnumerator Restart()
     {
         yield return StartCoroutine(board.ActOnEachBoardCellWithDelay(cell =>
         {
@@ -24,8 +24,6 @@ public class StandardTicTacToeGameManager : TicTacToeGameManager
 
         // Reset the game state to player 1's turn
         SetTurn(TicTacToeGameState.P1);
-
-        StartCoroutine(StartSequence());
     }
 
     protected override IEnumerator Setup()
