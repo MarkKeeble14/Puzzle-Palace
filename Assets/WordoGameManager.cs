@@ -1,16 +1,22 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
 {
-    [Header("Game Settings")]
-    [SerializeField] private TextAsset wordList;
+    [Header("Testing")]
+    [SerializeField] private bool overrideRandomWord;
+    [SerializeField] private string overridenRandomWord;
 
     [Header("UI Settings")]
+    [SerializeField] private bool treatDefinitions = true;
+    [SerializeField] private bool limitNumDefinitions = false;
+    [SerializeField] private int maxNumDefinitions = 1;
     [SerializeField] private float changeAlphaOfInvalidWordTextRate = 1.0f;
     [SerializeField] private float showInvalidWordTextDuration = 3.0f;
     [SerializeField] private float delayBetweenCellSpawns = .0125f;
@@ -22,7 +28,9 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
     [SerializeField] private WordoRow wordoCellRowPrefab;
 
     // Data
-    private string[] allWordData;
+    [SerializeField] private TextAsset allAllowedAnswersFile;
+    private List<string> allAllowedAnswers;
+    private Dictionary<string, string> wordMap = new Dictionary<string, string>();
     private List<string> possibleWords;
     private List<WordoRow> spawnedRows;
     private WordoCell[] spawnedCells;
@@ -36,12 +44,14 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
     [Header("References")]
     [SerializeField] protected TextMeshProUGUI winText;
     [SerializeField] protected TextMeshProUGUI wordText;
+    [SerializeField] protected TextMeshProUGUI definitionText;
     [SerializeField] protected TextMeshProUGUI numGuessesText;
     [SerializeField] private TextMeshProUGUI invalidWordText;
     [SerializeField] private CanvasGroup invalidWordTextCV;
     [SerializeField] private ManipulateRectTransformOnMouseInput manipGamePlace;
     [SerializeField] private RectTransform scrollViewRect;
     private ScrollRect scrollView;
+    [SerializeField] private ScrollRect endGameScrollView;
 
     [Header("Audio")]
     [SerializeField] private string onInput = "gm_onInput";
@@ -51,6 +61,7 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
     private AdditionalFuncVirtualKeyboardButton pencilButton;
 
     private InputMode currentInputMode;
+    private bool hasDealtWIthPencilButton;
 
     public enum InputMode
     {
@@ -62,16 +73,12 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
     {
         base.Awake();
 
-        LoadWordList();
+        LoadWordMap();
 
         // Get reference and store it
         scrollView = scrollViewRect.GetComponent<ScrollRect>();
-
-        virtualKeyboard.Generate();
-        pencilButton = virtualKeyboard.GetAdditionalFuncButton("PENCIL");
-        pencilButton.SetColor(WordoDataDealer._Instance.GetInactiveButtonColor());
-        additionalFunctionsDict.Add("PENCIL", ToggleInputMode);
     }
+
 
     private new void Update()
     {
@@ -145,6 +152,15 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
 
     protected override IEnumerator GameLoop()
     {
+        if (!hasDealtWIthPencilButton)
+        {
+            hasDealtWIthPencilButton = true;
+            pencilButton = virtualKeyboard.GetAdditionalFuncButton("PENCIL");
+            pencilButton.SetColor(WordoDataDealer._Instance.GetInactiveButtonColor());
+            additionalFunctionsDict.Add("PENCIL", ToggleInputMode);
+        }
+
+
         // Choose Word
         currentWord = GetRandomWord();
         spawnedRows = new List<WordoRow>();
@@ -197,10 +213,10 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
 
                 if (Input.GetKeyDown(KeyCode.Return) || enterPressed)
                 {
-                    AudioManager._Instance.PlayFromSFXDict(onInput);
                     enterPressed = false;
                     if (IsAcceptedWord(GetInputtedWord(spawnedCells)))
                     {
+                        AudioManager._Instance.PlayFromSFXDict(onInput);
                         // Debug.Log("Accepted Word; Breaking");
                         break;
                     }
@@ -283,14 +299,99 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
 
             // Read Player Guess & Check Accuracy of Player Guess
             // Also Show Result
+
+            Dictionary<char, int> inputtedCharAppearancesMap = new Dictionary<char, int>();
+            Dictionary<char, int> answerCharAppearancesMap = new Dictionary<char, int>();
+            Dictionary<char, int> numCorrectCharsConfirmed = new Dictionary<char, int>();
+
+            for (int i = 0; i < spawnedCells.Length; i++)
+            {
+                WordoCell cell = spawnedCells[i];
+                char inputtedChar = cell.GetInputtedChar();
+                char correctChar = cell.GetCorrectChar();
+
+                if (!numCorrectCharsConfirmed.ContainsKey(inputtedChar))
+                {
+                    numCorrectCharsConfirmed.Add(inputtedChar, 0);
+                }
+
+                if (inputtedCharAppearancesMap.ContainsKey(inputtedChar))
+                {
+                    inputtedCharAppearancesMap[inputtedChar] = inputtedCharAppearancesMap[inputtedChar] + 1;
+                }
+                else
+                {
+                    inputtedCharAppearancesMap.Add(inputtedChar, 1);
+                }
+
+                if (answerCharAppearancesMap.ContainsKey(correctChar))
+                {
+                    answerCharAppearancesMap[correctChar] = answerCharAppearancesMap[correctChar] + 1;
+                }
+                else
+                {
+                    answerCharAppearancesMap.Add(correctChar, 1);
+                }
+
+                if (inputtedChar.Equals(correctChar))
+                {
+                    numCorrectCharsConfirmed[inputtedChar] += 1;
+                }
+            }
+
             foreach (WordoCell cell in spawnedCells)
             {
-                yield return StartCoroutine(cell.Check());
-
-                if (cell.IsIncorrectGuess())
+                WordoCellResult result;
+                if (cell.HasCorrectChar())
                 {
-                    virtualKeyboard.BlackoutKey(cell.GetInputtedChar().ToString(), true);
+                    // Debug.Log("1");
+                    result = WordoCellResult.CORRECT;
+                    numCorrectCharsConfirmed[cell.GetInputtedChar()] += 1;
+                    // Debug.Log("Increased NumCorrectCharsConfirmed of " + cell.GetInputtedChar() + ", New Value: " + numCorrectCharsConfirmed[cell.GetInputtedChar()]);
                 }
+                else if (!answerCharAppearancesMap.ContainsKey(cell.GetInputtedChar()))
+                {
+                    result = WordoCellResult.INCORRECT;
+                    virtualKeyboard.BlackoutKey(cell.GetInputtedChar().ToString(), true);
+                    // Debug.Log("2");
+                }
+                else if (inputtedCharAppearancesMap.ContainsKey(cell.GetInputtedChar()) &&
+                    answerCharAppearancesMap.ContainsKey(cell.GetInputtedChar()))
+                {
+                    // Partially Correct Case
+                    if (inputtedCharAppearancesMap[cell.GetInputtedChar()] == answerCharAppearancesMap[cell.GetInputtedChar()])
+                    {
+                        // Debug.Log("3");
+                        result = WordoCellResult.PARTIAL_CORRECT;
+                        numCorrectCharsConfirmed[cell.GetInputtedChar()] += 1;
+                        // Debug.Log("Increased NumCorrectCharsConfirmed of " + cell.GetInputtedChar() + ", New Value: " + numCorrectCharsConfirmed[cell.GetInputtedChar()]);
+                    }
+                    else
+                    {
+                        // Debug.Log(numCorrectCharsConfirmed[cell.GetInputtedChar()] + ", " + answerCharAppearancesMap[cell.GetInputtedChar()]);
+                        // Find the number of times it's been placed correctly
+                        // We will say that <the number of times it appears - the number of times it's placed correctly> is the number of those char's we must partially accept
+                        if (numCorrectCharsConfirmed[cell.GetInputtedChar()] < answerCharAppearancesMap[cell.GetInputtedChar()])
+                        {
+                            // Debug.Log("4");
+                            numCorrectCharsConfirmed[cell.GetInputtedChar()] += 1;
+                            result = WordoCellResult.PARTIAL_CORRECT;
+                            // Debug.Log("Increased NumCorrectCharsConfirmed of " + cell.GetInputtedChar() + ", New Value: " + numCorrectCharsConfirmed[cell.GetInputtedChar()]);
+                        }
+                        else
+                        {
+                            result = WordoCellResult.INCORRECT;
+                            // Debug.Log("5");
+                        }
+                    }
+                }
+                else
+                {
+                    result = WordoCellResult.INCORRECT;
+                    // Debug.Log("6");
+                }
+
+                yield return StartCoroutine(cell.SetResult(result));
             }
 
             if (inputtedWord.Equals(currentWord))
@@ -316,7 +417,6 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
     }
 
     protected abstract IEnumerator HandleSuccessfulGuess();
-
 
     private int GetIndexOfFirstEmptyCell()
     {
@@ -347,31 +447,174 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
 
     private string GetRandomWord()
     {
-        return possibleWords[RandomHelper.RandomIntExclusive(0, possibleWords.Count)];
+        if (overrideRandomWord)
+        {
+            return overridenRandomWord;
+        }
+
+        int i = RandomHelper.RandomIntExclusive(0, possibleWords.Count);
+        string word = possibleWords[i];
+        if (allAllowedAnswers.Contains(word) && wordMap.ContainsKey(word))
+        {
+            Debug.Log("Set Word: " + word);
+            return word;
+        }
+        else
+        {
+            if (allAllowedAnswers.Contains(word))
+            {
+                // Debug.Log("Unacceptable Word: " + word + ", Was in Allowed Answers but not Word Map");
+                // wordMap.Remove(word);
+            }
+            else if (wordMap.ContainsKey(word))
+            {
+                // Debug.Log("Unacceptable Word: " + word + ", Was in Word Map but not Acceptable Answers");
+                allAllowedAnswers.Remove(word);
+            }
+            return GetRandomWord();
+        }
     }
 
-    protected void LoadWordList()
+    protected void LoadWordMap()
     {
-        // Load word list
-        if (wordList != null)
+        if (allAllowedAnswersFile == null)
         {
-            allWordData = wordList.text.Split('\n');
+            throw new Exception("No Answers File Specified");
         }
+
+        allAllowedAnswers = new List<string>();
+        allAllowedAnswers.AddRange(allAllowedAnswersFile.text.ToUpper().Split('\n'));
+
+        LoadJson();
     }
 
     protected void SetPossibleWords(Func<string, bool> acceptedWord)
     {
         possibleWords = new List<string>();
         string treatedString;
-        foreach (string s in allWordData)
+        foreach (KeyValuePair<string, string> word in wordMap)
         {
-            treatedString = s.ToUpper().Trim();
+            treatedString = word.Key.ToUpper().Trim();
             if (acceptedWord(treatedString))
             {
-                // Debug.Log(treatedString + ", " + treatedString.Length);
-
                 possibleWords.Add(treatedString);
             }
+        }
+    }
+
+    private void PrintWordMap()
+    {
+        foreach (KeyValuePair<string, string> kvp in wordMap)
+        {
+            Debug.Log("Word: " + kvp.Key + ", Definition: " + kvp.Value);
+        }
+    }
+
+    public void LoadJson()
+    {
+        string jsonFilePath = "Assets/Data/Wordo/dictionary.json";
+        string json = File.ReadAllText(jsonFilePath);
+
+        string curWord = "";
+        using (var reader = new JsonTextReader(new StringReader(json)))
+        {
+            while (reader.Read())
+            {
+                if (reader.Value == null)
+                    continue;
+                if (!curWord.Equals(""))
+                {
+                    wordMap.Add(curWord.ToUpper(), reader.Value.ToString());
+                    curWord = "";
+                }
+                else
+                {
+                    curWord = reader.Value.ToString();
+                }
+            }
+        }
+    }
+
+    protected void SetWordText()
+    {
+        wordText.text = "The Word was " + Utils.CapitalizeFirstLetter(currentWord);
+    }
+
+
+    protected void SetDefinitionText()
+    {
+        definitionText.text = "Definition:\n" + GetDefinition(currentWord);
+
+        // Set Scroll View to show top
+        endGameScrollView.verticalNormalizedPosition = 1;
+    }
+
+    protected void SetNumGuessesText()
+    {
+        numGuessesText.text = "You Guessed the Word in " + numGuesses + " Guess" + (numGuesses > 1 ? "es" : "");
+    }
+
+    protected void SetWinText()
+    {
+        winText.text = winTextString;
+    }
+    private string GetDefinition(string word)
+    {
+        if (!treatDefinitions) return wordMap[word];
+        string def = wordMap[word];
+
+        if (def.Contains("1"))
+        {
+            string treatedDef = "";
+
+            if (limitNumDefinitions)
+            {
+                for (int i = 0; i < def.Length; i++)
+                {
+                    if (char.IsDigit(def[i]) && def[i + 1].Equals('.') && (i > 0 ? def[i - 1].Equals(' ') : true))
+                    {
+                        if (i > 0)
+                            treatedDef += "\n";
+                        treatedDef += "\n";
+                    }
+
+                    if (def[i].Equals(char.Parse((1 + maxNumDefinitions).ToString())) && def[i + 1].Equals('.') && (i > 0 ? def[i - 1].Equals(' ') : true))
+                    {
+                        return treatedDef;
+                    }
+
+                    treatedDef += def[i];
+                }
+                return treatedDef;
+            }
+            else
+            {
+                int startAt;
+                if (def.Contains('2'))
+                {
+                    startAt = 0;
+                }
+                else
+                {
+                    startAt = 3;
+                }
+
+                for (int i = startAt; i < def.Length; i++)
+                {
+                    if (char.IsDigit(def[i]) && def[i + 1].Equals('.') && (i > 0 ? def[i - 1].Equals(' ') : true))
+                    {
+                        if (i > 0)
+                            treatedDef += "\n";
+                        treatedDef += "\n";
+                    }
+                    treatedDef += def[i];
+                }
+                return treatedDef;
+            }
+        }
+        else
+        {
+            return "\n" + def;
         }
     }
 }

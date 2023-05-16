@@ -34,9 +34,10 @@ public class StandardWordoGameManager : WordoGameManager
 
     protected override IEnumerator GameWon()
     {
-        winText.text = winTextString;
-        wordText.text = "The Word was " + Utils.CapitalizeFirstLetter(currentWord);
-        numGuessesText.text = "You Guessed the Word in " + numGuesses + " Guess" + Utils.GetPluralization(numGuesses);
+        SetWinText();
+        SetWordText();
+        SetDefinitionText();
+        SetNumGuessesText();
 
         // Handle High Score
         if (TrySetHighScore(numGuessesHSKey, numGuesses, (x, y) => x < y))
@@ -45,7 +46,8 @@ public class StandardWordoGameManager : WordoGameManager
         }
         else
         {
-            hsText.text = "High Score: " + GetHighScore(numGuessesHSKey);
+            float hs = GetHighScore(numGuessesHSKey);
+            hsText.text = "High Score: " + hs + " Guess" + Utils.GetPluralization(Mathf.RoundToInt(hs));
         }
 
         yield return null;

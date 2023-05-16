@@ -128,40 +128,35 @@ public class WordoCell : MonoBehaviour
         return inputtedChar;
     }
 
-    public bool IsCorrectGuess()
+    public char GetCorrectChar()
+    {
+        return correctChar;
+    }
+
+    public bool HasCorrectChar()
     {
         return inputtedChar.Equals(correctChar);
     }
 
-    public bool IsPartiallyCorrectGuess()
+    public IEnumerator SetResult(WordoCellResult result)
     {
-        return !IsCorrectGuess() && word.Contains(inputtedChar);
-    }
-
-    public bool IsIncorrectGuess()
-    {
-        return !IsCorrectGuess() && !IsPartiallyCorrectGuess();
-    }
-
-    public IEnumerator Check()
-    {
-        if (IsCorrectGuess())
+        switch (result)
         {
-            AudioManager._Instance.PlayFromSFXDict(onCorrect);
-            // if correct character, green
-            yield return StartCoroutine(ChangeBackgroundColor(correctColor));
-        }
-        else if (IsPartiallyCorrectGuess())
-        {
-            AudioManager._Instance.PlayFromSFXDict(onPartialSuccess);
-            // if incorrect character, but character exists in word, yellow
-            yield return StartCoroutine(ChangeBackgroundColor(partiallyCorrectColor));
-        }
-        else
-        {
-            AudioManager._Instance.PlayFromSFXDict(onIncorrect);
-            // if incorrect character, and character does not exist in word, red
-            yield return StartCoroutine(ChangeBackgroundColor(incorrectColor));
+            case WordoCellResult.CORRECT:
+                AudioManager._Instance.PlayFromSFXDict(onCorrect);
+                // if correct character, green
+                yield return StartCoroutine(ChangeBackgroundColor(correctColor));
+                break;
+            case WordoCellResult.PARTIAL_CORRECT:
+                AudioManager._Instance.PlayFromSFXDict(onPartialSuccess);
+                // if incorrect character, but character exists in word, yellow
+                yield return StartCoroutine(ChangeBackgroundColor(partiallyCorrectColor));
+                break;
+            case WordoCellResult.INCORRECT:
+                AudioManager._Instance.PlayFromSFXDict(onIncorrect);
+                // if incorrect character, and character does not exist in word, red
+                yield return StartCoroutine(ChangeBackgroundColor(incorrectColor));
+                break;
         }
     }
 

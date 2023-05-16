@@ -32,9 +32,10 @@ public class WordoMixGameManager : WordoGameManager
 
     protected override IEnumerator GameWon()
     {
-        winText.text = winTextString;
-        wordText.text = "The Word was " + Utils.CapitalizeFirstLetter(currentWord);
-        numGuessesText.text = "You Guessed the Word in " + numGuesses + " Guess" + Utils.GetPluralization(numGuesses);
+        SetWinText();
+        SetWordText();
+        SetDefinitionText();
+        SetNumGuessesText();
 
         // Handle High Score
         if (TrySetHighScore(numGuessesHSKey + currentWordLength, numGuesses, (x, y) => x < y))
@@ -43,7 +44,8 @@ public class WordoMixGameManager : WordoGameManager
         }
         else
         {
-            hsText.text = "High Score For Word of Length " + GetHighScore(numGuessesHSKey + currentWordLength) + ": ";
+            float hs = GetHighScore(numGuessesHSKey + currentWordLength);
+            hsText.text = "High Score For Word of Length " + currentWordLength + ": " + "\n" + hs + " Guess" + Utils.GetPluralization(Mathf.RoundToInt(hs));
         }
 
         yield return null;

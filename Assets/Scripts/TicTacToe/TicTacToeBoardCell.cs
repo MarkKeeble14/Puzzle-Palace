@@ -36,12 +36,12 @@ public class TicTacToeBoardCell : MonoBehaviour
         }
     }
 
-    bool symbolAlphaLocked;
-
-    private void Awake()
+    private void Start()
     {
-        SetInteractable(true);
+        SetStartColor(true);
     }
+
+    bool symbolAlphaLocked;
 
     private void Update()
     {
@@ -76,7 +76,6 @@ public class TicTacToeBoardCell : MonoBehaviour
     {
         yield return StartCoroutine(ChangeAlpha(coverCV, target));
     }
-
 
     public IEnumerator ChangeTotalAlpha(float target)
     {
@@ -131,9 +130,13 @@ public class TicTacToeBoardCell : MonoBehaviour
     public void SetInteractable(bool v)
     {
         symbol.raycastTarget = v;
+        SetStartColor(v);
+    }
+
+    private void SetStartColor(bool v)
+    {
         Color cellColor = TicTacToeDataDealer._Instance.GetCellColor(v);
         mainImageTargetColor = cellColor;
-
         if (currentState == TicTacToeBoardCellState.NULL)
         {
             symbolTargetAlpha = v ? 1 : 0;

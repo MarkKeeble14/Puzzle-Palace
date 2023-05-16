@@ -44,7 +44,7 @@ public abstract class TicTacToeGameManager : MiniGameManager
     {
         yield return new WaitUntil(() => gameStarted);
         SetTurn(TicTacToeGameState.P1);
-        beginGameScreenAnimationHelper.Fade(true);
+        // beginGameScreenAnimationHelper.Fade(0.0f);
     }
 
     protected override IEnumerator GameWon()

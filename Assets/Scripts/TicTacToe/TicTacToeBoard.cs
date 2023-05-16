@@ -152,7 +152,15 @@ public class TicTacToeBoard : MonoBehaviour
                 TicTacToeBoardCell cell = board[i, p];
 
                 StartCoroutine(cell.ChangeScale(.9f));
-                StartCoroutine(cell.ChangeTotalAlpha(1));
+                if (i == board.GetLongLength(0) - 1 && p == board.GetLength(0) - 1)
+                {
+                    yield return StartCoroutine(cell.ChangeTotalAlpha(1));
+                    SetInteractable(true);
+                }
+                else
+                {
+                    StartCoroutine(cell.ChangeTotalAlpha(1));
+                }
 
                 yield return new WaitForSeconds(delayBetweenCellSpawns);
             }

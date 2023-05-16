@@ -99,12 +99,12 @@ public abstract class MiniGameManager : MonoBehaviour
     public void BeginGame()
     {
         gameStarted = true;
-        beginGameScreen.Fade(true);
+        beginGameScreen.Fade(0.0f);
     }
 
     public IEnumerator RestartGame()
     {
-        endGameScreen.Fade(false);
+        endGameScreen.Fade(0.0f);
 
         yield return StartCoroutine(Restart());
 
@@ -115,7 +115,7 @@ public abstract class MiniGameManager : MonoBehaviour
 
     public IEnumerator CallGameWon()
     {
-        endGameScreen.Fade(true);
+        endGameScreen.Fade(1.0f);
 
         yield return StartCoroutine(GameWon());
     }

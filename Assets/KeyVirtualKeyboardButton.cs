@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class KeyVirtualKeyboardButton : VirtualKeyboardButton
 {
-    [SerializeField] private Image image;
+    [SerializeField] private Image changeColorOf;
     [SerializeField] private float changeColorRate;
 
     [SerializeField] private Color activeColor;
@@ -11,7 +11,7 @@ public class KeyVirtualKeyboardButton : VirtualKeyboardButton
 
     protected new void Awake()
     {
-        image.color = activeColor;
+        changeColorOf.color = activeColor;
         base.Awake();
     }
 
@@ -22,7 +22,7 @@ public class KeyVirtualKeyboardButton : VirtualKeyboardButton
 
     public void Blackout(bool v)
     {
-        StartCoroutine(Utils.ChangeColor(image, v ? blackedOutColor : activeColor, changeColorRate));
+        StartCoroutine(Utils.ChangeColor(changeColorOf, v ? blackedOutColor : activeColor, changeColorRate));
         // cv.blocksRaycasts = !v;
     }
 }

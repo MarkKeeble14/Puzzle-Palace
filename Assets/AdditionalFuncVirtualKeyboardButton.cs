@@ -10,6 +10,11 @@ public class AdditionalFuncVirtualKeyboardButton : VirtualKeyboardButton
     [Header("References")]
     [SerializeField] private Image changeColorOf;
 
+    private void Start()
+    {
+        SetColor(WordoDataDealer._Instance.GetInactiveButtonColor());
+    }
+
     public override void OnPress()
     {
         ((WordoGameManager)MiniGameManager._Instance).CallAdditionalFunction(value);

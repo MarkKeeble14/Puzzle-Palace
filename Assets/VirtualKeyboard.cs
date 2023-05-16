@@ -13,6 +13,11 @@ public class VirtualKeyboard : MonoBehaviour
     [SerializeField] private AdditionalFuncVirtualKeyboardButton additionalFuncVirtualKeyboardButtonPrefab;
     [SerializeField] private Transform virtualKeyboardRowPrefab;
 
+    private void Awake()
+    {
+        Generate();
+    }
+
     private bool generated;
 
     public void Generate()
@@ -54,7 +59,7 @@ public class VirtualKeyboard : MonoBehaviour
                     default:
                         throw new UnhandledSwitchCaseException();
                 }
-                spawned.SetShown(current.Shown);
+                spawned.Set(current.Shown, current.Icon);
             }
         }
     }

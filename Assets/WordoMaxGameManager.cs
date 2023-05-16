@@ -48,9 +48,10 @@ public class WordoMaxGameManager : WordoGameManager
     {
         if (passedAllLevels)
         {
-            winText.text = winTextString;
-            wordText.text = "The Word was " + Utils.CapitalizeFirstLetter(currentWord);
-            numGuessesText.text = "You Guessed the Word in " + numGuesses + " Guess" + (numGuesses > 1 ? "es" : "");
+            SetWinText();
+            SetWordText();
+            SetDefinitionText();
+            SetNumGuessesText();
 
             totalGuessesText.gameObject.SetActive(true);
             totalGuessesText.text = "Overall Guesses: " + numTotalGuesses;
@@ -72,7 +73,8 @@ public class WordoMaxGameManager : WordoGameManager
         else
         {
             winText.text = "Level " + (currentWordLength - startFinishWordLength.x) + " " + winTextString;
-            wordText.text = "The Word was " + Utils.CapitalizeFirstLetter(currentWord);
+            SetWordText();
+            SetDefinitionText();
             numGuessesText.text = "You Guessed the Word in " + numGuesses + " Guess" + (numGuesses > 1 ? "es" : "");
 
             endGameButtonText.text = "Next";
