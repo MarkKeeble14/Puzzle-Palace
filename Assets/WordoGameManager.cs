@@ -29,8 +29,9 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
 
     // Data
     [SerializeField] private TextAsset allAllowedAnswersFile;
-    private List<string> allAllowedAnswers;
+    [SerializeField] private TextAsset allGuessableAnswersFile;
     private Dictionary<string, string> wordMap = new Dictionary<string, string>();
+    private List<string> allAllowedAnswers;
     private List<string> possibleWords;
     private List<WordoRow> spawnedRows;
     private WordoCell[] spawnedCells;
@@ -512,8 +513,7 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
 
     public void LoadJson()
     {
-        string jsonFilePath = "Assets/Data/Wordo/dictionary.json";
-        string json = File.ReadAllText(jsonFilePath);
+        string json = allGuessableAnswersFile.text;
 
         string curWord = "";
         using (var reader = new JsonTextReader(new StringReader(json)))

@@ -2238,6 +2238,7 @@ MonoBehaviour:
   wordoCellPrefab: {fileID: 976114636637660188, guid: d8dcbae670386724482a6c8e9171652b, type: 3}
   wordoCellRowPrefab: {fileID: 6511007333675249912, guid: 21e32c801526f784594610e3f56fd096, type: 3}
   allAllowedAnswersFile: {fileID: 4900000, guid: a90799154cf1f12439dbf0815d47421d, type: 3}
+  allGuessableAnswersFile: {fileID: 4900000, guid: 747c23818f328ad44a54b8a00fbb717c, type: 3}
   winText: {fileID: 1060276644}
   wordText: {fileID: 1508377696}
   definitionText: {fileID: 1916597307}
