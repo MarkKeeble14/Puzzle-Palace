@@ -1,4 +1,4 @@
-﻿public enum TicTacToeGameState
+﻿public enum TwoPlayerGameState
 {
     MENU,
     P1,

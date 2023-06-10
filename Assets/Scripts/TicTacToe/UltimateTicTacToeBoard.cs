@@ -84,7 +84,7 @@ public class UltimateTicTacToeBoard : MonoBehaviour
     {
         ActOnEachBoardCell(cell =>
         {
-            if (cell.GetState() == TicTacToeBoardCellState.NULL)
+            if (cell.GetState() == TwoPlayerCellState.NULL)
             {
                 cell.GetSymbolImage().sprite = s;
             }
@@ -236,7 +236,7 @@ public class UltimateTicTacToeBoard : MonoBehaviour
         GameTied = true;
     }
 
-    public IEnumerator CheckMoveResult(TicTacToeGameState moveOccurredOn, TicTacToeBoardCell alteredCell)
+    public IEnumerator CheckMoveResult(TwoPlayerGameState moveOccurredOn, TicTacToeBoardCell alteredCell)
     {
         yield return StartCoroutine(alteredCell.OwnerOfCell.CheckMoveResult(moveOccurredOn, alteredCell));
 
@@ -274,7 +274,7 @@ public class UltimateTicTacToeBoard : MonoBehaviour
         }
         else
         {
-            SetWinnerState(moveOccurredOn == TicTacToeGameState.P1 ? WinnerOptions.P1 : WinnerOptions.P2);
+            SetWinnerState(moveOccurredOn == TwoPlayerGameState.P1 ? WinnerOptions.P1 : WinnerOptions.P2);
 
             yield return StartCoroutine(AnimateWinningBoards());
         }
@@ -311,7 +311,7 @@ public class UltimateTicTacToeBoard : MonoBehaviour
         float pitchChange = 0;
         foreach (TicTacToeBoard board in winBoardList)
         {
-            StartCoroutine(board.ChangeCoverColor(TicTacToeDataDealer._Instance.GetWinCellColor()));
+            StartCoroutine(board.ChangeCoverColor(TwoPlayerDataDealer._Instance.GetWinCellColor()));
 
             // Audio
             AudioManager._Instance.PlayFromSFXDict(onRevealWinningBoard, pitchChange);
@@ -329,7 +329,7 @@ public class UltimateTicTacToeBoard : MonoBehaviour
     {
         ActOnEachBoardCell(cell =>
         {
-            cell.HardSetToSymbol(TicTacToeBoardCellState.X);
+            cell.HardSetToSymbol(TwoPlayerCellState.X);
         });
         CheckForTie();
     }

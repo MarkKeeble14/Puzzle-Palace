@@ -59,6 +59,7 @@ public class AudioManager : MonoBehaviour
 
         audioSourceArray.Remove(source);
         clip.Source = source;
+        source.volume = clip.Volume;
 
         clip.PlayWithPitchAdjustment(pitchAdjustment);
 

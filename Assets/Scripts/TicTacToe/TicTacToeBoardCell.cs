@@ -3,45 +3,33 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TicTacToeBoardCell : MonoBehaviour
+public abstract class BoardCell : MonoBehaviour
 {
-    private TicTacToeBoardCellState currentState;
+    protected TwoPlayerCellState currentState;
     public Vector2Int Coordinates { get; set; }
-    public TicTacToeBoard OwnerOfCell { get; set; }
 
-    [SerializeField] private float changeColorSpeed = 1.0f;
-    [SerializeField] private float adjustAlphaSpeed = 1.0f;
-    [SerializeField] private float adjustScaleSpeed = 1.0f;
-    private Color mainImageTargetColor;
-    private float symbolTargetAlpha;
+    [Header("Settings")]
+    [SerializeField] protected float changeColorSpeed = 1.0f;
+    [SerializeField] protected float adjustAlphaSpeed = 1.0f;
+    [SerializeField] protected float adjustScaleSpeed = 1.0f;
+    protected Color mainImageTargetColor;
+    protected float symbolTargetAlpha;
 
-    // References
-    [SerializeField] private RectTransform mainTransform;
-    [SerializeField] private Image mainImage;
-    [SerializeField] private Button button;
-    [SerializeField] private CanvasGroup mainCV;
-    [SerializeField] private Image symbol;
-    [SerializeField] private CanvasGroup symbolCV;
+    [Header("References")]
+    [SerializeField] protected RectTransform mainTransform;
+    [SerializeField] protected Image mainImage;
+    [SerializeField] protected CanvasGroup mainCV;
+    [SerializeField] protected Image symbol;
+    [SerializeField] protected CanvasGroup symbolCV;
+    [SerializeField] protected Button button;
     [SerializeField] private Image cover;
     [SerializeField] private CanvasGroup coverCV;
+    private bool symbolAlphaLocked;
 
-    private TicTacToeGameManager activeTicTacToeManager;
-    private TicTacToeGameManager activeManager
-    {
-        get
-        {
-            if (activeTicTacToeManager == null)
-                activeTicTacToeManager = (TicTacToeGameManager)MiniGameManager._Instance;
-            return activeTicTacToeManager;
-        }
-    }
-
-    private void Start()
+    protected void Start()
     {
         SetStartColor(true);
     }
-
-    bool symbolAlphaLocked;
 
     private void Update()
     {
@@ -62,19 +50,9 @@ public class TicTacToeBoardCell : MonoBehaviour
         yield return StartCoroutine(ChangeScale(Vector3.one * targetScale));
     }
 
-    public IEnumerator ChangeCoverColor(Color color)
-    {
-        yield return StartCoroutine(Utils.ChangeColor(cover, color, changeColorSpeed));
-    }
-
-    private IEnumerator ChangeAlpha(CanvasGroup cv, float target)
+    public IEnumerator ChangeAlpha(CanvasGroup cv, float target)
     {
         yield return StartCoroutine(Utils.ChangeCanvasGroupAlpha(cv, target, adjustAlphaSpeed));
-    }
-
-    public IEnumerator ChangeCoverAlpha(float target)
-    {
-        yield return StartCoroutine(ChangeAlpha(coverCV, target));
     }
 
     public IEnumerator ChangeTotalAlpha(float target)
@@ -88,59 +66,95 @@ public class TicTacToeBoardCell : MonoBehaviour
         yield return StartCoroutine(ChangeAlpha(symbolCV, target));
     }
 
-    public void SetCoverColor(Color color)
-    {
-        cover.color = color;
-    }
-
-    public void SetNull()
-    {
-        ChangeState(TicTacToeBoardCellState.NULL);
-    }
-
-    public void SetToCurrentPlayerSymbol()
-    {
-        if (!activeManager.AllowMove) return;
-        if (currentState != TicTacToeBoardCellState.NULL) return;
-        ChangeState(TicTacToeDataDealer._Instance.GetCurrentPlayerSymbol());
-        StartCoroutine(activeManager.NotifyOfMove(this));
-    }
-
-    public void HardSetToSymbol(TicTacToeBoardCellState symbol)
-    {
-        ChangeState(symbol);
-    }
-
-    public TicTacToeBoardCellState GetState()
-    {
-        return currentState;
-    }
-
-    public void ChangeState(TicTacToeBoardCellState state)
-    {
-        currentState = state;
-        UpdateSprite();
-    }
-
-    private void UpdateSprite()
-    {
-        activeManager.SetImageInfo(symbol, currentState);
-    }
-
     public void SetInteractable(bool v)
     {
         symbol.raycastTarget = v;
         SetStartColor(v);
     }
-
-    private void SetStartColor(bool v)
+    public void HardSetToSymbol(TwoPlayerCellState symbol)
     {
-        Color cellColor = TicTacToeDataDealer._Instance.GetCellColor(v);
+        ChangeState(symbol);
+    }
+
+    public TwoPlayerCellState GetState()
+    {
+        return currentState;
+    }
+
+    public void ChangeState(TwoPlayerCellState state)
+    {
+        currentState = state;
+        UpdateSprite();
+    }
+
+    public IEnumerator ChangeCoverColor(Color color)
+    {
+        yield return StartCoroutine(Utils.ChangeColor(cover, color, changeColorSpeed));
+    }
+
+    public IEnumerator ChangeCoverAlpha(float target)
+    {
+        yield return StartCoroutine(ChangeAlpha(coverCV, target));
+    }
+
+    public void SetCoverColor(Color color)
+    {
+        cover.color = color;
+    }
+
+    private void UpdateSprite()
+    {
+        SetImageInfo(symbol, currentState);
+    }
+
+    private void SetImageInfo(Image i, TwoPlayerCellState state)
+    {
+        TicTacToeBoardCellStateVisualInfo info = TwoPlayerDataDealer._Instance.GetStateVisualInfo(state);
+        i.sprite = info.Sprite;
+        i.color = info.Color;
+    }
+
+    protected void SetStartColor(bool v)
+    {
+        Color cellColor = TwoPlayerDataDealer._Instance.GetCellColor(v);
         mainImageTargetColor = cellColor;
-        if (currentState == TicTacToeBoardCellState.NULL)
+        if (currentState == TwoPlayerCellState.NULL)
         {
             symbolTargetAlpha = v ? 1 : 0;
         }
+    }
+}
+
+public class TicTacToeBoardCell : BoardCell
+{
+    public TicTacToeBoard OwnerOfCell { get; set; }
+
+    private TicTacToeGameManager activeTicTacToeManager;
+    private TicTacToeGameManager activeManager
+    {
+        get
+        {
+            if (activeTicTacToeManager == null)
+                activeTicTacToeManager = (TicTacToeGameManager)MiniGameManager._Instance;
+            return activeTicTacToeManager;
+        }
+    }
+
+    #region Symbol Manipulation
+
+    public void SetToCurrentPlayerSymbol()
+    {
+        if (!activeManager.AllowMove) return;
+        if (currentState != TwoPlayerCellState.NULL) return;
+        ChangeState(TwoPlayerDataDealer._Instance.GetCurrentPlayerSymbol());
+        StartCoroutine(activeManager.NotifyOfMove(this));
+    }
+
+    #endregion
+
+    public void SetNull()
+    {
+        ChangeState(TwoPlayerCellState.NULL);
     }
 
     public Image GetSymbolImage()

@@ -23,7 +23,7 @@ public class StandardTicTacToeGameManager : TicTacToeGameManager
         Destroy(board.gameObject);
 
         // Reset the game state to player 1's turn
-        SetTurn(TicTacToeGameState.P1);
+        SetTurn(TwoPlayerGameState.P1);
     }
 
     protected override IEnumerator Setup()
@@ -38,47 +38,47 @@ public class StandardTicTacToeGameManager : TicTacToeGameManager
 
     protected override IEnumerator HandleP1Turn()
     {
-        board.SetUnsetBoardSpritesToSprite(GetStateDisplayInfo(TicTacToeBoardCellState.O).Sprite);
+        board.SetUnsetBoardSpritesToSprite(GetStateDisplayInfo(TwoPlayerCellState.O).Sprite);
         yield return new WaitUntil(() => board.HasChanged);
         if (board.GameWon)
         {
             winner = WinnerOptions.P1;
-            SetTurn(TicTacToeGameState.END);
+            SetTurn(TwoPlayerGameState.END);
         }
         else if (board.GameTied)
         {
             winner = WinnerOptions.NEITHER;
-            SetTurn(TicTacToeGameState.END);
+            SetTurn(TwoPlayerGameState.END);
         }
         else
         {
             board.ResetHasChanged();
-            SetTurn(TicTacToeGameState.P2);
+            SetTurn(TwoPlayerGameState.P2);
         }
     }
 
     protected override IEnumerator HandleP2Turn()
     {
-        board.SetUnsetBoardSpritesToSprite(GetStateDisplayInfo(TicTacToeBoardCellState.X).Sprite);
+        board.SetUnsetBoardSpritesToSprite(GetStateDisplayInfo(TwoPlayerCellState.X).Sprite);
         yield return new WaitUntil(() => board.HasChanged);
         if (board.GameWon)
         {
             winner = WinnerOptions.P2;
-            SetTurn(TicTacToeGameState.END);
+            SetTurn(TwoPlayerGameState.END);
         }
         else if (board.GameTied)
         {
             winner = WinnerOptions.NEITHER;
-            SetTurn(TicTacToeGameState.END);
+            SetTurn(TwoPlayerGameState.END);
         }
         else
         {
             board.ResetHasChanged();
-            SetTurn(TicTacToeGameState.P1);
+            SetTurn(TwoPlayerGameState.P1);
         }
     }
 
-    protected override IEnumerator CheckMoveResult(TicTacToeGameState moveOccurredOn, TicTacToeBoardCell alteredCell)
+    protected override IEnumerator CheckMoveResult(TwoPlayerGameState moveOccurredOn, TicTacToeBoardCell alteredCell)
     {
         yield return StartCoroutine(board.CheckMoveResult(moveOccurredOn, alteredCell));
     }

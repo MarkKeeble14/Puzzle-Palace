@@ -4,27 +4,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum Player
+public class TwoPlayerDataDealer : MonoBehaviour
 {
-    PLAYER1,
-    PLAYER2
-}
-
-[System.Serializable]
-public struct PlayerRepresentationInformation
-{
-    public TicTacToeBoardCellState CellState;
-    public TicTacToeBoardCellStateVisualInfo VisualInfo;
-}
-
-public class TicTacToeDataDealer : MonoBehaviour
-{
-    public static TicTacToeDataDealer _Instance { get; private set; }
+    public static TwoPlayerDataDealer _Instance { get; private set; }
 
     [SerializeField]
     private SerializableDictionary<Player, PlayerRepresentationInformation> playerRepresentingDict = new SerializableDictionary<Player, PlayerRepresentationInformation>();
-    private Dictionary<TicTacToeGameState, Player> playerGameStateLinker = new Dictionary<TicTacToeGameState, Player>();
-    private Dictionary<TicTacToeBoardCellState, Player> playerCellStateLinker = new Dictionary<TicTacToeBoardCellState, Player>();
+    private Dictionary<TwoPlayerGameState, Player> playerGameStateLinker = new Dictionary<TwoPlayerGameState, Player>();
+    private Dictionary<TwoPlayerCellState, Player> playerCellStateLinker = new Dictionary<TwoPlayerCellState, Player>();
     private Dictionary<WinnerOptions, Player> winnerOptionsPlayerLinker = new Dictionary<WinnerOptions, Player>();
 
     [SerializeField] private TicTacToeBoardCellStateVisualInfo nullCellVisualInfo;
@@ -32,7 +19,7 @@ public class TicTacToeDataDealer : MonoBehaviour
     [SerializeField] private Color uninteractableCellColor;
     [SerializeField] private Color interactableCellColor;
 
-    public TicTacToeGameState CurrentTurn { get; set; }
+    public TwoPlayerGameState CurrentTurn { get; set; }
 
     [SerializeField] private Image p1Image;
     [SerializeField] private Image p2Image;
@@ -41,8 +28,8 @@ public class TicTacToeDataDealer : MonoBehaviour
     {
         _Instance = this;
 
-        playerGameStateLinker.Add(TicTacToeGameState.P1, Player.PLAYER1);
-        playerGameStateLinker.Add(TicTacToeGameState.P2, Player.PLAYER2);
+        playerGameStateLinker.Add(TwoPlayerGameState.P1, Player.PLAYER1);
+        playerGameStateLinker.Add(TwoPlayerGameState.P2, Player.PLAYER2);
 
         playerCellStateLinker.Add(playerRepresentingDict[Player.PLAYER1].CellState, Player.PLAYER1);
         playerCellStateLinker.Add(playerRepresentingDict[Player.PLAYER2].CellState, Player.PLAYER2);
@@ -71,22 +58,21 @@ public class TicTacToeDataDealer : MonoBehaviour
         return playerRepresentingDict[winnerOptionsPlayerLinker[player]].VisualInfo.Color;
     }
 
-    public Color GetPlayerColor(TicTacToeGameState gameState)
+    public Color GetPlayerColor(TwoPlayerGameState gameState)
     {
         return playerRepresentingDict[playerGameStateLinker[gameState]].VisualInfo.Color;
     }
 
-
-    public TicTacToeBoardCellStateVisualInfo GetStateVisualInfo(TicTacToeBoardCellState state)
+    public TicTacToeBoardCellStateVisualInfo GetStateVisualInfo(TwoPlayerCellState state)
     {
-        if (state == TicTacToeBoardCellState.NULL)
+        if (state == TwoPlayerCellState.NULL)
         {
             return nullCellVisualInfo;
         }
         return playerRepresentingDict[playerCellStateLinker[state]].VisualInfo;
     }
 
-    public TicTacToeBoardCellState GetCurrentPlayerSymbol()
+    public TwoPlayerCellState GetCurrentPlayerSymbol()
     {
         return playerRepresentingDict[playerGameStateLinker[CurrentTurn]].CellState;
     }

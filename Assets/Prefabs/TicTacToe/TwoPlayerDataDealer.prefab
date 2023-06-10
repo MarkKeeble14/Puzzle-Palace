@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 136829926806315003}
   - component: {fileID: 136829926806315002}
   m_Layer: 0
-  m_Name: TicTacToeDataDealer
+  m_Name: TwoPlayerDataDealer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -62,5 +62,7 @@ MonoBehaviour:
     Sprite: {fileID: 0}
     Color: {r: 0, g: 0, b: 0, a: 0}
   winCellColor: {r: 0.5019608, g: 1, b: 0.3764706, a: 1}
+  uninteractableCellColor: {r: 0, g: 0, b: 0, a: 0}
+  interactableCellColor: {r: 0, g: 0, b: 0, a: 0}
   p1Image: {fileID: 0}
   p2Image: {fileID: 0}

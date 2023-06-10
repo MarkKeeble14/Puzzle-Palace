@@ -1,16 +1,16 @@
 ﻿using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
-public abstract class TicTacToeGameManager : MiniGameManager
+public class ConnectFourGameManager : MiniGameManager
 {
+    [SerializeField] private ConnectFourBoard boardPrefab;
+    private ConnectFourBoard board;
+
     protected TwoPlayerGameState gameState;
     protected WinnerOptions winner;
 
     [Header("References")]
-    [SerializeField] private ScreenAnimationController eogScreenAnimationHelper;
-    [SerializeField] private ScreenAnimationController beginGameScreenAnimationHelper;
     [SerializeField] protected Transform parentSpawnedTo;
     [SerializeField] protected TextMeshProUGUI turnText;
     [SerializeField] protected Animator turnTextAnimator;
@@ -24,7 +24,9 @@ public abstract class TicTacToeGameManager : MiniGameManager
     protected int p2Score;
 
     [SerializeField] protected float delayOnRestart = 1.0f;
-    [SerializeField] protected int numCells;
+    [SerializeField] protected Vector2Int gridSize;
+
+    [SerializeField] private float delayBetweenCellsInRestartSequence;
 
     public bool AllowMove { get; protected set; }
 
@@ -66,9 +68,6 @@ public abstract class TicTacToeGameManager : MiniGameManager
         }
         yield break;
     }
-
-    protected abstract IEnumerator HandleP1Turn();
-    protected abstract IEnumerator HandleP2Turn();
 
     protected override IEnumerator GameLoop()
     {
@@ -115,17 +114,93 @@ public abstract class TicTacToeGameManager : MiniGameManager
         gameState = state;
     }
 
-    protected abstract IEnumerator CheckMoveResult(TwoPlayerGameState moveOccurredOn, TicTacToeBoardCell alteredCell);
-
-    public IEnumerator NotifyOfMove(TicTacToeBoardCell alteredCell)
+    public IEnumerator NotifyOfMove(ConnectFourBoardCell alteredCell)
     {
         AllowMove = false;
+
+        yield return StartCoroutine(board.ShowMove(alteredCell, TwoPlayerDataDealer._Instance.GetCurrentPlayerInfo().CellState));
+
         yield return CheckMoveResult(gameState, alteredCell);
+
         AllowMove = true;
     }
 
     protected Sprite GetCurrentPlayerSymbol()
     {
         return TwoPlayerDataDealer._Instance.GetCurrentPlayerInfo().VisualInfo.Sprite;
+    }
+
+    protected override IEnumerator Restart()
+    {
+        AllowMove = false;
+        yield return StartCoroutine(board.ActOnEachBoardCellWithDelay(cell =>
+        {
+            StartCoroutine(cell.ChangeScale(0));
+            StartCoroutine(cell.ChangeTotalAlpha(0));
+        }, delayBetweenCellsInRestartSequence, true));
+
+        yield return new WaitForSeconds(delayOnRestart);
+
+        Destroy(board.gameObject);
+
+        // Reset the game state to player 1's turn
+        SetTurn(TwoPlayerGameState.P1);
+
+        AllowMove = true;
+    }
+
+    protected override IEnumerator Setup()
+    {
+        // Generate the board
+        board = Instantiate(boardPrefab, parentSpawnedTo);
+
+        yield return StartCoroutine(board.Generate(gridSize));
+
+        playButton.SetActive(true);
+    }
+
+    protected IEnumerator HandleP1Turn()
+    {
+        yield return new WaitUntil(() => board.HasChanged);
+        if (board.GameWon)
+        {
+            winner = WinnerOptions.P1;
+            SetTurn(TwoPlayerGameState.END);
+        }
+        else if (board.GameTied)
+        {
+            winner = WinnerOptions.NEITHER;
+            SetTurn(TwoPlayerGameState.END);
+        }
+        else
+        {
+            board.ResetHasChanged();
+            SetTurn(TwoPlayerGameState.P2);
+        }
+    }
+
+    protected IEnumerator HandleP2Turn()
+    {
+        yield return new WaitUntil(() => board.HasChanged);
+        if (board.GameWon)
+        {
+            winner = WinnerOptions.P2;
+            SetTurn(TwoPlayerGameState.END);
+        }
+        else if (board.GameTied)
+        {
+            winner = WinnerOptions.NEITHER;
+            SetTurn(TwoPlayerGameState.END);
+        }
+        else
+        {
+            board.ResetHasChanged();
+            SetTurn(TwoPlayerGameState.P1);
+        }
+    }
+
+    protected IEnumerator CheckMoveResult(TwoPlayerGameState moveOccurredOn, ConnectFourBoardCell alteredCell)
+    {
+        yield return StartCoroutine(board.CheckMoveResult(moveOccurredOn, alteredCell));
     }
 }

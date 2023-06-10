@@ -23,4 +23,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/WordoMix.unity
     guid: a8cd1fe09781de34d87831960600bf39
+  - enabled: 1
+    path: Assets/Scenes/ConnectFour.unity
+    guid: faa6036ec9f4bad499275a4396ca3d60
   m_configObjects: {}

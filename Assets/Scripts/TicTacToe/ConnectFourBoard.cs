@@ -4,15 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TicTacToeBoard : MonoBehaviour
+public class ConnectFourBoard : MonoBehaviour
 {
     [Header("Data")]
     [SerializeField] private float delayBetweenWinCellAnimations = 0.1f;
-    private List<TicTacToeBoardCell> winCellList;
-    private TicTacToeBoardCell[,] board;
+    private List<ConnectFourBoardCell> winCellList;
+    private ConnectFourBoardCell[,] board;
 
     [Header("Visual & References")]
-    [SerializeField] private TicTacToeBoardCell boardCellPrefab;
+    [SerializeField] private ConnectFourBoardCell boardCellPrefab;
     [SerializeField] private Transform parentCellSpawnsTo;
     [SerializeField] private GridLayoutGroup glGroup;
     [SerializeField] private int cellSize;
@@ -21,7 +21,6 @@ public class TicTacToeBoard : MonoBehaviour
     [SerializeField] private float glGroupSpacing = 5.0f;
     [SerializeField] private RectTransform mainTransform;
     [SerializeField] private CanvasGroup mainCanvasGroup;
-    [SerializeField] private float coverImageAlphaGainRate = 5.0f;
     [SerializeField] private float changeAlphaRate = 5.0f;
     [SerializeField] private float changeColorRate = 5.0f;
     [SerializeField] private float changeScaleRate = 5.0f;
@@ -33,23 +32,17 @@ public class TicTacToeBoard : MonoBehaviour
     [SerializeField] private string onFinishedSpawningCells = "tttBoard_onFinishedSpawningCells";
     [SerializeField] private string onRevealWinningCell = "tttBoard_onRevealWinningCell";
 
-    private bool useCoverImageOnWin;
-
-    public Vector2Int Coordinates;
-
     public bool HasChanged { get; private set; }
     public bool GameWon { get; private set; }
     public bool GameTied { get; private set; }
     public WinnerOptions WinnerState { get; private set; }
     private bool interactable;
-
-    [SerializeField] private Image coverImage;
-    private CanvasGroup coverImageCanvasGroup;
+    private ConnectFourBoardCell checkingCell;
 
     public void SetInteractable(bool v)
     {
         interactable = v;
-        foreach (TicTacToeBoardCell cell in board)
+        foreach (ConnectFourBoardCell cell in board)
         {
             cell.SetInteractable(interactable);
         }
@@ -60,24 +53,24 @@ public class TicTacToeBoard : MonoBehaviour
         WinnerState = winnerState;
     }
 
-    public void ActOnEachBoardCell(Action<TicTacToeBoardCell> func)
+    public void ActOnEachBoardCell(Action<ConnectFourBoardCell> func)
     {
         for (int i = 0; i < board.GetLength(0); i++)
         {
-            for (int p = 0; p < board.GetLongLength(0); p++)
+            for (int p = 0; p < board.GetLength(1); p++)
             {
                 func(board[i, p]);
             }
         }
     }
 
-    public IEnumerator ActOnEachBoardCellWithDelay(Action<TicTacToeBoardCell> func, float delay, bool reverseOrder)
+    public IEnumerator ActOnEachBoardCellWithDelay(Action<ConnectFourBoardCell> func, float delay, bool reverseOrder)
     {
         if (reverseOrder)
         {
             for (int i = board.GetLength(0) - 1; i >= 0; i--)
             {
-                for (int p = (int)board.GetLongLength(0) - 1; p >= 0; p--)
+                for (int p = (int)board.GetLength(1) - 1; p >= 0; p--)
                 {
                     func(board[i, p]);
                     yield return new WaitForSeconds(delay);
@@ -88,7 +81,7 @@ public class TicTacToeBoard : MonoBehaviour
         {
             for (int i = 0; i < board.GetLength(0); i++)
             {
-                for (int p = 0; p < board.GetLongLength(0); p++)
+                for (int p = 0; p < board.GetLength(1); p++)
                 {
                     func(board[i, p]);
                     yield return new WaitForSeconds(delay);
@@ -97,45 +90,31 @@ public class TicTacToeBoard : MonoBehaviour
         }
     }
 
-    public void SetUnsetBoardSpritesToSprite(Sprite s)
-    {
-        ActOnEachBoardCell(cell =>
-        {
-            if (cell.GetState() == TwoPlayerCellState.NULL)
-            {
-                cell.GetSymbolImage().sprite = s;
-            }
-        });
-    }
-
     public void ResetHasChanged()
     {
         HasChanged = false;
     }
 
-    public IEnumerator Generate(int boardSize, bool useCoverImageOnWin)
+    public IEnumerator Generate(Vector2Int boardSize)
     {
-        this.useCoverImageOnWin = useCoverImageOnWin;
         GameWon = false;
         GameTied = false;
         HasChanged = false;
-        winCellList = new List<TicTacToeBoardCell>();
+        winCellList = new List<ConnectFourBoardCell>();
 
         glGroup.cellSize = new Vector2(cellSize, cellSize);
-        glGroup.constraintCount = boardSize;
+        glGroup.constraintCount = boardSize.y;
         glGroup.spacing = glGroupSpacing * Vector2.one;
         glGroup.GetComponent<RectTransform>().sizeDelta = Vector2.one * boardSize * cellSize;
 
-        coverImageCanvasGroup = coverImage.GetComponent<CanvasGroup>();
-
-        board = new TicTacToeBoardCell[boardSize, boardSize];
+        board = new ConnectFourBoardCell[boardSize.x, boardSize.y];
         for (int i = 0; i < board.GetLength(0); i++)
         {
-            for (int p = 0; p < board.GetLongLength(0); p++)
+            for (int p = 0; p < board.GetLength(1); p++)
             {
-                TicTacToeBoardCell cell = Instantiate(boardCellPrefab, parentCellSpawnsTo);
+                // Debug.Log(i + ", " + p);
+                ConnectFourBoardCell cell = Instantiate(boardCellPrefab, parentCellSpawnsTo);
                 cell.Coordinates = new Vector2Int(i, p);
-                cell.OwnerOfCell = this;
                 board[i, p] = cell;
                 cell.name += "<" + i + ", " + p + ">";
             }
@@ -145,14 +124,14 @@ public class TicTacToeBoard : MonoBehaviour
 
         for (int i = 0; i < board.GetLength(0); i++)
         {
-            for (int p = 0; p < board.GetLongLength(0); p++)
+            for (int p = 0; p < board.GetLength(1); p++)
             {
                 AudioManager._Instance.PlayFromSFXDict(onCellSpawned);
 
-                TicTacToeBoardCell cell = board[i, p];
+                ConnectFourBoardCell cell = board[i, p];
 
                 StartCoroutine(cell.ChangeScale(.9f));
-                if (i == board.GetLongLength(0) - 1 && p == board.GetLength(0) - 1)
+                if (i == board.GetLength(0) - 1 && p == board.GetLength(1) - 1)
                 {
                     yield return StartCoroutine(cell.ChangeTotalAlpha(1));
                     SetInteractable(true);
@@ -169,93 +148,138 @@ public class TicTacToeBoard : MonoBehaviour
         AudioManager._Instance.PlayFromSFXDict(onFinishedSpawningCells);
     }
 
-    private bool CheckForHorizontalWin(TicTacToeBoardCell cellToCheck)
+    public IEnumerator ShowMove(ConnectFourBoardCell alteredCell, TwoPlayerCellState state)
+    {
+        AudioManager._Instance.PlayFromSFXDict(onCellChanged);
+
+        Vector2Int check = new Vector2Int(0, alteredCell.Coordinates.y);
+        board[check.x, check.y].HardSetToSymbol(state);
+
+        while (check.x + 1 < board.GetLength(0) &&
+            board[check.x + 1, check.y].GetState() == TwoPlayerCellState.NULL)
+        {
+            yield return new WaitForSeconds(.1f);
+            board[check.x, check.y].HardSetToSymbol(TwoPlayerCellState.NULL);
+            check.x++;
+            board[check.x, check.y].HardSetToSymbol(state);
+        }
+
+        checkingCell = board[check.x, check.y];
+    }
+
+    private bool CheckForHorizontalWin()
     {
         // Check for Row Win
-        int row = cellToCheck.Coordinates.x;
-        for (int i = 0; i < board.GetLength(0); i++)
+        int count = 0;
+        int row = checkingCell.Coordinates.x;
+        for (int col = 0; col < board.GetLength(1); col++)
         {
-            TicTacToeBoardCell currentlyChecking = board[row, i];
-            if (currentlyChecking.GetState() != cellToCheck.GetState())
+            ConnectFourBoardCell currentlyChecking = board[row, col];
+            if (currentlyChecking.GetState() != checkingCell.GetState())
             {
-                return false;
+                winCellList.Clear();
+                count = 0;
+            }
+            else
+            {
+                count++;
+                winCellList.Add(board[row, col]);
+                if (count >= 4)
+                {
+                    return true;
+                }
             }
         }
-
-        // if we are here, that means a horizontal win has occured
-        for (int i = 0; i < board.GetLength(0); i++)
-        {
-            winCellList.Add(board[row, i]);
-        }
-
-        return true;
+        winCellList.Clear();
+        return false;
     }
 
-    private bool CheckForVerticalWin(TicTacToeBoardCell cellToCheck)
+    private bool CheckForVerticalWin()
     {
         // Check for Column Win
-        int column = cellToCheck.Coordinates.y;
+        int count = 0;
+        int column = checkingCell.Coordinates.y;
         for (int i = 0; i < board.GetLength(0); i++)
         {
-            TicTacToeBoardCell currentlyChecking = board[i, column];
-            if (currentlyChecking.GetState() != cellToCheck.GetState())
+            ConnectFourBoardCell currentlyChecking = board[i, column];
+            if (currentlyChecking.GetState() != checkingCell.GetState())
             {
-                return false;
+                winCellList.Clear();
+                count = 0;
+            }
+            else
+            {
+                count++;
+                winCellList.Add(board[i, column]);
+                if (count >= 4)
+                {
+                    return true;
+                }
             }
         }
-
-        // if we are here, that means a vertical win has occured
-        for (int i = 0; i < board.GetLength(0); i++)
-        {
-            winCellList.Add(board[i, column]);
-        }
-
-        return true;
+        winCellList.Clear();
+        return false;
     }
 
-    private bool CheckForDiagonalWin(TicTacToeBoardCell cellToCheck)
+    private bool CheckForDiagonalWin()
     {
-        bool won = true;
-        //
-        for (int i = 0; i < board.GetLength(0); i++)
+        // Debug.Log("0: " + board.GetLength(0) + ", 1: " + board.GetLength(1));
+        Vector2Int check = checkingCell.Coordinates;
+
+        return
+                CheckForDiagonalWinHelper(check, -1, -1)
+            || CheckForDiagonalWinHelper(check, -1, 1)
+            || CheckForDiagonalWinHelper(check, 1, -1)
+            || CheckForDiagonalWinHelper(check, 1, 1);
+    }
+
+    private bool CheckForDiagonalWinHelper(Vector2Int check, int xChange, int yChange)
+    {
+        int count = 0;
+
+        while (check.x < board.GetLength(0) - 1 && check.x > 0
+            && check.y < board.GetLength(1) - 1 && check.y > 0)
         {
-            TicTacToeBoardCell currentlyChecking = board[i, i];
-            if (currentlyChecking.GetState() != cellToCheck.GetState())
-            {
-                won = false;
-                break;
-            }
-        }
-        if (won)
-        {
-            // if we are here, that means a diagonal win in the top left -> bottom right orientationhas occured
-            for (int i = 0; i < board.GetLength(0); i++)
-            {
-                winCellList.Add(board[i, i]);
-            }
-            return true;
+            check.x -= xChange;
+            check.y -= yChange;
         }
 
-        won = true;
-        // 
-        for (int i = 0; i < board.GetLength(0); i++)
+        ConnectFourBoardCell currentlyChecking = board[check.x, check.y];
+
+        while (currentlyChecking != null)
         {
-            TicTacToeBoardCell currentlyChecking = board[i, board.GetLength(0) - 1 - i];
-            if (currentlyChecking.GetState() != cellToCheck.GetState())
+            // Debug.Log(currentlyChecking.Coordinates + ", " + xChange + ", " + yChange);
+            if (currentlyChecking.GetState() != checkingCell.GetState())
             {
-                won = false;
+                // Debug.Log("Breaking");
                 break;
             }
-        }
-        if (won)
-        {
-            // if we are here, that means a diagonal win in the top left -> bottom right orientationhas occured
-            for (int i = 0; i < board.GetLength(0); i++)
+            else
             {
-                winCellList.Add(board[i, board.GetLength(0) - 1 - i]);
+                // Debug.Log("Found Another in Sequence");
+                count++;
+                winCellList.Add(currentlyChecking);
+
+                if (count >= 4)
+                {
+                    return true;
+                }
+
+                check.x += xChange;
+                check.y += yChange;
+                // Debug.Log("X: " + check.x + ", Y: " + check.y);
+                if (check.x > board.GetLength(0) - 1 || check.x < 0 || check.y > board.GetLength(1) - 1 || check.y < 0)
+                {
+                    break;
+                }
+                else
+                {
+                    currentlyChecking = board[check.x, check.y];
+                }
             }
-            return true;
+
         }
+        winCellList.Clear();
         return false;
     }
 
@@ -263,7 +287,7 @@ public class TicTacToeBoard : MonoBehaviour
     {
         for (int i = 0; i < board.GetLength(0); i++)
         {
-            for (int p = 0; p < board.GetLongLength(0); p++)
+            for (int p = 0; p < board.GetLength(1); p++)
             {
                 // Empty cells exist, therefore not at a stalemate yet
                 if (board[i, p].GetState() == TwoPlayerCellState.NULL)
@@ -277,30 +301,40 @@ public class TicTacToeBoard : MonoBehaviour
         return;
     }
 
-    private void CheckForWin(TicTacToeBoardCell cellToCheck)
+    private void CheckForWin()
     {
-        if (CheckForHorizontalWin(cellToCheck))
+        List<ConnectFourBoardCell> rememberWinCells = new List<ConnectFourBoardCell>();
+        if (CheckForHorizontalWin())
         {
+            // Debug.Log("Horizontal Win");
             GameWon = true;
-            return;
+            rememberWinCells.AddRange(winCellList);
         };
-        if (CheckForVerticalWin(cellToCheck))
+        if (CheckForVerticalWin())
         {
+            // Debug.Log("Vertical Win");
             GameWon = true;
-            return;
+            rememberWinCells.AddRange(winCellList);
         };
-        if (CheckForDiagonalWin(cellToCheck))
+        if (CheckForDiagonalWin())
         {
+            // Debug.Log("Diagonal Win");
             GameWon = true;
-            return;
+            rememberWinCells.AddRange(winCellList);
         };
+        winCellList.Clear();
+        foreach (ConnectFourBoardCell cell in rememberWinCells)
+        {
+            if (!winCellList.Contains(cell))
+            {
+                winCellList.Add(cell);
+            }
+        }
     }
 
-    public IEnumerator CheckMoveResult(TwoPlayerGameState moveOccurredOn, TicTacToeBoardCell alteredCell)
+    public IEnumerator CheckMoveResult(TwoPlayerGameState moveOccurredOn, ConnectFourBoardCell alteredCell)
     {
-        AudioManager._Instance.PlayFromSFXDict(onCellChanged);
-
-        CheckForWin(alteredCell);
+        CheckForWin();
         CheckForTie();
 
         if (GameWon)
@@ -308,12 +342,6 @@ public class TicTacToeBoard : MonoBehaviour
             yield return StartCoroutine(AnimateWinningCells());
 
             SetWinnerState(moveOccurredOn == TwoPlayerGameState.P1 ? WinnerOptions.P1 : WinnerOptions.P2);
-
-            if (useCoverImageOnWin)
-            {
-                StartCoroutine(ChangeCoverAlpha(1));
-                yield return StartCoroutine(ChangeCoverColor(TwoPlayerDataDealer._Instance.GetPlayerColor(WinnerState)));
-            }
         }
 
         HasChanged = true;
@@ -321,7 +349,7 @@ public class TicTacToeBoard : MonoBehaviour
 
     public bool HasEmptySpace()
     {
-        foreach (TicTacToeBoardCell cell in board)
+        foreach (ConnectFourBoardCell cell in board)
         {
             if (cell.GetState() == TwoPlayerCellState.NULL) return true;
         }
@@ -331,13 +359,13 @@ public class TicTacToeBoard : MonoBehaviour
     public IEnumerator AnimateWinningCells()
     {
         // Hide all Symbols
-        foreach (TicTacToeBoardCell cell in board)
-        {
-            StartCoroutine(cell.LockSymbolAlpha(0));
-        }
+        // foreach (ConnectFourBoardCell cell in board)
+        // {
+        //    StartCoroutine(cell.LockSymbolAlpha(0));
+        // }
 
         float pitchChange = 0;
-        foreach (TicTacToeBoardCell cell in winCellList)
+        foreach (ConnectFourBoardCell cell in winCellList)
         {
             cell.SetCoverColor(TwoPlayerDataDealer._Instance.GetWinCellColor());
             StartCoroutine(cell.ChangeCoverAlpha(1));
@@ -354,11 +382,6 @@ public class TicTacToeBoard : MonoBehaviour
         AudioManager._Instance.PlayFromSFXDict(onGameWon);
     }
 
-    public IEnumerator ChangeCoverAlpha(float target)
-    {
-        yield return StartCoroutine(Utils.ChangeCanvasGroupAlpha(coverImageCanvasGroup, target, coverImageAlphaGainRate));
-    }
-
     public IEnumerator ChangeScale(Vector3 target)
     {
         yield return StartCoroutine(Utils.ChangeScale(mainTransform, target, changeScaleRate));
@@ -372,10 +395,5 @@ public class TicTacToeBoard : MonoBehaviour
     public IEnumerator ChangeTotalAlpha(float target)
     {
         yield return StartCoroutine(Utils.ChangeCanvasGroupAlpha(mainCanvasGroup, target, changeAlphaRate));
-    }
-
-    public IEnumerator ChangeCoverColor(Color target)
-    {
-        yield return StartCoroutine(Utils.ChangeColor(coverImage, target, changeColorRate));
     }
 }
