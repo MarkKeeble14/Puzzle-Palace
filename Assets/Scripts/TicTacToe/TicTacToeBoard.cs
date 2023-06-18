@@ -138,6 +138,7 @@ public class TicTacToeBoard : MonoBehaviour
                 cell.OwnerOfCell = this;
                 board[i, p] = cell;
                 cell.name += "<" + i + ", " + p + ">";
+                cell.SetInteractable(false);
             }
         }
 
@@ -151,15 +152,14 @@ public class TicTacToeBoard : MonoBehaviour
 
                 TicTacToeBoardCell cell = board[i, p];
 
-                StartCoroutine(cell.ChangeScale(.9f));
                 if (i == board.GetLongLength(0) - 1 && p == board.GetLength(0) - 1)
                 {
-                    yield return StartCoroutine(cell.ChangeTotalAlpha(1));
+                    yield return StartCoroutine(cell.ChangeScale(.9f));
                     SetInteractable(true);
                 }
                 else
                 {
-                    StartCoroutine(cell.ChangeTotalAlpha(1));
+                    StartCoroutine(cell.ChangeScale(.9f));
                 }
 
                 yield return new WaitForSeconds(delayBetweenCellSpawns);
@@ -333,7 +333,7 @@ public class TicTacToeBoard : MonoBehaviour
         // Hide all Symbols
         foreach (TicTacToeBoardCell cell in board)
         {
-            StartCoroutine(cell.LockSymbolAlpha(0));
+            // StartCoroutine(cell.LockSymbolAlpha(0));
         }
 
         float pitchChange = 0;

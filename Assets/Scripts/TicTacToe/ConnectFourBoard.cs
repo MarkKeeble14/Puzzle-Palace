@@ -116,6 +116,7 @@ public class ConnectFourBoard : MonoBehaviour
                 cell.Coordinates = new Vector2Int(i, p);
                 board[i, p] = cell;
                 cell.name += "<" + i + ", " + p + ">";
+                cell.SetInteractable(false);
             }
         }
 
@@ -129,15 +130,14 @@ public class ConnectFourBoard : MonoBehaviour
 
                 ConnectFourBoardCell cell = board[i, p];
 
-                StartCoroutine(cell.ChangeScale(.9f));
                 if (i == board.GetLength(0) - 1 && p == board.GetLength(1) - 1)
                 {
-                    yield return StartCoroutine(cell.ChangeTotalAlpha(1));
+                    yield return StartCoroutine(cell.ChangeScale(.9f));
                     SetInteractable(true);
                 }
                 else
                 {
-                    StartCoroutine(cell.ChangeTotalAlpha(1));
+                    StartCoroutine(cell.ChangeScale(.9f));
                 }
 
                 yield return new WaitForSeconds(delayBetweenCellSpawns);

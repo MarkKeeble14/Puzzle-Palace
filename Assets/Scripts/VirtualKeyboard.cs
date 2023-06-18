@@ -59,6 +59,7 @@ public class VirtualKeyboard : MonoBehaviour
                     default:
                         throw new UnhandledSwitchCaseException();
                 }
+                spawned.GetComponent<RectTransform>().sizeDelta = current.sizeDelta;
                 spawned.Set(current.Shown, current.Icon);
             }
         }

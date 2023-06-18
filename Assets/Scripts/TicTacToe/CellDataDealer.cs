@@ -6,8 +6,8 @@ public class CellDataDealer : MonoBehaviour
 
     [SerializeField] protected TicTacToeBoardCellStateVisualInfo nullCellVisualInfo;
     [SerializeField] protected Color winCellColor;
-    [SerializeField] protected Color uninteractableCellColor;
-    [SerializeField] protected Color interactableCellColor;
+    [SerializeField] protected float uninteractableCellAlpha = .4f;
+    [SerializeField] protected float interactableCellAlpha = 1f;
 
     protected virtual void Awake()
     {
@@ -19,8 +19,8 @@ public class CellDataDealer : MonoBehaviour
         return winCellColor;
     }
 
-    public Color GetCellColor(bool interactable)
+    public float GetAlphaOfCell(bool interactable)
     {
-        return interactable ? interactableCellColor : uninteractableCellColor;
+        return interactable ? interactableCellAlpha : uninteractableCellAlpha;
     }
 }

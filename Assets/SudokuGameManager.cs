@@ -38,6 +38,8 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
         board = Instantiate(sudokuBoardPrefab, parentSpawnedTo);
 
         yield return StartCoroutine(board.Generate(SelectCell, allowedNums, minMaxNumHoles));
+
+        yield return StartCoroutine(ShowKeyboard());
     }
 
     protected override IEnumerator Restart()
@@ -46,7 +48,7 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
         yield return StartCoroutine(board.ActOnEachBoardCellWithDelay(cell =>
         {
             StartCoroutine(cell.ChangeScale(0));
-            StartCoroutine(cell.ChangeTotalAlpha(0));
+            cell.SetInteractable(false);
         }, delayBetweenCellsInRestartSequence, true));
 
         yield return new WaitForSeconds(delayOnRestart);
@@ -81,9 +83,18 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
 
     private void SelectCell(SudokuBoardCell cell)
     {
-        if (selectedCell) selectedCell.Deselect();
+        if (selectedCell)
+        {
+            board.UnshowCellsWithChar();
+            selectedCell.Deselect();
+        }
         selectedCell = cell;
         selectedCell.Select();
+
+        if (!selectedCell.GetInputtedChar().Equals(' '))
+        {
+            board.ShowCellsWithChar(selectedCell.GetInputtedChar());
+        }
     }
 
     private void ToggleInputMode()
@@ -114,63 +125,68 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
         string currentFrameString;
         while (true)
         {
-            if (!selectedCell)
+            if (selectedCell)
             {
-                yield return null;
-            }
-
-            if (Input.GetKeyDown(KeyCode.Backspace) || backPressed)
-            {
-                AudioManager._Instance.PlayFromSFXDict(onInput);
-                backPressed = false;
-                if (!selectedCell.GetInputtedChar().Equals(' '))
+                if (Input.GetKeyDown(KeyCode.Backspace) || backPressed)
                 {
-                    selectedCell.SetInputtedChar(' ');
-                }
-                else
-                {
-                    selectedCell.SetInputtedChar(' ');
-                }
-            }
-            else
-            {
-                if (keyPressed)
-                {
-                    currentFrameString = key;
-                    keyPressed = false;
-                }
-                else
-                {
-                    currentFrameString = Input.inputString;
-                }
-
-                if (currentFrameString.Length > 0)
-                {
-                    int x;
-                    if (int.TryParse(currentFrameString[0].ToString(), out x) && allowedNums.Contains(x))
+                    AudioManager._Instance.PlayFromSFXDict(onInput);
+                    backPressed = false;
+                    if (!selectedCell.GetInputtedChar().Equals(' '))
                     {
-                        switch (currentInputMode)
+                        selectedCell.SetInputtedChar(' ');
+                    }
+                    else
+                    {
+                        selectedCell.SetInputtedChar(' ');
+                    }
+                }
+                else
+                {
+                    if (keyPressed)
+                    {
+                        currentFrameString = key;
+                        keyPressed = false;
+                    }
+                    else
+                    {
+                        currentFrameString = Input.inputString;
+                    }
+
+                    if (currentFrameString.Length > 0)
+                    {
+                        int x;
+                        if (int.TryParse(currentFrameString[0].ToString(), out x) && allowedNums.Contains(x))
                         {
-                            case InputMode.INPUT:
-                                selectedCell.SetInputtedChar(x.ToString()[0]);
-                                AudioManager._Instance.PlayFromSFXDict(onInput);
+                            switch (currentInputMode)
+                            {
+                                case InputMode.INPUT:
+                                    board.UnshowCellsWithChar();
+                                    board.RemoveCharFromInvalidLocations(selectedCell, x.ToString()[0]);
 
-                                if (board.CheckForWin())
-                                {
-                                    yield break;
-                                }
+                                    selectedCell.SetInputtedChar(x.ToString()[0]);
+                                    AudioManager._Instance.PlayFromSFXDict(onInput);
 
-                                break;
-                            case InputMode.PENCIL:
-                                if (!selectedCell.GetInputtedChar().Equals(' ')) selectedCell.SetInputtedChar(' ');
-                                selectedCell.TryPencilChar(x.ToString()[0]);
-                                AudioManager._Instance.PlayFromSFXDict(onInput);
-                                break;
+                                    if (board.CheckForWin())
+                                    {
+                                        yield break;
+                                    }
+
+                                    break;
+                                case InputMode.PENCIL:
+                                    board.UnshowCellsWithChar();
+                                    if (!selectedCell.GetInputtedChar().Equals(' ')) selectedCell.SetInputtedChar(' ');
+                                    selectedCell.TryPencilChar(x.ToString()[0]);
+                                    AudioManager._Instance.PlayFromSFXDict(onInput);
+                                    break;
+                            }
                         }
                     }
                 }
             }
-
+            else
+            {
+                keyPressed = false;
+            }
             yield return null;
         }
     }

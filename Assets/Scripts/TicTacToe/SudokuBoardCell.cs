@@ -10,18 +10,17 @@ public class SudokuBoardCell : BoardCell
     private char inputtedChar;
 
     [SerializeField] private TextMeshProUGUI entered;
-    private List<char> pencilledChars = new List<char>();
+    private List<int> pencilledChars = new List<int>();
     [SerializeField] private List<TextMeshProUGUI> pencilledCharTexts = new List<TextMeshProUGUI>();
-    private Dictionary<char, TextMeshProUGUI> assignedCharTextsDict = new Dictionary<char, TextMeshProUGUI>();
 
-    private SudokuGameManager activeConnectFourManager;
+    private SudokuGameManager activeSudokuGameManager;
     private SudokuGameManager activeManager
     {
         get
         {
-            if (activeConnectFourManager == null)
-                activeConnectFourManager = (SudokuGameManager)MiniGameManager._Instance;
-            return activeConnectFourManager;
+            if (activeSudokuGameManager == null)
+                activeSudokuGameManager = (SudokuGameManager)MiniGameManager._Instance;
+            return activeSudokuGameManager;
         }
     }
 
@@ -33,9 +32,8 @@ public class SudokuBoardCell : BoardCell
 
     private Action<SudokuBoardCell> OnPressed;
 
-    protected new void Start()
+    protected void Start()
     {
-        base.Start();
         SetBorderColor();
     }
 
@@ -52,6 +50,11 @@ public class SudokuBoardCell : BoardCell
     private void SetBorderColor()
     {
         border.color = isSelected ? selectedBorderColor : notSelectedBorderColor;
+    }
+
+    public void SetSymbolAlpha(float alpha)
+    {
+        symbolCV.alpha = alpha;
     }
 
     public void Select()
@@ -77,41 +80,30 @@ public class SudokuBoardCell : BoardCell
     {
         s = s.ToString().ToUpper().ToCharArray()[0];
 
-        Debug.Log("Pencilling: " + s);
+        int index;
+        if (!int.TryParse(s.ToString(), out index))
+        {
+            return;
+        }
+
+        // Debug.Log("Pencilling: " + index);
 
         // First check if the char has already been pencilled in
-        if (pencilledChars.Contains(s))
+        if (pencilledChars.Contains(index))
         {
-            Debug.Log("Pencilled Chars Already Contains String");
+            // Debug.Log("Pencilled Chars Already Contains String");
             // if so, instead of adding the char, we will remove it
-            pencilledChars.Remove(s);
-            assignedCharTextsDict[s].gameObject.SetActive(false);
-            assignedCharTextsDict.Remove(s);
+            pencilledCharTexts[index - 1].text = "";
+            pencilledChars.Remove(index);
             return;
         }
 
         // Char has not already been pencilled in, find first empty text and do so
         if (pencilledChars.Count < pencilledCharTexts.Count)
         {
-            Debug.Log("Adding Pencilled Char");
-
-            foreach (TextMeshProUGUI text in pencilledCharTexts)
-            {
-                Debug.Log("Check: " + text);
-                if (!text.gameObject.activeInHierarchy)
-                {
-                    Debug.Log("1");
-                    text.gameObject.SetActive(true);
-                    text.text = s.ToString();
-                    pencilledChars.Add(s);
-                    assignedCharTextsDict.Add(s, text);
-                    return;
-                }
-                else
-                {
-                    Debug.Log("2");
-                }
-            }
+            // Debug.Log("Adding Pencilled Char");
+            pencilledChars.Add(index);
+            pencilledCharTexts[index - 1].text = index.ToString();
         }
     }
 
@@ -119,10 +111,9 @@ public class SudokuBoardCell : BoardCell
     {
         while (pencilledChars.Count > 0)
         {
-            char c = pencilledChars[0];
-            pencilledChars.Remove(c);
-            assignedCharTextsDict[c].gameObject.SetActive(false);
-            assignedCharTextsDict.Remove(c);
+            int num = pencilledChars[0];
+            pencilledChars.Remove(num);
+            pencilledCharTexts[num - 1].text = "";
         }
     }
 
@@ -144,5 +135,18 @@ public class SudokuBoardCell : BoardCell
     public bool HasCorrectChar()
     {
         return inputtedChar.Equals(correctChar);
+    }
+
+    public void TryRemovePencilChar(char v)
+    {
+        int x;
+        if (int.TryParse(v.ToString(), out x))
+        {
+            if (pencilledChars.Contains(x))
+            {
+                pencilledChars.Remove(x);
+                pencilledCharTexts[x - 1].text = "";
+            }
+        }
     }
 }

@@ -2,6 +2,6 @@
 {
     public override void OnPress()
     {
-        ((WordoGameManager)MiniGameManager._Instance).SimulateEnter();
+        ((UsesVirtualKeyboardMiniGameManager)MiniGameManager._Instance).SimulateEnter();
     }
 }

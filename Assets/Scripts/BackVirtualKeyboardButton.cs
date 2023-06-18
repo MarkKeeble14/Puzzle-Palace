@@ -2,6 +2,6 @@
 {
     public override void OnPress()
     {
-        ((WordoGameManager)MiniGameManager._Instance).SimulateBack();
+        ((UsesVirtualKeyboardMiniGameManager)MiniGameManager._Instance).SimulateBack();
     }
 }

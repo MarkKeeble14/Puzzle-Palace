@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,6 +11,9 @@ public abstract class UsesVirtualKeyboardMiniGameManager : MiniGameManager
     protected string key;
 
     [SerializeField] protected VirtualKeyboard virtualKeyboard;
+    private CanvasGroup keyboardCV;
+
+    [SerializeField] private float adjustAlphaRate = 1;
 
     protected Dictionary<string, Action> additionalFunctionsDict = new Dictionary<string, Action>();
 
@@ -42,5 +46,16 @@ public abstract class UsesVirtualKeyboardMiniGameManager : MiniGameManager
         keyPressed = false;
         backPressed = false;
         enterPressed = false;
+    }
+
+    protected IEnumerator ShowKeyboard()
+    {
+        keyboardCV = virtualKeyboard.GetComponent<CanvasGroup>();
+        while (keyboardCV.alpha < 1)
+        {
+            keyboardCV.alpha += Time.deltaTime * adjustAlphaRate;
+            yield return null;
+        }
+        keyboardCV.blocksRaycasts = true;
     }
 }

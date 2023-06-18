@@ -68,7 +68,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7482667652216324306, guid: 462c00ce1741429428e4419fafe36991, type: 3}
+  m_Sprite: {fileID: -2413806693520163455, guid: 54864c89bf525a841a5c2f16ff50f0c9, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -253,14 +253,10 @@ MonoBehaviour:
   changeColorSpeed: 2
   adjustAlphaSpeed: 2.5
   adjustScaleSpeed: 5
-  mainTransform: {fileID: 5334410880550646607}
-  mainImage: {fileID: 5334410880550646605}
-  mainCV: {fileID: 6232014259104123906}
-  symbol: {fileID: 5334410879592951123}
-  symbolCV: {fileID: 5544111260933455022}
   button: {fileID: 809596635818975672}
+  backgroundTransform: {fileID: 5334410880550646607}
+  symbol: {fileID: 5334410879592951123}
   cover: {fileID: 5549323184080930396}
-  coverCV: {fileID: 3413653165297183614}
 --- !u!1 &8951462931005614423
 GameObject:
   m_ObjectHideFlags: 0

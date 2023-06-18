@@ -510,6 +510,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 136829926806315002, guid: 5e99d1fc43bee6c48a3ac325f8925f7a, type: 3}
+      propertyPath: nullCellVisualInfo.Sprite
+      value: 
+      objectReference: {fileID: -2413806693520163455, guid: 54864c89bf525a841a5c2f16ff50f0c9, type: 3}
+    - target: {fileID: 136829926806315002, guid: 5e99d1fc43bee6c48a3ac325f8925f7a, type: 3}
       propertyPath: uninteractableCellColor.a
       value: 0.5019608
       objectReference: {fileID: 0}
@@ -523,6 +527,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 136829926806315002, guid: 5e99d1fc43bee6c48a3ac325f8925f7a, type: 3}
       propertyPath: uninteractableCellColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 136829926806315002, guid: 5e99d1fc43bee6c48a3ac325f8925f7a, type: 3}
+      propertyPath: nullCellVisualInfo.Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 136829926806315002, guid: 5e99d1fc43bee6c48a3ac325f8925f7a, type: 3}
+      propertyPath: nullCellVisualInfo.Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 136829926806315002, guid: 5e99d1fc43bee6c48a3ac325f8925f7a, type: 3}
+      propertyPath: nullCellVisualInfo.Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 136829926806315002, guid: 5e99d1fc43bee6c48a3ac325f8925f7a, type: 3}
+      propertyPath: nullCellVisualInfo.Color.r
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 136829926806315002, guid: 5e99d1fc43bee6c48a3ac325f8925f7a, type: 3}

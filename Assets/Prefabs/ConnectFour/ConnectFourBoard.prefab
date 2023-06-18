@@ -170,18 +170,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71beed3b8b29c2040850c8335b73a139, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  delayBetweenWinCellAnimations: 0.25
+  delayBetweenWinCellAnimations: 0.375
   boardCellPrefab: {fileID: 5152384071143435228, guid: a0b73cbfdce92744abf9fb13f288c9c5, type: 3}
   parentCellSpawnsTo: {fileID: 2033024323420879214}
   glGroup: {fileID: 5451493303670369126}
   cellSize: 100
-  delayBetweenCellSpawns: 0.025
-  pitchIncreasePerCell: 0.1
+  delayBetweenCellSpawns: 0.03125
+  pitchIncreasePerCell: 0.25
   glGroupSpacing: 5
   mainTransform: {fileID: 5100660330269285064}
   mainCanvasGroup: {fileID: 6834930160593909902}
   changeAlphaRate: 5
-  changeColorRate: 5
   changeScaleRate: 5
   onCellChanged: tttBoard_onCellChanged
   onGameWon: tttBoard_onGameWon

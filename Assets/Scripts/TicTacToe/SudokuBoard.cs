@@ -80,6 +80,31 @@ public class SudokuBoard : MonoBehaviour
         }
     }
 
+    internal void UnshowCellsWithChar()
+    {
+        for (int i = 0; i < board.GetLength(0); i++)
+        {
+            for (int p = 0; p < board.GetLength(1); p++)
+            {
+                board[i, p].SetSymbolAlpha(1);
+            }
+        }
+    }
+
+    public void ShowCellsWithChar(char v)
+    {
+        for (int i = 0; i < board.GetLength(0); i++)
+        {
+            for (int p = 0; p < board.GetLength(1); p++)
+            {
+                if (board[i, p].GetInputtedChar().Equals(v))
+                {
+                    board[i, p].SetSymbolAlpha(.6f);
+                }
+            }
+        }
+    }
+
     public void ResetHasChanged()
     {
         HasChanged = false;
@@ -123,6 +148,7 @@ public class SudokuBoard : MonoBehaviour
             {
                 // Debug.Log(i + ", " + p);
                 SudokuBoardCell cell = Instantiate(boardCellPrefab, GetCorrespondingGrid(i, p));
+                cell.SetInteractable(false);
                 cell.AddOnPressedAction(onPressCellAction);
                 cell.Coordinates = new Vector2Int(i, p);
                 cell.SetCorrectChar('0');
@@ -145,15 +171,14 @@ public class SudokuBoard : MonoBehaviour
 
                 SudokuBoardCell cell = board[i, p];
 
-                StartCoroutine(cell.ChangeScale(.9f));
                 if (i == board.GetLength(0) - 1 && p == board.GetLength(1) - 1)
                 {
-                    yield return StartCoroutine(cell.ChangeTotalAlpha(1));
+                    yield return StartCoroutine(cell.ChangeScale(.9f));
                     SetInteractable(true);
                 }
                 else
                 {
-                    StartCoroutine(cell.ChangeTotalAlpha(1));
+                    StartCoroutine(cell.ChangeScale(.9f));
                 }
 
                 yield return new WaitForSeconds(delayBetweenCellSpawns);
@@ -162,6 +187,43 @@ public class SudokuBoard : MonoBehaviour
 
         AudioManager._Instance.PlayFromSFXDict(onFinishedSpawningCells);
     }
+
+    public void RemoveCharFromInvalidLocations(SudokuBoardCell selectedCell, char v)
+    {
+        RemoveCharFromRow(v, selectedCell.Coordinates.x);
+        RemoveCharFromCol(v, selectedCell.Coordinates.y);
+        RemoveCharFromRegion(v, selectedCell.Coordinates.x, selectedCell.Coordinates.y);
+    }
+
+    private void RemoveCharFromRow(char v, int rowIndex)
+    {
+        for (int i = 0; i < board.GetLength(0); i++)
+        {
+            board[rowIndex, i].TryRemovePencilChar(v);
+        }
+    }
+
+    private void RemoveCharFromCol(char v, int colIndex)
+    {
+        for (int i = 0; i < board.GetLength(1); i++)
+        {
+            board[i, colIndex].TryRemovePencilChar(v);
+        }
+    }
+
+    private void RemoveCharFromRegion(char v, int rowIndex, int colIndex)
+    {
+        int boxStartRow = rowIndex - (rowIndex % 3);
+        int boxStartCol = colIndex - (colIndex % 3);
+        for (int i = 0; i < 3; i++)
+        {
+            for (int p = 0; p < 3; p++)
+            {
+                board[boxStartRow + i, boxStartCol + p].TryRemovePencilChar(v);
+            }
+        }
+    }
+
     private bool PopulateBoard(List<int> acceptedNums)
     {
         SudokuBoardCell cell = FindEmptyCell();

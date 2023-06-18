@@ -14,8 +14,8 @@ public class StandardTicTacToeGameManager : TicTacToeGameManager
     {
         yield return StartCoroutine(board.ActOnEachBoardCellWithDelay(cell =>
         {
+            cell.SetInteractable(false);
             StartCoroutine(cell.ChangeScale(0));
-            StartCoroutine(cell.ChangeTotalAlpha(0));
         }, delayBetweenCellsInRestartSequence, true));
 
         yield return new WaitForSeconds(delayOnRestart);

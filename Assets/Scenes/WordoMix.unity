@@ -2282,8 +2282,9 @@ MonoBehaviour:
   endGameScreen: {fileID: 1177834461}
   miniGameLabel: WordoMix
   virtualKeyboard: {fileID: 2088068950}
-  overrideRandomWord: 1
-  overridenRandomWord: ANGST
+  adjustAlphaRate: 1
+  overrideRandomWord: 0
+  overridenRandomWord: 
   treatDefinitions: 1
   limitNumDefinitions: 0
   maxNumDefinitions: 1
@@ -3237,6 +3238,18 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!225 &2088068955
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 23365045}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &2092259455 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 31236585972509427, guid: 946fdfa67a0cff34ba2beb9acc29e584, type: 3}
@@ -3912,6 +3925,14 @@ PrefabInstance:
     - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
       propertyPath: Content.Array.data[1].Data.Array.data[9].Shown
       value: L
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
+      propertyPath: Content.Array.data[2].Data.Array.data[0].sizeDelta.x
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
+      propertyPath: Content.Array.data[2].Data.Array.data[8].sizeDelta.x
+      value: 100
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 29092b3bd748f544286af897d38ce02b, type: 3}

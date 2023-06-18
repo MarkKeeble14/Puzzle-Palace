@@ -1,4 +1,4 @@
-﻿public class ConnectFourBoardCell : BoardCell
+﻿public class ConnectFourBoardCell : TwoPlayerBoardCell
 {
     private ConnectFourGameManager activeConnectFourManager;
     private ConnectFourGameManager activeManager

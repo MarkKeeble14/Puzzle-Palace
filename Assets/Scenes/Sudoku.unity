@@ -833,7 +833,7 @@ MonoBehaviour:
   m_Spacing: 0
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 0
+  m_ChildControlWidth: 1
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
@@ -847,7 +847,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2330652146809122905, guid: 349b87702c8907a448ba5387e4e47552, type: 3}
       propertyPath: m_Name
-      value: WordoDataDealer
+      value: DataDealer
       objectReference: {fileID: 0}
     - target: {fileID: 2330652146809122907, guid: 349b87702c8907a448ba5387e4e47552, type: 3}
       propertyPath: m_RootOrder
@@ -1738,13 +1738,12 @@ MonoBehaviour:
   endGameScreen: {fileID: 1060276643}
   miniGameLabel: Sudoku
   virtualKeyboard: {fileID: 2088068950}
+  adjustAlphaRate: 1
   parentSpawnedTo: {fileID: 653820198}
   sudokuBoardPrefab: {fileID: 493596855196936529, guid: 4441c2c5dd661c748ab7d573b33148a8, type: 3}
   manipGamePlace: {fileID: 1676455330}
   scrollViewRect: {fileID: 653820198}
   onInput: gm_onInput
-  onInvalidGuess: gm_onInvalidGuess
-  onSuccessfulGuess: gm_onSuccessfulGuess
   minMaxNumHoles: {x: 47, y: 59}
   delayBetweenCellsInRestartSequence: 0
   delayOnRestart: 1
@@ -1920,8 +1919,8 @@ MonoBehaviour:
     Sprite: {fileID: 0}
     Color: {r: 0, g: 0, b: 0, a: 0}
   winCellColor: {r: 0.5019608, g: 1, b: 0.3764706, a: 1}
-  uninteractableCellColor: {r: 1, g: 1, b: 1, a: 0.5019608}
-  interactableCellColor: {r: 1, g: 1, b: 1, a: 1}
+  uninteractableCellAlpha: 0.4
+  interactableCellAlpha: 1
 --- !u!114 &1384673067 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1067297881457489246, guid: 3dce4045c43369b43a18e68c512057e2, type: 3}
@@ -2596,10 +2595,22 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: -1
   m_PreferredWidth: -1
-  m_PreferredHeight: 350
+  m_PreferredHeight: 200
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!225 &2088068958
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 23365045}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &2092259455 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 31236585972509427, guid: 946fdfa67a0cff34ba2beb9acc29e584, type: 3}
@@ -3136,6 +3147,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: OnScreenKeyboard
       objectReference: {fileID: 0}
+    - target: {fileID: 4866995181161698100, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
+      propertyPath: m_Padding.m_Top
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866995181161698100, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
+      propertyPath: m_Padding.m_Bottom
+      value: 25
+      objectReference: {fileID: 0}
     - target: {fileID: 4866995181161698101, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -3166,11 +3185,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4866995181161698101, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 640
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4866995181161698101, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 195.33334
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 4866995181161698101, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3355,6 +3374,42 @@ PrefabInstance:
     - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
       propertyPath: Content.Array.data[0].Data.Array.data[10].Shown
       value: PENCIL
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
+      propertyPath: Content.Array.data[0].Data.Array.data[1].sizeDelta.x
+      value: 55
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
+      propertyPath: Content.Array.data[0].Data.Array.data[2].sizeDelta.x
+      value: 55
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
+      propertyPath: Content.Array.data[0].Data.Array.data[3].sizeDelta.x
+      value: 55
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
+      propertyPath: Content.Array.data[0].Data.Array.data[4].sizeDelta.x
+      value: 55
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
+      propertyPath: Content.Array.data[0].Data.Array.data[5].sizeDelta.x
+      value: 55
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
+      propertyPath: Content.Array.data[0].Data.Array.data[6].sizeDelta.x
+      value: 55
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
+      propertyPath: Content.Array.data[0].Data.Array.data[7].sizeDelta.x
+      value: 55
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
+      propertyPath: Content.Array.data[0].Data.Array.data[8].sizeDelta.x
+      value: 55
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
+      propertyPath: Content.Array.data[0].Data.Array.data[9].sizeDelta.x
+      value: 55
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 29092b3bd748f544286af897d38ce02b, type: 3}

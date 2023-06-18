@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class TicTacToeBoardCell : BoardCell
+public class TicTacToeBoardCell : TwoPlayerBoardCell
 {
     public TicTacToeBoard OwnerOfCell { get; set; }
 

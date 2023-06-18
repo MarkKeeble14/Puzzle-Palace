@@ -161,6 +161,7 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
             additionalFunctionsDict.Add("PENCIL", ToggleInputMode);
         }
 
+        yield return StartCoroutine(ShowKeyboard());
 
         // Choose Word
         currentWord = GetRandomWord();
