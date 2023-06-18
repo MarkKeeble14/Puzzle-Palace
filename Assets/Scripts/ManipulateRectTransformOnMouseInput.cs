@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class ManipulateRectTransformOnMouseInput : MonoBehaviour
 {
+    [SerializeField] private bool enablePositionChanges;
+    [SerializeField] private bool enableZoomChanges;
+
     // References
     [SerializeField] private RectTransform rect;
 
@@ -99,36 +102,42 @@ public class ManipulateRectTransformOnMouseInput : MonoBehaviour
         }
         else
         {
-            if (lockZoom)
+            if (enableZoomChanges)
             {
-                scaleSizeChange = Mathf.Lerp(scaleSizeChange, 0, scaleSizeChangeRate * Time.deltaTime);
-            }
-            else
-            {
-                scaleSizeChange += Input.mouseScrollDelta.y * scaleSizeChangeRate * Time.deltaTime;
-                if (scaleSizeChange > minMaxScaleSizeChange.y)
+                if (lockZoom)
                 {
-                    scaleSizeChange = minMaxScaleSizeChange.y;
+                    scaleSizeChange = Mathf.Lerp(scaleSizeChange, 0, scaleSizeChangeRate * Time.deltaTime);
                 }
-                if (scaleSizeChange < minMaxScaleSizeChange.x)
+                else
                 {
-                    scaleSizeChange = minMaxScaleSizeChange.x;
+                    scaleSizeChange += Input.mouseScrollDelta.y * scaleSizeChangeRate * Time.deltaTime;
+                    if (scaleSizeChange > minMaxScaleSizeChange.y)
+                    {
+                        scaleSizeChange = minMaxScaleSizeChange.y;
+                    }
+                    if (scaleSizeChange < minMaxScaleSizeChange.x)
+                    {
+                        scaleSizeChange = minMaxScaleSizeChange.x;
+                    }
                 }
             }
+            currentScale = scaleSizeChange + defaultScale;
+            rect.localScale = new Vector3(currentScale, currentScale, 1);
         }
-        currentScale = scaleSizeChange + defaultScale;
-        rect.localScale = new Vector3(currentScale, currentScale, 1);
 
-        if (lockPosition)
+        if (enablePositionChanges)
         {
-            rect.anchoredPosition = Vector2.Lerp(rect.anchoredPosition, Vector2.zero, moveRTRate / 10 * Time.deltaTime);
-        }
-        else if (Input.GetMouseButton(0))
-        {
-            Vector2 prevRTPosition = rect.anchoredPosition;
-            rect.anchoredPosition = new Vector2(
-                prevRTPosition.x + (deltaMousePosition.x * Time.deltaTime * moveRTRate),
-                prevRTPosition.y + (deltaMousePosition.y * Time.deltaTime * moveRTRate));
+            if (lockPosition)
+            {
+                rect.anchoredPosition = Vector2.Lerp(rect.anchoredPosition, Vector2.zero, moveRTRate / 10 * Time.deltaTime);
+            }
+            else if (Input.GetMouseButton(0))
+            {
+                Vector2 prevRTPosition = rect.anchoredPosition;
+                rect.anchoredPosition = new Vector2(
+                    prevRTPosition.x + (deltaMousePosition.x * Time.deltaTime * moveRTRate),
+                    prevRTPosition.y + (deltaMousePosition.y * Time.deltaTime * moveRTRate));
+            }
         }
     }
 }

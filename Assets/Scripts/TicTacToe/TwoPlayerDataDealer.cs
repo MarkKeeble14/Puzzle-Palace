@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TwoPlayerDataDealer : MonoBehaviour
+
+public class TwoPlayerDataDealer : CellDataDealer
 {
-    public static TwoPlayerDataDealer _Instance { get; private set; }
+    public new static TwoPlayerDataDealer _Instance { get; private set; }
 
     [SerializeField]
     private SerializableDictionary<Player, PlayerRepresentationInformation> playerRepresentingDict = new SerializableDictionary<Player, PlayerRepresentationInformation>();
@@ -14,17 +15,12 @@ public class TwoPlayerDataDealer : MonoBehaviour
     private Dictionary<TwoPlayerCellState, Player> playerCellStateLinker = new Dictionary<TwoPlayerCellState, Player>();
     private Dictionary<WinnerOptions, Player> winnerOptionsPlayerLinker = new Dictionary<WinnerOptions, Player>();
 
-    [SerializeField] private TicTacToeBoardCellStateVisualInfo nullCellVisualInfo;
-    [SerializeField] private Color winCellColor;
-    [SerializeField] private Color uninteractableCellColor;
-    [SerializeField] private Color interactableCellColor;
-
     public TwoPlayerGameState CurrentTurn { get; set; }
 
     [SerializeField] private Image p1Image;
     [SerializeField] private Image p2Image;
 
-    private void Awake()
+    protected override void Awake()
     {
         _Instance = this;
 
@@ -75,15 +71,5 @@ public class TwoPlayerDataDealer : MonoBehaviour
     public TwoPlayerCellState GetCurrentPlayerSymbol()
     {
         return playerRepresentingDict[playerGameStateLinker[CurrentTurn]].CellState;
-    }
-
-    public Color GetWinCellColor()
-    {
-        return winCellColor;
-    }
-
-    public Color GetCellColor(bool interactable)
-    {
-        return interactable ? interactableCellColor : uninteractableCellColor;
     }
 }

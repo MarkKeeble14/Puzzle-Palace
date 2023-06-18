@@ -45,6 +45,7 @@ public class WordoCell : MonoBehaviour
     {
         OnPressed += action;
     }
+
     public void Select()
     {
         isSelected = true;

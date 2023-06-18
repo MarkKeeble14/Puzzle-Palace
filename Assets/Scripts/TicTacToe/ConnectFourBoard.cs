@@ -22,7 +22,6 @@ public class ConnectFourBoard : MonoBehaviour
     [SerializeField] private RectTransform mainTransform;
     [SerializeField] private CanvasGroup mainCanvasGroup;
     [SerializeField] private float changeAlphaRate = 5.0f;
-    [SerializeField] private float changeColorRate = 5.0f;
     [SerializeField] private float changeScaleRate = 5.0f;
 
     [Header("Audio")]

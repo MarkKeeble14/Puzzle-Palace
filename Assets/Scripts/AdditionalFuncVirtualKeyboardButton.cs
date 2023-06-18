@@ -17,7 +17,7 @@ public class AdditionalFuncVirtualKeyboardButton : VirtualKeyboardButton
 
     public override void OnPress()
     {
-        ((WordoGameManager)MiniGameManager._Instance).CallAdditionalFunction(value);
+        ((UsesVirtualKeyboardMiniGameManager)MiniGameManager._Instance).CallAdditionalFunction(value);
     }
 
     public void SetColor(Color color)
