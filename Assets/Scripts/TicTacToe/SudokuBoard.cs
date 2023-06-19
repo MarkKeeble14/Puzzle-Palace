@@ -28,6 +28,10 @@ public class SudokuBoard : MonoBehaviour
     [SerializeField] private GameObject innerGridPrefab;
     [SerializeField] private Transform[,] innerGrids;
 
+    [SerializeField] private Color evenInnerGridColor;
+    [SerializeField] private Color oddInnerGridColor;
+
+
     public bool HasChanged { get; private set; }
     public bool GameWon { get; private set; }
     public bool GameTied { get; private set; }
@@ -157,11 +161,22 @@ public class SudokuBoard : MonoBehaviour
             }
         }
 
+        for (int i = 0; i < innerGrids.GetLength(0); i++)
+        {
+            for (int p = 0; p < innerGrids.GetLength(1); p++)
+            {
+                foreach (SudokuBoardCell cell in innerGrids[i, p].GetComponentsInChildren<SudokuBoardCell>())
+                {
+                    cell.SetSymbolColor((i + p) % 2 == 0 ? evenInnerGridColor : oddInnerGridColor);
+                }
+            }
+        }
+
         PopulateBoard(acceptedNums);
 
-        // Debug.Log(CheckBoardForValidity());
-
         PokeHoles(RandomHelper.RandomIntExclusive(minMaxNumHoles));
+
+        SolidifyBoard();
 
         for (int i = 0; i < board.GetLength(0); i++)
         {
@@ -188,11 +203,60 @@ public class SudokuBoard : MonoBehaviour
         AudioManager._Instance.PlayFromSFXDict(onFinishedSpawningCells);
     }
 
+    private void SolidifyBoard()
+    {
+        for (int i = 0; i < board.GetLength(0); i++)
+        {
+            for (int p = 0; p < board.GetLength(1); p++)
+            {
+                if (!board[i, p].GetInputtedChar().Equals(' '))
+                {
+                    board[i, p].Lock();
+                }
+            }
+        }
+    }
+
     public void RemoveCharFromInvalidLocations(SudokuBoardCell selectedCell, char v)
     {
         RemoveCharFromRow(v, selectedCell.Coordinates.x);
         RemoveCharFromCol(v, selectedCell.Coordinates.y);
         RemoveCharFromRegion(v, selectedCell.Coordinates.x, selectedCell.Coordinates.y);
+    }
+
+    public SudokuBoardCell CheckIfRowContainsChar(char v, int rowIndex)
+    {
+        for (int i = 0; i < board.GetLength(0); i++)
+        {
+            if (board[rowIndex, i].GetInputtedChar().Equals(v))
+                return board[rowIndex, i];
+        }
+        return null;
+    }
+
+    public SudokuBoardCell CheckIfColContainsChar(char v, int colIndex)
+    {
+        for (int i = 0; i < board.GetLength(1); i++)
+        {
+            if (board[i, colIndex].GetInputtedChar().Equals(v))
+                return board[i, colIndex];
+        }
+        return null;
+    }
+
+    public SudokuBoardCell CheckIfRegionContainsChar(char v, int rowIndex, int colIndex)
+    {
+        int boxStartRow = rowIndex - (rowIndex % 3);
+        int boxStartCol = colIndex - (colIndex % 3);
+        for (int i = 0; i < 3; i++)
+        {
+            for (int p = 0; p < 3; p++)
+            {
+                if (board[boxStartRow + i, boxStartCol + p].GetInputtedChar().Equals(v))
+                    return board[boxStartRow + i, boxStartCol + p];
+            }
+        }
+        return null;
     }
 
     private void RemoveCharFromRow(char v, int rowIndex)

@@ -29,7 +29,7 @@ RectTransform:
   m_GameObject: {fileID: 5100660330269285071}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2033024323420879214}
@@ -172,23 +172,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boardCellPrefab: {fileID: 402213241238543627, guid: 793cc09f8ea54c64fa250cbc09573ffd, type: 3}
   parentCellSpawnsTo: {fileID: 2033024323420879214}
-  glGroup: {fileID: 5451493303670369126}
-  cellSize: 100
   delayBetweenCellSpawns: 0.025
   pitchIncreasePerCell: 0.1
-  glGroupSpacing: 5
   mainTransform: {fileID: 5100660330269285064}
   mainCanvasGroup: {fileID: 6834930160593909902}
   changeAlphaRate: 5
-  changeColorRate: 5
   changeScaleRate: 5
-  onCellChanged: tttBoard_onCellChanged
-  onGameWon: tttBoard_onGameWon
   onCellSpawned: tttBoard_onCellSpawned
   onFinishedSpawningCells: tttBoard_onFinishedSpawningCells
-  onRevealWinningCell: tttBoard_onRevealWinningCell
   innerGridPrefab: {fileID: 7609434566097581720, guid: b98ba13f78bf8dc468e9395b216c294c, type: 3}
-  innerGrids: []
+  evenInnerGridColor: {r: 0.76862746, g: 0.8862745, b: 1, a: 1}
+  oddInnerGridColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &7230086291867891352
 GameObject:
   m_ObjectHideFlags: 0
@@ -255,7 +249,7 @@ MonoBehaviour:
   m_ChildAlignment: 4
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 350, y: 350}
+  m_CellSize: {x: 300, y: 300}
   m_Spacing: {x: 5, y: 5}
   m_Constraint: 1
   m_ConstraintCount: 3

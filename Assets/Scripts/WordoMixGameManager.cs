@@ -19,13 +19,21 @@ public class WordoMixGameManager : WordoGameManager
 
     protected override IEnumerator Setup()
     {
+        yield return StartCoroutine(ShowKeyboard());
+
+        if (gameHasBeenRestarted)
+            gameStarted = true;
+
         yield return null;
     }
 
     protected override IEnumerator Restart()
     {
         // 
+        gameHasBeenRestarted = true;
         numGuesses = 0;
+
+        yield return StartCoroutine(HideKeyboard());
 
         yield return StartCoroutine(ClearSpawnedRows());
     }

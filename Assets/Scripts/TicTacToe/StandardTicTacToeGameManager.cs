@@ -10,8 +10,11 @@ public class StandardTicTacToeGameManager : TicTacToeGameManager
     private TicTacToeBoard board;
     [SerializeField] private float delayBetweenCellsInRestartSequence;
 
+    private bool gameHasBeenRestarted;
+
     protected override IEnumerator Restart()
     {
+        gameHasBeenRestarted = true;
         yield return StartCoroutine(board.ActOnEachBoardCellWithDelay(cell =>
         {
             cell.SetInteractable(false);
@@ -34,6 +37,9 @@ public class StandardTicTacToeGameManager : TicTacToeGameManager
         yield return StartCoroutine(board.Generate(numCells, false));
 
         playButton.SetActive(true);
+
+        if (gameHasBeenRestarted)
+            gameStarted = true;
     }
 
     protected override IEnumerator HandleP1Turn()

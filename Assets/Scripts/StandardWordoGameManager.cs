@@ -21,6 +21,11 @@ public class StandardWordoGameManager : WordoGameManager
 
     protected override IEnumerator Setup()
     {
+        yield return StartCoroutine(ShowKeyboard());
+
+        if (gameHasBeenRestarted)
+            gameStarted = true;
+
         yield return null;
     }
 
@@ -28,6 +33,9 @@ public class StandardWordoGameManager : WordoGameManager
     {
         // 
         numGuesses = 0;
+        gameHasBeenRestarted = true;
+
+        yield return StartCoroutine(HideKeyboard());
 
         yield return StartCoroutine(ClearSpawnedRows());
     }

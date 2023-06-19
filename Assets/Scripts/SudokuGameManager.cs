@@ -23,15 +23,24 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
     [SerializeField] private Vector2Int minMaxNumHoles = new Vector2Int(60, 64);
 
     private AdditionalFuncVirtualKeyboardButton pencilButton;
+    private AdditionalFuncVirtualKeyboardButton solveCellButton;
+    private AdditionalFuncVirtualKeyboardButton solveBoardButton;
+
+    private bool gameHasBeenRestarted;
 
     private InputMode currentInputMode;
-    private bool hasDealtWIthPencilButton;
+    private bool hasDealtWIthFunctionButtons;
 
     public bool AllowMove { get; protected set; }
     [SerializeField] private float delayBetweenCellsInRestartSequence;
     [SerializeField] protected float delayOnRestart = 1.0f;
 
     [SerializeField] private List<int> allowedNums = new List<int>();
+    private bool forceChange;
+
+    [SerializeField] protected TextMeshProUGUI timeTakenText;
+    [SerializeField] protected TextMeshProUGUI hsTimeTakenText;
+
     protected override IEnumerator Setup()
     {
         // Generate the board
@@ -39,12 +48,25 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
 
         yield return StartCoroutine(board.Generate(SelectCell, allowedNums, minMaxNumHoles));
 
+        if (hasDealtWIthFunctionButtons)
+        {
+            solveCellButton.SetState(false);
+            solveCellButton.SetInteractable(false);
+        }
+
         yield return StartCoroutine(ShowKeyboard());
+
+        if (gameHasBeenRestarted)
+            gameStarted = true;
     }
 
     protected override IEnumerator Restart()
     {
+        StartCoroutine(HideKeyboard());
+
+        gameHasBeenRestarted = true;
         AllowMove = false;
+
         yield return StartCoroutine(board.ActOnEachBoardCellWithDelay(cell =>
         {
             StartCoroutine(cell.ChangeScale(0));
@@ -60,6 +82,10 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
 
     protected override IEnumerator GameWon()
     {
+        SetTimerHighScore(hsTimeTakenText);
+
+        timeTakenText.text = "Time to Solve: " + Utils.ParseDuration((int)timer);
+
         yield return null;
     }
 
@@ -74,12 +100,10 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
         base.Awake();
     }
 
-
     private new void Update()
     {
         base.Update();
     }
-
 
     private void SelectCell(SudokuBoardCell cell)
     {
@@ -103,28 +127,72 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
         {
             case InputMode.INPUT:
                 currentInputMode = InputMode.PENCIL;
-                pencilButton.SetColor(WordoDataDealer._Instance.GetActiveButtonColor());
+                pencilButton.SetState(true);
                 break;
             case InputMode.PENCIL:
                 currentInputMode = InputMode.INPUT;
-                pencilButton.SetColor(WordoDataDealer._Instance.GetInactiveButtonColor());
+                pencilButton.SetState(false);
                 break;
         }
     }
 
+    private void ConfirmSolveSelectedCell()
+    {
+        SpawnToolTip("Solve the Selected Cell", SolveSelectedCell, null);
+    }
+
+    private void ConfirmSolveBoard()
+    {
+        SpawnToolTip("Solve the Board", SolveBoard, null);
+    }
+
+    private void SolveSelectedCell()
+    {
+        if (selectedCell)
+        {
+            selectedCell.SetInputtedChar(selectedCell.GetCorrectChar());
+            forceChange = true;
+        }
+    }
+
+    private void SolveBoard()
+    {
+        board.CheatBoard();
+        forceChange = true;
+    }
+
     protected override IEnumerator GameLoop()
     {
-        if (!hasDealtWIthPencilButton)
+        if (!hasDealtWIthFunctionButtons)
         {
-            hasDealtWIthPencilButton = true;
+            hasDealtWIthFunctionButtons = true;
+
             pencilButton = virtualKeyboard.GetAdditionalFuncButton("PENCIL");
-            pencilButton.SetColor(WordoDataDealer._Instance.GetInactiveButtonColor());
             additionalFunctionsDict.Add("PENCIL", ToggleInputMode);
+
+            solveCellButton = virtualKeyboard.GetAdditionalFuncButton("SOLVE_CELL");
+            additionalFunctionsDict.Add("SOLVE_CELL", ConfirmSolveSelectedCell);
+
+            solveBoardButton = virtualKeyboard.GetAdditionalFuncButton("SOLVE_BOARD");
+            additionalFunctionsDict.Add("SOLVE_BOARD", ConfirmSolveBoard);
+            solveBoardButton.SetState(true);
         }
 
         string currentFrameString;
         while (true)
         {
+            solveCellButton.SetState(selectedCell != null);
+            solveCellButton.SetInteractable(selectedCell != null);
+
+            if (forceChange)
+            {
+                if (board.CheckForWin())
+                {
+                    forceChange = false;
+                    yield break;
+                }
+            }
+
             if (selectedCell)
             {
                 if (Input.GetKeyDown(KeyCode.Backspace) || backPressed)
@@ -160,16 +228,47 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
                             switch (currentInputMode)
                             {
                                 case InputMode.INPUT:
-                                    board.UnshowCellsWithChar();
-                                    board.RemoveCharFromInvalidLocations(selectedCell, x.ToString()[0]);
+                                    char c = x.ToString()[0];
 
-                                    selectedCell.SetInputtedChar(x.ToString()[0]);
-                                    AudioManager._Instance.PlayFromSFXDict(onInput);
-
-                                    if (board.CheckForWin())
+                                    SudokuBoardCell checkCell;
+                                    if ((checkCell = board.CheckIfRowContainsChar(c, selectedCell.Coordinates.x)) != null)
                                     {
-                                        yield break;
+                                        // Invalid Case
+                                        yield return StartCoroutine(checkCell.ChangeCoverAlpha(1));
+
+                                        yield return StartCoroutine(checkCell.ChangeCoverAlpha(0));
                                     }
+                                    else if ((checkCell = board.CheckIfColContainsChar(c, selectedCell.Coordinates.y)) != null)
+                                    {
+                                        // Invalid Case
+                                        yield return StartCoroutine(checkCell.ChangeCoverAlpha(1));
+
+                                        yield return StartCoroutine(checkCell.ChangeCoverAlpha(0));
+
+                                    }
+                                    else if ((checkCell = board.CheckIfRegionContainsChar(c, selectedCell.Coordinates.x, selectedCell.Coordinates.y)) != null)
+                                    {
+                                        // Invalid Case
+                                        yield return StartCoroutine(checkCell.ChangeCoverAlpha(1));
+
+                                        yield return StartCoroutine(checkCell.ChangeCoverAlpha(0));
+                                    }
+                                    else
+                                    {
+                                        // Valid Input
+                                        board.UnshowCellsWithChar();
+                                        board.RemoveCharFromInvalidLocations(selectedCell, x.ToString()[0]);
+
+
+                                        selectedCell.SetInputtedChar(x.ToString()[0]);
+                                        AudioManager._Instance.PlayFromSFXDict(onInput);
+
+                                        if (board.CheckForWin())
+                                        {
+                                            yield break;
+                                        }
+                                    }
+
 
                                     break;
                                 case InputMode.PENCIL:

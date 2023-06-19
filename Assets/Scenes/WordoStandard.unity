@@ -2550,63 +2550,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1508377694}
   m_CullTransparentMesh: 1
---- !u!1001 &1537716601
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2330652146809122905, guid: 349b87702c8907a448ba5387e4e47552, type: 3}
-      propertyPath: m_Name
-      value: WordoDataDealer
-      objectReference: {fileID: 0}
-    - target: {fileID: 2330652146809122907, guid: 349b87702c8907a448ba5387e4e47552, type: 3}
-      propertyPath: m_RootOrder
-      value: 11
-      objectReference: {fileID: 0}
-    - target: {fileID: 2330652146809122907, guid: 349b87702c8907a448ba5387e4e47552, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 320
-      objectReference: {fileID: 0}
-    - target: {fileID: 2330652146809122907, guid: 349b87702c8907a448ba5387e4e47552, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 568
-      objectReference: {fileID: 0}
-    - target: {fileID: 2330652146809122907, guid: 349b87702c8907a448ba5387e4e47552, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2330652146809122907, guid: 349b87702c8907a448ba5387e4e47552, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2330652146809122907, guid: 349b87702c8907a448ba5387e4e47552, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2330652146809122907, guid: 349b87702c8907a448ba5387e4e47552, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2330652146809122907, guid: 349b87702c8907a448ba5387e4e47552, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2330652146809122907, guid: 349b87702c8907a448ba5387e4e47552, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2330652146809122907, guid: 349b87702c8907a448ba5387e4e47552, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2330652146809122907, guid: 349b87702c8907a448ba5387e4e47552, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 349b87702c8907a448ba5387e4e47552, type: 3}
 --- !u!1 &1540621357 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8978390132676926184, guid: d7b80b392d87e94489ab9c8b32e3ad16, type: 3}
@@ -3927,8 +3870,24 @@ PrefabInstance:
       value: L
       objectReference: {fileID: 0}
     - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
+      propertyPath: Content.Array.data[1].Data.Array.data[9].SizeDelta.x
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
+      propertyPath: Content.Array.data[1].Data.Array.data[9].SizeDelta.y
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
+      propertyPath: Content.Array.data[2].Data.Array.data[0].SizeDelta.x
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
       propertyPath: Content.Array.data[2].Data.Array.data[0].sizeDelta.x
       value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
+      propertyPath: Content.Array.data[2].Data.Array.data[8].SizeDelta.x
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
       propertyPath: Content.Array.data[2].Data.Array.data[8].sizeDelta.x

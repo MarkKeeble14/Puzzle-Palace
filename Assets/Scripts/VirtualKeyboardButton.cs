@@ -5,30 +5,38 @@ using UnityEngine.UI;
 
 public abstract class VirtualKeyboardButton : MonoBehaviour
 {
-    [SerializeField] protected CanvasGroup cv;
-    [SerializeField] protected TextMeshProUGUI text;
     [SerializeField] private Image image;
+    [SerializeField] protected TextMeshProUGUI text;
+    protected CanvasGroup cv;
+    private RectTransform rect;
     [SerializeField] private float changeAlphaRate;
 
     protected string value;
+    protected VirtualKeyboard cachedKeyboard;
 
-    public void Set(string label, Sprite sprite)
+    public void Set(VirtualKeyboard kb, VirtualKeyboardContentData data)
     {
-        value = label.ToUpper();
-        text.text = label.ToUpper();
+        // Get References
+        rect = GetComponent<RectTransform>();
+        if (!cv)
+            cv = GetComponent<CanvasGroup>();
 
-        if (sprite)
+        // Store Reference
+        cachedKeyboard = kb;
+
+        value = data.Shown.ToUpper();
+        text.text = data.Shown.ToUpper();
+        rect.sizeDelta = data.SizeDelta;
+
+        if (data.Icon)
         {
             text.gameObject.SetActive(false);
-            image.sprite = sprite;
+            image.sprite = data.Icon;
             image.gameObject.SetActive(true);
         }
+
+        StartCoroutine(Utils.ChangeCanvasGroupAlpha(cv, 1, changeAlphaRate));
     }
 
     public abstract void OnPress();
-
-    protected void Awake()
-    {
-        StartCoroutine(Utils.ChangeCanvasGroupAlpha(cv, 1, changeAlphaRate));
-    }
 }

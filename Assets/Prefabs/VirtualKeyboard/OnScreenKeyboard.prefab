@@ -82,68 +82,126 @@ MonoBehaviour:
   - Data:
     - Type: 0
       Shown: Q
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: W
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: E
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: R
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: T
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: Y
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: U
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: I
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: O
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: P
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
   - Data:
     - Type: 0
       Shown: A
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: S
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: D
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: F
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: G
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: H
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: J
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: K
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: L
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
   - Data:
     - Type: 2
       Shown: Back
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: Z
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: X
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: C
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: V
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: B
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: N
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 0
       Shown: M
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
     - Type: 1
       Shown: Enter
+      Icon: {fileID: 0}
+      SizeDelta: {x: 50, y: 60}
   parentTo: {fileID: 4866995181161698101}
   keyVirtualKeyboardButtonPrefab: {fileID: 733730244671483557, guid: f07930b7f9b03f84abc1c99e70f187ae, type: 3}
   enterVirtualKeyboardButtonPrefab: {fileID: 7655725600279678564, guid: 7cc50bc3f0fa5524ebcf54ff33993be0, type: 3}
   backVirtualKeyboardButtonPrefab: {fileID: -4630235468919075664, guid: 03026c7f74d4a8a429dca3203648f062, type: 3}
   additionalFuncVirtualKeyboardButtonPrefab: {fileID: 5468411061356300274, guid: efa4d5399dc41454383cc9e0d890053a, type: 3}
   virtualKeyboardRowPrefab: {fileID: 7370092874077221746, guid: b453c3285962b15468788afb1deb524a, type: 3}
+  activeButtonColor: {r: 0.5019608, g: 1, b: 0.5019608, a: 1}
+  inactiveButtonColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!222 &4565872697056697796
 CanvasRenderer:
   m_ObjectHideFlags: 0

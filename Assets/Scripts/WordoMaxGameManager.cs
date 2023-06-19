@@ -17,6 +17,9 @@ public class WordoMaxGameManager : WordoGameManager
     private int numTotalGuesses;
     private bool passedAllLevels => currentWordLength > startFinishWordLength.y;
 
+    private float overallTimer;
+
+
     private new void Start()
     {
         base.Start();
@@ -26,6 +29,11 @@ public class WordoMaxGameManager : WordoGameManager
 
     protected override IEnumerator Setup()
     {
+        yield return StartCoroutine(ShowKeyboard());
+
+        if (gameHasBeenRestarted)
+            gameStarted = true;
+
         yield return null;
     }
 
@@ -35,17 +43,20 @@ public class WordoMaxGameManager : WordoGameManager
         {
             numTotalGuesses = 0;
             SetPossibleWords(s => s.Length == startFinishWordLength.x);
+
+            yield return StartCoroutine(HideKeyboard());
         }
 
         // 
+        gameHasBeenRestarted = true;
         numGuesses = 0;
-        gameStarted = true;
 
         yield return StartCoroutine(ClearSpawnedRows());
     }
 
     protected override IEnumerator GameWon()
     {
+        overallTimer += timer;
         if (passedAllLevels)
         {
             SetWinText();
@@ -68,7 +79,8 @@ public class WordoMaxGameManager : WordoGameManager
                 overallGuessesHSText.text = "High Score: " + GetHighScore(overallGuessesHSKey) + " Total Guess" + Utils.GetPluralization(numTotalGuesses);
             }
 
-            SetTimerHighScore(timeTakenHSText);
+            SetTimerHighScore(timeTakenHSText, overallTimer);
+            overallTimer = 0;
         }
         else
         {

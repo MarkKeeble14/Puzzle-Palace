@@ -63,6 +63,7 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
 
     private InputMode currentInputMode;
     private bool hasDealtWIthPencilButton;
+    protected bool gameHasBeenRestarted;
 
     public enum InputMode
     {
@@ -79,7 +80,6 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
         // Get reference and store it
         scrollView = scrollViewRect.GetComponent<ScrollRect>();
     }
-
 
     private new void Update()
     {
@@ -98,11 +98,11 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
         {
             case InputMode.INPUT:
                 currentInputMode = InputMode.PENCIL;
-                pencilButton.SetColor(WordoDataDealer._Instance.GetActiveButtonColor());
+                pencilButton.SetState(true);
                 break;
             case InputMode.PENCIL:
                 currentInputMode = InputMode.INPUT;
-                pencilButton.SetColor(WordoDataDealer._Instance.GetInactiveButtonColor());
+                pencilButton.SetState(false);
                 break;
         }
     }
@@ -157,11 +157,8 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
         {
             hasDealtWIthPencilButton = true;
             pencilButton = virtualKeyboard.GetAdditionalFuncButton("PENCIL");
-            pencilButton.SetColor(WordoDataDealer._Instance.GetInactiveButtonColor());
             additionalFunctionsDict.Add("PENCIL", ToggleInputMode);
         }
-
-        yield return StartCoroutine(ShowKeyboard());
 
         // Choose Word
         currentWord = GetRandomWord();

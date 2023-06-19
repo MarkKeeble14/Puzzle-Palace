@@ -9,10 +9,9 @@ public class KeyVirtualKeyboardButton : VirtualKeyboardButton
     [SerializeField] private Color activeColor;
     [SerializeField] private Color blackedOutColor;
 
-    protected new void Awake()
+    protected void Awake()
     {
         changeColorOf.color = activeColor;
-        base.Awake();
     }
 
     public override void OnPress()

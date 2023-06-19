@@ -58,4 +58,14 @@ public abstract class UsesVirtualKeyboardMiniGameManager : MiniGameManager
         }
         keyboardCV.blocksRaycasts = true;
     }
+
+    protected IEnumerator HideKeyboard()
+    {
+        keyboardCV.blocksRaycasts = false;
+        while (keyboardCV.alpha > 0)
+        {
+            keyboardCV.alpha -= Time.deltaTime * adjustAlphaRate;
+            yield return null;
+        }
+    }
 }

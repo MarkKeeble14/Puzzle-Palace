@@ -29,6 +29,7 @@ public class ConnectFourGameManager : MiniGameManager
     [SerializeField] private float delayBetweenCellsInRestartSequence;
 
     public bool AllowMove { get; protected set; }
+    private bool gameHasBeenRestarted;
 
     protected TicTacToeBoardCellStateVisualInfo GetStateDisplayInfo(TwoPlayerCellState state)
     {
@@ -132,6 +133,7 @@ public class ConnectFourGameManager : MiniGameManager
 
     protected override IEnumerator Restart()
     {
+        gameHasBeenRestarted = true;
         AllowMove = false;
         yield return StartCoroutine(board.ActOnEachBoardCellWithDelay(cell =>
         {
@@ -157,6 +159,9 @@ public class ConnectFourGameManager : MiniGameManager
         yield return StartCoroutine(board.Generate(gridSize));
 
         playButton.SetActive(true);
+
+        if (gameHasBeenRestarted)
+            gameStarted = true;
     }
 
     protected IEnumerator HandleP1Turn()

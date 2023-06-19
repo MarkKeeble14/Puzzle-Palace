@@ -32,6 +32,20 @@ public class SudokuBoardCell : BoardCell
 
     private Action<SudokuBoardCell> OnPressed;
 
+    private bool locked;
+    [SerializeField] private Color lockedTextColor;
+
+    public void Lock()
+    {
+        locked = true;
+        entered.color = lockedTextColor;
+    }
+
+    public void SetSymbolColor(Color c)
+    {
+        symbol.color = c;
+    }
+
     protected void Start()
     {
         SetBorderColor();
@@ -71,6 +85,8 @@ public class SudokuBoardCell : BoardCell
 
     public void SetInputtedChar(char s)
     {
+        if (locked) return;
+
         ClearPencilledChars();
         inputtedChar = s.ToString().ToUpper().ToCharArray()[0];
         entered.text = inputtedChar.ToString();
@@ -78,6 +94,8 @@ public class SudokuBoardCell : BoardCell
 
     public void TryPencilChar(char s)
     {
+        if (locked) return;
+
         s = s.ToString().ToUpper().ToCharArray()[0];
 
         int index;
@@ -109,6 +127,8 @@ public class SudokuBoardCell : BoardCell
 
     private void ClearPencilledChars()
     {
+        if (locked) return;
+
         while (pencilledChars.Count > 0)
         {
             int num = pencilledChars[0];
@@ -139,6 +159,8 @@ public class SudokuBoardCell : BoardCell
 
     public void TryRemovePencilChar(char v)
     {
+        if (locked) return;
+
         int x;
         if (int.TryParse(v.ToString(), out x))
         {

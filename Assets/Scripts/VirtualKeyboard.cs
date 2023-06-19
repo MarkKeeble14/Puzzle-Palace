@@ -13,6 +13,19 @@ public class VirtualKeyboard : MonoBehaviour
     [SerializeField] private AdditionalFuncVirtualKeyboardButton additionalFuncVirtualKeyboardButtonPrefab;
     [SerializeField] private Transform virtualKeyboardRowPrefab;
 
+    [SerializeField] private Color activeButtonColor;
+    [SerializeField] private Color inactiveButtonColor;
+
+    public Color GetActiveButtonColor()
+    {
+        return activeButtonColor;
+    }
+
+    public Color GetInactiveButtonColor()
+    {
+        return inactiveButtonColor;
+    }
+
     private void Awake()
     {
         Generate();
@@ -59,8 +72,7 @@ public class VirtualKeyboard : MonoBehaviour
                     default:
                         throw new UnhandledSwitchCaseException();
                 }
-                spawned.GetComponent<RectTransform>().sizeDelta = current.sizeDelta;
-                spawned.Set(current.Shown, current.Icon);
+                spawned.Set(this, current);
             }
         }
     }

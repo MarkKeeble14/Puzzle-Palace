@@ -19,6 +19,26 @@ public abstract class MiniGameManager : MonoBehaviour
 
     private string timeTakenHSKey = "Duration";
 
+    [SerializeField] private ToolTipDisplay toolTipDisplayPrefab;
+    [SerializeField] private Transform toolTipHolder;
+
+    protected void SpawnToolTip(string text, Action onConfirm, Action onCancel)
+    {
+        ToolTipDisplay spawned = Instantiate(toolTipDisplayPrefab, toolTipHolder);
+        spawned.SetText(text);
+        spawned.AddOnConfirmAction(delegate
+        {
+            Destroy(spawned.gameObject);
+            onConfirm?.Invoke();
+        });
+
+        spawned.AddOnCancelAction(delegate
+        {
+            Destroy(spawned.gameObject);
+            onCancel?.Invoke();
+        });
+    }
+
     private string ConstructHighScoreString(string key)
     {
         return hsLead + miniGameLabel + "_" + key;
@@ -68,6 +88,18 @@ public abstract class MiniGameManager : MonoBehaviour
         if (TrySetHighScore(timeTakenHSKey, timer, (x, y) => x < y))
         {
             text.text = "New High Score!: " + Utils.ParseDuration((int)timer);
+        }
+        else
+        {
+            text.text = "High Score: " + Utils.ParseDuration((int)GetHighScore(timeTakenHSKey));
+        }
+    }
+
+    protected void SetTimerHighScore(TextMeshProUGUI text, float overridenTimer)
+    {
+        if (TrySetHighScore(timeTakenHSKey, overridenTimer, (x, y) => x < y))
+        {
+            text.text = "New High Score!: " + Utils.ParseDuration((int)overridenTimer);
         }
         else
         {
@@ -131,11 +163,20 @@ public abstract class MiniGameManager : MonoBehaviour
         yield return StartCoroutine(GameLoop());
 
         yield return StartCoroutine(CallGameWon());
+
+        timer = 0;
+        gameStarted = false;
     }
 
     protected abstract IEnumerator GameLoop();
     protected virtual IEnumerator Setup()
     {
         yield return null;
+    }
+
+    [ContextMenu("ClearTimerHighScore")]
+    public void ClearTimerHighScore()
+    {
+        DeleteHighScore(timeTakenHSKey);
     }
 }

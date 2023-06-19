@@ -121,7 +121,6 @@ public abstract class TicTacToeGameManager : MiniGameManager
     {
         AllowMove = false;
         yield return CheckMoveResult(gameState, alteredCell);
-        AllowMove = true;
     }
 
     protected Sprite GetCurrentPlayerSymbol()
