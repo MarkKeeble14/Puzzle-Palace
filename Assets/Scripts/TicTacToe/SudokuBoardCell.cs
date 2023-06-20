@@ -11,7 +11,7 @@ public class SudokuBoardCell : BoardCell
 
     [SerializeField] private TextMeshProUGUI entered;
     private List<int> pencilledChars = new List<int>();
-    [SerializeField] private List<TextMeshProUGUI> pencilledCharTexts = new List<TextMeshProUGUI>();
+    [SerializeField] private List<SudokuBoardCellPencilledCharDisplay> pencilledCharDisplays = new List<SudokuBoardCellPencilledCharDisplay>();
 
     private SudokuGameManager activeSudokuGameManager;
     private SudokuGameManager activeManager
@@ -111,18 +111,77 @@ public class SudokuBoardCell : BoardCell
         {
             // Debug.Log("Pencilled Chars Already Contains String");
             // if so, instead of adding the char, we will remove it
-            pencilledCharTexts[index - 1].text = "";
+            pencilledCharDisplays[index - 1].SetText("");
             pencilledChars.Remove(index);
             return;
         }
 
         // Char has not already been pencilled in, find first empty text and do so
-        if (pencilledChars.Count < pencilledCharTexts.Count)
+        if (pencilledChars.Count < pencilledCharDisplays.Count)
         {
             // Debug.Log("Adding Pencilled Char");
             pencilledChars.Add(index);
-            pencilledCharTexts[index - 1].text = index.ToString();
+            pencilledCharDisplays[index - 1].SetText(index.ToString());
         }
+    }
+
+    public void TrySetPencilledCharAlpha(char v, float alpha)
+    {
+
+        int index = ConvertCharToValue(v);
+        Debug.Log("Checking if : " + ToString() + " Contains: " + v + ", " + index);
+        if (pencilledChars.Contains(index))
+        {
+            Debug.Log("Contained: " + v);
+            pencilledCharDisplays[index - 1].SetAlpha(alpha);
+        }
+    }
+
+    public void SetAllPencilledCharAlpha(float alpha)
+    {
+        for (int i = 0; i < pencilledCharDisplays.Count; i++)
+        {
+            pencilledCharDisplays[i].SetAlpha(alpha);
+        }
+    }
+
+    private int ConvertCharToValue(char v)
+    {
+        int index;
+        if (int.TryParse(v.ToString(), out index))
+        {
+            return index;
+        }
+        return -1;
+    }
+
+    public List<int> GetPencilledChars()
+    {
+        return pencilledChars;
+    }
+
+    public bool HasCharPencilled(char v)
+    {
+        return pencilledChars.Contains(ConvertCharToValue(v));
+    }
+
+    public void PencilChar(char s)
+    {
+        if (locked) return;
+
+        if (pencilledChars.Contains(s))
+        {
+            return;
+        }
+
+        int index;
+        if (!int.TryParse(s.ToString(), out index))
+        {
+            return;
+        }
+
+        pencilledChars.Add(index);
+        pencilledCharDisplays[index - 1].SetText(index.ToString());
     }
 
     private void ClearPencilledChars()
@@ -133,7 +192,7 @@ public class SudokuBoardCell : BoardCell
         {
             int num = pencilledChars[0];
             pencilledChars.Remove(num);
-            pencilledCharTexts[num - 1].text = "";
+            pencilledCharDisplays[num - 1].SetText("");
         }
     }
 
@@ -167,7 +226,7 @@ public class SudokuBoardCell : BoardCell
             if (pencilledChars.Contains(x))
             {
                 pencilledChars.Remove(x);
-                pencilledCharTexts[x - 1].text = "";
+                pencilledCharDisplays[x - 1].SetText("");
             }
         }
     }

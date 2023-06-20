@@ -24,7 +24,10 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
 
     private AdditionalFuncVirtualKeyboardButton pencilButton;
     private AdditionalFuncVirtualKeyboardButton solveCellButton;
+
     private AdditionalFuncVirtualKeyboardButton solveBoardButton;
+    private AdditionalFuncVirtualKeyboardButton fullyPencilButton;
+    private AdditionalFuncVirtualKeyboardButton correctlyPencilButton;
 
     private bool gameHasBeenRestarted;
 
@@ -111,6 +114,11 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
         {
             board.UnshowCellsWithChar();
             selectedCell.Deselect();
+            foreach (int i in selectedCell.GetPencilledChars())
+            {
+                virtualKeyboard.BlackoutKey(i.ToString(), false);
+
+            }
         }
         selectedCell = cell;
         selectedCell.Select();
@@ -119,6 +127,13 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
         {
             board.ShowCellsWithChar(selectedCell.GetInputtedChar());
         }
+
+        foreach (int i in selectedCell.GetPencilledChars())
+        {
+            virtualKeyboard.BlackoutKey(i.ToString(), true);
+
+        }
+
     }
 
     private void ToggleInputMode()
@@ -146,6 +161,17 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
         SpawnToolTip("Solve the Board", SolveBoard, null);
     }
 
+    private void ConfirmFullyPencilInBoard()
+    {
+        SpawnToolTip("Pencil in all Possible Options", FullyPencilInBoard, null);
+    }
+
+    private void ConfirmCorrectlyPencilInBoard()
+    {
+        SpawnToolTip("Pencil in all Correct Options", CorrectlyPencilInBoard, null);
+    }
+
+
     private void SolveSelectedCell()
     {
         if (selectedCell)
@@ -159,6 +185,16 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
     {
         board.CheatBoard();
         forceChange = true;
+    }
+
+    private void FullyPencilInBoard()
+    {
+        board.FullyPencilInUnfilled(allowedNums);
+    }
+
+    private void CorrectlyPencilInBoard()
+    {
+        board.CorrectlyPencilInUnfilled(allowedNums);
     }
 
     protected override IEnumerator GameLoop()
@@ -176,6 +212,14 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
             solveBoardButton = virtualKeyboard.GetAdditionalFuncButton("SOLVE_BOARD");
             additionalFunctionsDict.Add("SOLVE_BOARD", ConfirmSolveBoard);
             solveBoardButton.SetState(true);
+
+            fullyPencilButton = virtualKeyboard.GetAdditionalFuncButton("FULLY_PENCIL");
+            additionalFunctionsDict.Add("FULLY_PENCIL", ConfirmFullyPencilInBoard);
+            fullyPencilButton.SetState(true);
+
+            correctlyPencilButton = virtualKeyboard.GetAdditionalFuncButton("CORRECTLY_PENCIL");
+            additionalFunctionsDict.Add("CORRECTLY_PENCIL", ConfirmCorrectlyPencilInBoard);
+            correctlyPencilButton.SetState(true);
         }
 
         string currentFrameString;
@@ -258,7 +302,6 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
                                         // Valid Input
                                         board.UnshowCellsWithChar();
                                         board.RemoveCharFromInvalidLocations(selectedCell, x.ToString()[0]);
-
 
                                         selectedCell.SetInputtedChar(x.ToString()[0]);
                                         AudioManager._Instance.PlayFromSFXDict(onInput);

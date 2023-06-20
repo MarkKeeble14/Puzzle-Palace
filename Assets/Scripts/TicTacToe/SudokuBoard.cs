@@ -91,6 +91,8 @@ public class SudokuBoard : MonoBehaviour
             for (int p = 0; p < board.GetLength(1); p++)
             {
                 board[i, p].SetSymbolAlpha(1);
+
+                board[i, p].SetAllPencilledCharAlpha(0);
             }
         }
     }
@@ -101,6 +103,8 @@ public class SudokuBoard : MonoBehaviour
         {
             for (int p = 0; p < board.GetLength(1); p++)
             {
+                board[i, p].TrySetPencilledCharAlpha(v, .5f);
+
                 if (board[i, p].GetInputtedChar().Equals(v))
                 {
                     board[i, p].SetSymbolAlpha(.6f);
@@ -201,6 +205,50 @@ public class SudokuBoard : MonoBehaviour
         }
 
         AudioManager._Instance.PlayFromSFXDict(onFinishedSpawningCells);
+    }
+
+    public void FullyPencilInUnfilled(List<int> allowedNums)
+    {
+        ActOnEachBoardCell(cell =>
+        {
+            if (!cell.GetInputtedChar().Equals(' '))
+            {
+                return;
+            }
+
+            for (int i = 0; i < allowedNums.Count; i++)
+            {
+                cell.PencilChar(allowedNums[i].ToString()[0]);
+            }
+        });
+    }
+
+    public void CorrectlyPencilInUnfilled(List<int> allowedNums)
+    {
+        ActOnEachBoardCell(cell =>
+        {
+            if (!cell.GetInputtedChar().Equals(' '))
+            {
+                return;
+            }
+
+            for (int i = 0; i < allowedNums.Count; i++)
+            {
+                char c = allowedNums[i].ToString()[0];
+
+                if (!CheckIfRowContainsChar(c, cell.Coordinates.x)
+                && !CheckIfColContainsChar(c, cell.Coordinates.y)
+                && !CheckIfRegionContainsChar(c, cell.Coordinates.x, cell.Coordinates.y))
+                {
+                    cell.PencilChar(c);
+                }
+                else
+                {
+                    cell.TryRemovePencilChar(c);
+                }
+
+            }
+        });
     }
 
     private void SolidifyBoard()
