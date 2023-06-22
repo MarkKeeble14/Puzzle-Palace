@@ -114,11 +114,6 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
         {
             board.UnshowCellsWithChar();
             selectedCell.Deselect();
-            foreach (int i in selectedCell.GetPencilledChars())
-            {
-                virtualKeyboard.BlackoutKey(i.ToString(), false);
-
-            }
         }
         selectedCell = cell;
         selectedCell.Select();
@@ -128,12 +123,11 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
             board.ShowCellsWithChar(selectedCell.GetInputtedChar());
         }
 
-        foreach (int i in selectedCell.GetPencilledChars())
+        List<int> pencilledChars = selectedCell.GetPencilledChars();
+        foreach (int i in allowedNums)
         {
-            virtualKeyboard.BlackoutKey(i.ToString(), true);
-
+            virtualKeyboard.BlackoutKey(i.ToString(), pencilledChars.Contains(i));
         }
-
     }
 
     private void ToggleInputMode()
@@ -176,8 +170,12 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
     {
         if (selectedCell)
         {
-            selectedCell.SetInputtedChar(selectedCell.GetCorrectChar());
+            char c = selectedCell.GetCorrectChar();
+            selectedCell.SetInputtedChar(c);
             forceChange = true;
+
+            board.RemoveCharFromInvalidLocations(selectedCell, c);
+            BlackoutPencilledCharsOfCell(selectedCell, true);
         }
     }
 
@@ -190,11 +188,33 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
     private void FullyPencilInBoard()
     {
         board.FullyPencilInUnfilled(allowedNums);
+        if (selectedCell)
+            BlackoutPencilledCharsOfCell(selectedCell, true);
     }
 
     private void CorrectlyPencilInBoard()
     {
         board.CorrectlyPencilInUnfilled(allowedNums);
+        if (selectedCell)
+            BlackoutPencilledCharsOfCell(selectedCell, true);
+    }
+
+    private void BlackoutPencilledCharsOfCell(SudokuBoardCell cell, bool b)
+    {
+        List<int> pencilledChars = cell.GetPencilledChars();
+
+        for (int i = 0; i < allowedNums.Count; i++)
+        {
+            int num = allowedNums[i];
+            if (pencilledChars.Contains(num))
+            {
+                virtualKeyboard.BlackoutKey(num.ToString(), b);
+            }
+            else
+            {
+                virtualKeyboard.BlackoutKey(num.ToString(), !b);
+            }
+        }
     }
 
     protected override IEnumerator GameLoop()
@@ -269,10 +289,10 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
                         int x;
                         if (int.TryParse(currentFrameString[0].ToString(), out x) && allowedNums.Contains(x))
                         {
+                            char c = x.ToString()[0];
                             switch (currentInputMode)
                             {
                                 case InputMode.INPUT:
-                                    char c = x.ToString()[0];
 
                                     SudokuBoardCell checkCell;
                                     if ((checkCell = board.CheckIfRowContainsChar(c, selectedCell.Coordinates.x)) != null)
@@ -316,8 +336,21 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
                                     break;
                                 case InputMode.PENCIL:
                                     board.UnshowCellsWithChar();
-                                    if (!selectedCell.GetInputtedChar().Equals(' ')) selectedCell.SetInputtedChar(' ');
-                                    selectedCell.TryPencilChar(x.ToString()[0]);
+                                    if (!selectedCell.GetInputtedChar().Equals(' '))
+                                    {
+                                        selectedCell.SetInputtedChar(' ');
+                                    }
+
+                                    TryPencilCharResult resOfTryPencilChar = selectedCell.TryPencilChar(c);
+                                    if (resOfTryPencilChar == TryPencilCharResult.ADD)
+                                    {
+                                        virtualKeyboard.BlackoutKey(c.ToString(), true);
+                                    }
+                                    else if (resOfTryPencilChar == TryPencilCharResult.REMOVE)
+                                    {
+                                        virtualKeyboard.BlackoutKey(c.ToString(), false);
+                                    }
+
                                     AudioManager._Instance.PlayFromSFXDict(onInput);
                                     break;
                             }

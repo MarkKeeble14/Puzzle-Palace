@@ -92,16 +92,16 @@ public class SudokuBoardCell : BoardCell
         entered.text = inputtedChar.ToString();
     }
 
-    public void TryPencilChar(char s)
+    public TryPencilCharResult TryPencilChar(char s)
     {
-        if (locked) return;
+        if (locked) return TryPencilCharResult.FAIL;
 
         s = s.ToString().ToUpper().ToCharArray()[0];
 
         int index;
         if (!int.TryParse(s.ToString(), out index))
         {
-            return;
+            return TryPencilCharResult.FAIL;
         }
 
         // Debug.Log("Pencilling: " + index);
@@ -113,26 +113,28 @@ public class SudokuBoardCell : BoardCell
             // if so, instead of adding the char, we will remove it
             pencilledCharDisplays[index - 1].SetText("");
             pencilledChars.Remove(index);
-            return;
+            return TryPencilCharResult.REMOVE;
         }
 
-        // Char has not already been pencilled in, find first empty text and do so
+        // Char has not already been pencilled in
         if (pencilledChars.Count < pencilledCharDisplays.Count)
         {
             // Debug.Log("Adding Pencilled Char");
             pencilledChars.Add(index);
             pencilledCharDisplays[index - 1].SetText(index.ToString());
+            return TryPencilCharResult.ADD;
         }
+        return TryPencilCharResult.FAIL;
     }
 
     public void TrySetPencilledCharAlpha(char v, float alpha)
     {
 
         int index = ConvertCharToValue(v);
-        Debug.Log("Checking if : " + ToString() + " Contains: " + v + ", " + index);
+        // Debug.Log("Checking if : " + ToString() + " Contains: " + v + ", " + index);
         if (pencilledChars.Contains(index))
         {
-            Debug.Log("Contained: " + v);
+            // Debug.Log("Contained: " + v);
             pencilledCharDisplays[index - 1].SetAlpha(alpha);
         }
     }
@@ -184,7 +186,7 @@ public class SudokuBoardCell : BoardCell
         pencilledCharDisplays[index - 1].SetText(index.ToString());
     }
 
-    private void ClearPencilledChars()
+    public void ClearPencilledChars()
     {
         if (locked) return;
 

@@ -107,7 +107,7 @@ public class SudokuBoard : MonoBehaviour
 
                 if (board[i, p].GetInputtedChar().Equals(v))
                 {
-                    board[i, p].SetSymbolAlpha(.6f);
+                    board[i, p].SetSymbolAlpha(.75f);
                 }
             }
         }
@@ -182,6 +182,8 @@ public class SudokuBoard : MonoBehaviour
 
         SolidifyBoard();
 
+        yield return new WaitForSeconds(1);
+
         for (int i = 0; i < board.GetLength(0); i++)
         {
             for (int p = 0; p < board.GetLength(1); p++)
@@ -205,6 +207,7 @@ public class SudokuBoard : MonoBehaviour
         }
 
         AudioManager._Instance.PlayFromSFXDict(onFinishedSpawningCells);
+
     }
 
     public void FullyPencilInUnfilled(List<int> allowedNums)
@@ -215,6 +218,8 @@ public class SudokuBoard : MonoBehaviour
             {
                 return;
             }
+
+            cell.ClearPencilledChars();
 
             for (int i = 0; i < allowedNums.Count; i++)
             {
@@ -232,6 +237,8 @@ public class SudokuBoard : MonoBehaviour
                 return;
             }
 
+            cell.ClearPencilledChars();
+
             for (int i = 0; i < allowedNums.Count; i++)
             {
                 char c = allowedNums[i].ToString()[0];
@@ -242,11 +249,6 @@ public class SudokuBoard : MonoBehaviour
                 {
                     cell.PencilChar(c);
                 }
-                else
-                {
-                    cell.TryRemovePencilChar(c);
-                }
-
             }
         });
     }
