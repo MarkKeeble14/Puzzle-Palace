@@ -2,7 +2,7 @@
 using TMPro;
 using UnityEngine;
 
-public class SudokuBoardCellPencilledCharDisplay : MonoBehaviour
+public class PencilledCharDisplay : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI text;
     [SerializeField] private Image background;

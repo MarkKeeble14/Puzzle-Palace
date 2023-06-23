@@ -147,4 +147,15 @@ public class Utils
             yield return null;
         }
     }
+
+    public static int ConvertCharToInt(char v)
+    {
+        int num;
+        if (int.TryParse(v.ToString(), out num))
+        {
+            return num;
+        }
+        return -1;
+    }
+
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 
-public class SudokuBoardCell : BoardCell
+public class OperationsBoardCell : BoardCell
 {
     private char correctChar;
     private char inputtedChar;
@@ -13,13 +13,13 @@ public class SudokuBoardCell : BoardCell
     private List<int> pencilledChars = new List<int>();
     [SerializeField] private List<PencilledCharDisplay> pencilledCharDisplays = new List<PencilledCharDisplay>();
 
-    private SudokuGameManager activeSudokuGameManager;
-    private SudokuGameManager activeManager
+    private OperationsGameManager activeSudokuGameManager;
+    private OperationsGameManager activeManager
     {
         get
         {
             if (activeSudokuGameManager == null)
-                activeSudokuGameManager = (SudokuGameManager)MiniGameManager._Instance;
+                activeSudokuGameManager = (OperationsGameManager)MiniGameManager._Instance;
             return activeSudokuGameManager;
         }
     }
@@ -30,9 +30,17 @@ public class SudokuBoardCell : BoardCell
     [SerializeField] private Color selectedBorderColor;
     [SerializeField] private Color notSelectedBorderColor;
 
-    private Action<SudokuBoardCell> OnPressed;
+    private Action<OperationsBoardCell> OnPressed;
 
     private bool locked;
+    private MathematicalOperation cellOperation;
+
+    public MathematicalOperation GetCellOperation()
+    {
+        return cellOperation;
+    }
+
+    public OperationsBoardCellType CellType { get; private set; }
     [SerializeField] private Color lockedTextColor;
 
     public void Lock()
@@ -56,7 +64,7 @@ public class SudokuBoardCell : BoardCell
         OnPressed?.Invoke(this);
     }
 
-    public void AddOnPressedAction(Action<SudokuBoardCell> action)
+    public void AddOnPressedAction(Action<OperationsBoardCell> action)
     {
         OnPressed += action;
     }
@@ -215,7 +223,45 @@ public class SudokuBoardCell : BoardCell
 
     public bool HasCorrectChar()
     {
+        if (CellType == OperationsBoardCellType.BLANK) return true;
         return inputtedChar.Equals(correctChar);
+    }
+
+    public void SetBlank()
+    {
+        SetCellType(OperationsBoardCellType.BLANK);
+        SetSymbolAlpha(0);
+        StartCoroutine(ChangeCoverAlpha(1));
+        SetCoverColor(Color.black);
+        Lock();
+    }
+
+    public void SetCellType(OperationsBoardCellType type)
+    {
+        CellType = type;
+    }
+
+    public void SetOperation(MathematicalOperation operation)
+    {
+        char c = ' ';
+        switch (operation)
+        {
+            case MathematicalOperation.ADD:
+                c = '+';
+                break;
+            case MathematicalOperation.SUBTRACT:
+                c = '-';
+                break;
+            case MathematicalOperation.MULTIPLY:
+                c = '×';
+                break;
+            case MathematicalOperation.DIVIDE:
+                c = '÷';
+                break;
+        }
+        cellOperation = operation;
+        SetCorrectChar(c);
+        SetInputtedChar(c);
     }
 
     public void TryRemovePencilChar(char v)
@@ -231,5 +277,19 @@ public class SudokuBoardCell : BoardCell
                 pencilledCharDisplays[x - 1].SetText("");
             }
         }
+    }
+
+    public void SetAnswer(int v)
+    {
+        SetCellType(OperationsBoardCellType.ANSWER);
+        SetCorrectChar('0');
+        entered.text = v.ToString();
+    }
+
+    internal void Clear()
+    {
+        SetOperation(MathematicalOperation.NONE);
+        SetInputtedChar('0');
+        SetCorrectChar('0');
     }
 }

@@ -29,4 +29,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Sudoku.unity
     guid: 1a6e18a15ade0224f82b999ac73176b8
+  - enabled: 1
+    path: Assets/Scenes/Operations.unity
+    guid: 6c72c37383d9f5f4b86dd01294eab98d
   m_configObjects: {}
