@@ -161,10 +161,11 @@ public class OperationsGameManager : UsesVirtualKeyboardMiniGameManager
         if (selectedCell)
         {
             char c = selectedCell.GetCorrectChar();
+            board.RemoveCharFromInvalidLocations(c);
+
             selectedCell.SetInputtedChar(c);
             forceChange = true;
 
-            board.RemoveCharFromInvalidLocations(c);
             BlackoutPencilledCharsOfCell(selectedCell, true);
         }
     }

@@ -336,8 +336,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: NumbersBoardCell, Assembly-CSharp
+      - m_Target: {fileID: 2393005458093232505}
+        m_TargetAssemblyTypeName: OperationsBoardCell, Assembly-CSharp
         m_MethodName: OnPress
         m_Mode: 1
         m_Arguments:

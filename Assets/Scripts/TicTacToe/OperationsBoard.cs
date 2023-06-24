@@ -461,13 +461,14 @@ public class OperationsBoard : MonoBehaviour
 
     private void RemoveCharFromBoard(char v)
     {
-        for (int i = 0; i < board.GetLength(0); i++)
+        ActOnEachBoardCell(cell =>
         {
-            for (int p = 0; p < board.GetLength(1); p++)
+            cell.TryRemovePencilChar(v);
+            if (cell.GetInputtedChar().Equals(v))
             {
-                board[i, p].TryRemovePencilChar(v);
+                cell.SetInputtedChar(' ');
             }
-        }
+        });
     }
 
     private void PrintBoardState()
