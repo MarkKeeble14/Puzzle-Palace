@@ -111,7 +111,7 @@ public class SudokuBoardCell : BoardCell
         {
             // Debug.Log("Pencilled Chars Already Contains String");
             // if so, instead of adding the char, we will remove it
-            pencilledCharDisplays[index - 1].SetText("");
+            pencilledCharDisplays[index - 1].ClearText();
             pencilledChars.Remove(index);
             return TryPencilCharResult.REMOVE;
         }
@@ -194,7 +194,7 @@ public class SudokuBoardCell : BoardCell
         {
             int num = pencilledChars[0];
             pencilledChars.Remove(num);
-            pencilledCharDisplays[num - 1].SetText("");
+            pencilledCharDisplays[num - 1].ClearText();
         }
     }
 
@@ -228,7 +228,7 @@ public class SudokuBoardCell : BoardCell
             if (pencilledChars.Contains(x))
             {
                 pencilledChars.Remove(x);
-                pencilledCharDisplays[x - 1].SetText("");
+                pencilledCharDisplays[x - 1].ClearText();
             }
         }
     }
