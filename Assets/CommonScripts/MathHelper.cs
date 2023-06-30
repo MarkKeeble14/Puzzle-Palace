@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -33,5 +34,17 @@ public class MathHelper
     public static Vector3 RotateCounterClockwise(Vector3 aDir, float angle)
     {
         return new Vector3(-aDir.z, 0, aDir.x);
+    }
+
+    public static int RoundToNearestGivenInt(int v1, int v2)
+    {
+        if (v1 % v2 == 0)
+        {
+            return Mathf.FloorToInt(v1 / v2) * v2;
+        }
+        else
+        {
+            return ((Mathf.FloorToInt(v1 / v2)) * v2) + v2;
+        }
     }
 }
