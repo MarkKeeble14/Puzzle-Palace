@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ public class CrosswordGameManager : UsesVirtualKeyboardMiniGameManager
     [SerializeField] private CrosswordBoard numbersBoardPrefab;
     private CrosswordBoard board;
     private CrosswordBoardCell selectedCell;
+    private CrosswordCluePlacementData selectedWord;
 
     [Header("References")]
     [SerializeField] private ManipulateRectTransformOnMouseInput manipGamePlace;
@@ -40,6 +42,7 @@ public class CrosswordGameManager : UsesVirtualKeyboardMiniGameManager
 
     [SerializeField] protected TextMeshProUGUI timeTakenText;
     [SerializeField] protected TextMeshProUGUI hsTimeTakenText;
+    [SerializeField] private TextMeshProUGUI clueText;
 
     protected override IEnumerator Setup()
     {
@@ -109,9 +112,42 @@ public class CrosswordGameManager : UsesVirtualKeyboardMiniGameManager
     {
         if (selectedCell)
         {
-            board.UnshowCellsWithChar();
+            board.UnshowCells();
             selectedCell.Deselect();
         }
+
+        if (cell.GetReservedBy().Count == 1)
+        {
+            selectedWord = cell.GetReservedBy()[0];
+            clueText.text = selectedWord.GetClue().GetClue();
+            board.ShowCells(selectedWord);
+        }
+        else if (cell.GetReservedBy().Count == 2)
+        {
+            // 
+            if (cell == selectedCell)
+            {
+                if (clueText.text == cell.GetReservedBy()[0].GetClue().GetClue())
+                {
+                    selectedWord = cell.GetReservedBy()[1];
+                    clueText.text = selectedWord.GetClue().GetClue();
+                    board.ShowCells(selectedWord);
+                }
+                else
+                {
+                    selectedWord = cell.GetReservedBy()[0];
+                    clueText.text = selectedWord.GetClue().GetClue();
+                    board.ShowCells(selectedWord);
+                }
+            }
+            else
+            {
+                selectedWord = cell.GetReservedBy()[0];
+                clueText.text = selectedWord.GetClue().GetClue();
+                board.ShowCells(selectedWord);
+            }
+        }
+
         selectedCell = cell;
         selectedCell.Select();
     }
@@ -229,6 +265,26 @@ public class CrosswordGameManager : UsesVirtualKeyboardMiniGameManager
                                 if (board.CheckForWin())
                                 {
                                     yield break;
+                                }
+
+                                selectedCell.Deselect();
+                                List<CrosswordBoardCell> wordCells = selectedWord.GetIncorperatedCells();
+                                for (int i = 0; i < wordCells.Count; i++)
+                                {
+                                    if (wordCells[i] == selectedCell)
+                                    {
+                                        if (i < wordCells.Count - 1)
+                                        {
+                                            // Select Next Cell
+                                            selectedCell = wordCells[i + 1];
+                                            selectedCell.Select();
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            // Full Deselect
+                                        }
+                                    }
                                 }
 
                                 break;

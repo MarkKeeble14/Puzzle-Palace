@@ -6,15 +6,16 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public struct WordPlacementData
+[System.Serializable]
+public class CrosswordCharData
 {
-    public int Position;
     public char Character;
+    public CrosswordBoardCell Cell;
 
-    public WordPlacementData(int position, char character)
+    public CrosswordCharData(char character, CrosswordBoardCell cell)
     {
-        Position = position;
         Character = character;
+        Cell = cell;
     }
 }
 
@@ -36,7 +37,8 @@ public enum Alignment
 public class CrosswordCluePlacementData
 {
     private CrosswordClue clue;
-    private List<CrosswordBoardCell> placedIntoCells = new List<CrosswordBoardCell>();
+    private List<CrosswordBoardCell> incorperatedCells = new List<CrosswordBoardCell>();
+    private List<CrosswordBoardCell> affectedCells = new List<CrosswordBoardCell>();
     private Direction direction;
 
     public Alignment GetAlignment()
@@ -49,9 +51,9 @@ public class CrosswordCluePlacementData
         return clue;
     }
 
-    public List<CrosswordBoardCell> GetCrosswordBoardCells()
+    public List<CrosswordBoardCell> GetAffectedCells()
     {
-        return placedIntoCells;
+        return affectedCells;
     }
 
     public void SetDirection(Direction d)
@@ -64,27 +66,88 @@ public class CrosswordCluePlacementData
         this.clue = clue;
     }
 
-    public void AddCell(CrosswordBoardCell cell)
+    public void AddIncorperatedCell(CrosswordBoardCell cell)
     {
-        placedIntoCells.Add(cell);
+        // Debug.Log(this + ", Adding Incorperated Cell: " + cell);
+        incorperatedCells.Add(cell);
     }
 
-    public void RemoveCell(CrosswordBoardCell cell)
+    public void RemoveIncorperatedCell(CrosswordBoardCell cell)
     {
-        placedIntoCells.Remove(cell);
+        // Debug.Log(this + ", Removing Incorperated Cell: " + cell);
+        incorperatedCells.Remove(cell);
+    }
+
+    public void AddAffectedCell(CrosswordBoardCell cell)
+    {
+        affectedCells.Add(cell);
+    }
+
+    public void RemoveAffectedCell(CrosswordBoardCell cell)
+    {
+        affectedCells.Remove(cell);
     }
 
     public override string ToString()
     {
+        /*
         string cells = "";
         foreach (CrosswordBoardCell cell in placedIntoCells)
         {
             cells += cell + " ";
         }
-        return base.ToString() + ": Clue: " + clue + ", Direction: " + direction + ", Num Cells: " + placedIntoCells.Count + " - " + cells;
+        */
+        // return base.ToString() + ": Clue: " + clue + ", Direction: " + direction + ", Num Cells: " + placedIntoCells.Count + " - " + cells;
+        return base.ToString() + ": Clue: " + clue + ", Makeup String: " + GetMakeupString();
+    }
+
+    public bool SharesAnyChar(CrosswordClue checkingClue)
+    {
+        string checkAnswer = checkingClue.GetAnswer();
+        for (int i = 0; i < checkAnswer.Length; i++)
+        {
+            if (clue.GetAnswer().Contains(checkAnswer[i]))
+                return true;
+        }
+        return false;
+    }
+
+    public List<CrosswordCharData> GetSharedChars(CrosswordClue nextClue)
+    {
+        string checkAnswer = nextClue.GetAnswer();
+
+        List<CrosswordCharData> result = new List<CrosswordCharData>();
+
+        // for each char in the passed in clue
+        for (int i = 0; i < checkAnswer.Length; i++)
+        {
+            // loop through each cell in clue and see if it's char matches the char from the clue
+            for (int q = 0; q < affectedCells.Count; q++)
+            {
+                if (affectedCells[q].GetCorrectChar().Equals(checkAnswer[i]))
+                    result.Add(new CrosswordCharData(checkAnswer[i], affectedCells[q]));
+            }
+        }
+        return result;
+    }
+
+    public string GetMakeupString()
+    {
+        string s = "";
+        foreach (CrosswordBoardCell cell in incorperatedCells)
+        {
+            s += cell.GetCorrectChar();
+        }
+        return s;
+    }
+
+    public List<CrosswordBoardCell> GetIncorperatedCells()
+    {
+        return incorperatedCells;
     }
 }
 
+[System.Serializable]
 public class CrosswordClue
 {
     private string clue;
@@ -182,7 +245,7 @@ public class CrosswordBoard : MonoBehaviour
         }
     }
 
-    internal void UnshowCellsWithChar()
+    public void UnshowCellsWithChar()
     {
         for (int i = 0; i < board.GetLength(0); i++)
         {
@@ -211,6 +274,25 @@ public class CrosswordBoard : MonoBehaviour
         }
     }
 
+    public void UnshowCells()
+    {
+        ActOnEachBoardCell(cell =>
+        {
+            cell.SetSymbolAlpha(1);
+            cell.SetAllPencilledCharAlpha(0);
+        });
+    }
+
+    public void ShowCells(CrosswordCluePlacementData toShow)
+    {
+        List<CrosswordBoardCell> showCells = toShow.GetIncorperatedCells();
+        for (int i = 0; i < showCells.Count; i++)
+        {
+            CrosswordBoardCell cell = showCells[i];
+            cell.SetSymbolAlpha(.75f);
+        }
+    }
+
     public IEnumerator Generate(Action<CrosswordBoardCell> onPressCellAction, string clueFilePath, Vector2Int boardSize, Vector2Int minMaxWordSize, int targetNumWords)
     {
         board = new CrosswordBoardCell[boardSize.x, boardSize.y];
@@ -235,45 +317,130 @@ public class CrosswordBoard : MonoBehaviour
         string st = File.ReadAllText(clueFilePath);
         string[] data = st.Split(new char[] { '\t', '\n' });
 
-        int numEntries = 200000;
+        // Populate Clue Dict with Lists
+        Dictionary<int, List<CrosswordClue>> clueDict = new Dictionary<int, List<CrosswordClue>>();
+        for (int i = minMaxWordSize.x; i <= minMaxWordSize.y; i++)
+        {
+            clueDict.Add(i, new List<CrosswordClue>());
+        }
+
+        // Populate Lists
+        List<string> possibleAnswers = new List<string>();
+        int numEntries = 2500;
         int inc = 16;
-        int start = MathHelper.RoundToNearestGivenInt(RandomHelper.RandomIntExclusive(0, data.Length - inc * numEntries), 4);
-        start = 0;
-
-        // Dictionary<int, List<CrosswordClue>> charsPerAnswerDict = new Dictionary<int, List<CrosswordClue>>();
-        Dictionary<int, Dictionary<char, List<CrosswordClue>>> trackingDict = new Dictionary<int, Dictionary<char, List<CrosswordClue>>>();
-        for (int i = start; i < numEntries * inc; i += inc)
+        int start = MathHelper.RoundToNearestGivenInt(RandomHelper.RandomIntExclusive(0, data.Length - (numEntries * inc)), 4);
+        int cap = start + (numEntries * inc);
+        // Debug.Log("Total: " + data.Length + ", NumEntries: " + numEntries + ", inc: " + inc + ", Start: " + start);
+        for (int i = start; i < cap; i += inc)
         {
-            // Debug.Log(new CrosswordClue(data[i + 3], data[i + 2]));
             string answer = data[i + 2];
-            CrosswordClue clue = new CrosswordClue(data[i + 3], answer);
+            // Debug.Log(answer);
+            if (answer.Length < minMaxWordSize.x || answer.Length > minMaxWordSize.y)
+            {
+                continue;
+            }
+            // Debug.Log(new CrosswordClue(data[i + 3], data[i + 2]));
+            possibleAnswers.Add(answer);
+            clueDict[answer.Length].Add(new CrosswordClue(data[i + 3], answer));
+            // Debug.Log("Added Answer: " + answer);
+            // in case the increment causes indexer to rise above the cap before filling in all the entries
+            if (i + inc > cap && possibleAnswers.Count < numEntries)
+            {
+                i = 4;
+            }
+        }
+        // Debug.Log("Done Parsing Data");
 
-            // Check if the dict already has an entry for that length
-            int length = answer.Length;
-            if (trackingDict.ContainsKey(length))
-            {
-                // Dict already has an entry for specified length, for each char in the answer, add this new Clue to the list found by accessing the inner Dictionary using that char as the key
-                AddToDictUnderChars(clue, trackingDict[length]);
-            }
-            else
-            {
-                // Dict doesn't have an entry for specified length, add a new inner Dict, to that inner dict add a new List<CrosswordClue> with the current clue under the key's of each of it's chars
-                Dictionary<char, List<CrosswordClue>> innerDict = new Dictionary<char, List<CrosswordClue>>();
-                AddToDictUnderChars(clue, innerDict);
-                trackingDict.Add(length, innerDict);
-            }
-        }
-        foreach (KeyValuePair<int, Dictionary<char, List<CrosswordClue>>> outerKvp in trackingDict)
+        // Shuffle Lists
+        List<CrosswordClue> clues = new List<CrosswordClue>();
+        foreach (KeyValuePair<int, List<CrosswordClue>> kvp in clueDict)
         {
-            Dictionary<char, List<CrosswordClue>> innerDict = outerKvp.Value;
-            foreach (KeyValuePair<char, List<CrosswordClue>> innerKvp in innerDict)
-            {
-                innerKvp.Value.Shuffle();
-            }
+            kvp.Value.Shuffle();
+            clues.AddRange(kvp.Value);
         }
+
+        // Sort Clue List
+        CrosswordClue[] arr = clues.ToArray();
+        Array.Sort(arr, (y, x) => x.GetAnswer().Length.CompareTo(y.GetAnswer().Length));
+        clues = arr.ToList();
+        // Debug.Log(clues.Count + ", " + clues[0] + ", " + clues[clues.Count - 1]);
 
         List<CrosswordCluePlacementData> boardPlacements = new List<CrosswordCluePlacementData>();
-        CreateBoard(trackingDict, targetNumWords, minMaxWordSize, boardPlacements);
+        bool boardGenerated = false;
+        while (!boardGenerated)
+        {
+            // Populate Board
+            boardGenerated = CreateBoard(clues, possibleAnswers, targetNumWords, 50, minMaxWordSize, boardPlacements);
+
+            if (!boardGenerated)
+            {
+                Debug.Log("Failed to Generate, Re-Trying");
+                ActOnEachBoardCell(cell =>
+                {
+                    cell.Clear();
+                    cell.ResetReservedBy();
+                });
+                boardPlacements.Clear();
+            }
+        }
+        // PrintBoardState();
+        List<CrosswordCluePlacementData> finalBoardPlacements = GetCurrentBoardStatePlacementData();
+
+        /*
+        Debug.Log("Final Board Placements");
+        for (int i = 0; i < finalBoardPlacements.Count; i++)
+        {
+            Debug.Log("Final Board Placement: " + finalBoardPlacements[i]);
+        }
+        Debug.Log("Calculated Board Placements");
+        for (int i = 0; i < boardPlacements.Count; i++)
+        {
+            Debug.Log("Calculated Board Placement: " + boardPlacements[i]);
+        }
+        Debug.Log("Final Board Placements: " + finalBoardPlacements.Count + ", Calculated Board Placements: " + boardPlacements.Count);
+        */
+
+        // Determine the final board state if the number of placed words does not match the number of words on the board
+        if (boardPlacements.Count != finalBoardPlacements.Count)
+        {
+            // PrintBoardState();
+            ActOnEachBoardCell(cell =>
+            {
+                cell.ResetReservedBy();
+            });
+            boardPlacements = GetCurrentBoardStatePlacementData();
+
+            // Attach Clue to Placements
+            foreach (CrosswordCluePlacementData placement in boardPlacements)
+            {
+                string answer = placement.GetMakeupString();
+                // Debug.Log("Missing Word: " + placement + ", Looking for: " + answer);
+                List<CrosswordClue> searchThrough = clueDict[placement.GetMakeupString().Length];
+                for (int i = 0; i < searchThrough.Count; i++)
+                {
+                    CrosswordClue cur = searchThrough[i];
+                    // Debug.Log("Searching: " + cur);
+                    if (cur.GetAnswer() == answer)
+                    {
+                        // Debug.Log("Found Clue: " + cur);
+                        placement.SetClue(cur);
+                        List<CrosswordBoardCell> includedCells = placement.GetIncorperatedCells();
+                        // Debug.Log("CellCount: " + includedCells.Count);
+                        foreach (CrosswordBoardCell cell in includedCells)
+                        {
+                            // Debug.Log("Set Reserved By for: " + cell);
+                            cell.SetReservedBy(placement);
+                        }
+                        break;
+                    }
+                }
+            }
+
+            for (int i = 0; i < boardPlacements.Count; i++)
+            {
+                Debug.Log("Completed Board Placement: " + boardPlacements[i]);
+            }
+        }
 
         ActOnEachBoardCell(cell =>
         {
@@ -310,21 +477,49 @@ public class CrosswordBoard : MonoBehaviour
         AudioManager._Instance.PlayFromSFXDict(onFinishedSpawningCells);
     }
 
-    private void AddToDictUnderChars(CrosswordClue clue, Dictionary<char, List<CrosswordClue>> dict)
+    private List<CrosswordCluePlacementData> GetNewBoardPlacementDatas(Alignment directionalAlignment)
     {
-        foreach (char c in clue.GetAnswer())
+        List<CrosswordCluePlacementData> datas = new List<CrosswordCluePlacementData>();
+        CrosswordCluePlacementData newPlacementData = null;
+        for (int i = 0; i < board.GetLength(0); i++)
         {
-            if (dict.ContainsKey(c))
+            for (int p = 0; p < board.GetLength(1); p++)
             {
-                if (!dict[c].Contains(clue))
-                    dict[c].Add(clue);
+                CrosswordBoardCell cell = board[directionalAlignment == Alignment.HORIZONTAL ? i : p, directionalAlignment == Alignment.HORIZONTAL ? p : i];
+                if (!cell.GetCorrectChar().Equals(CrosswordBoardCell.DefaultChar))
+                {
+                    if (newPlacementData == null)
+                    {
+                        newPlacementData = new CrosswordCluePlacementData();
+                        newPlacementData.SetDirection(directionalAlignment == Alignment.HORIZONTAL ? Direction.RIGHT : Direction.DOWN);
+                    }
+                    newPlacementData.AddAffectedCell(cell);
+                    newPlacementData.AddIncorperatedCell(cell);
+                }
+                else
+                {
+                    if (newPlacementData != null)
+                    {
+                        if (newPlacementData.GetAffectedCells().Count > 1)
+                        {
+                            // Debug.Log("Added New Placement Data: " + newPlacementData);
+                            datas.Add(newPlacementData);
+                        }
+                        newPlacementData = null;
+                    }
+                }
             }
-            else
+            if (newPlacementData != null)
             {
-                List<CrosswordClue> newList = new List<CrosswordClue>() { clue };
-                dict.Add(c, newList);
+                if (newPlacementData.GetAffectedCells().Count > 1)
+                {
+                    // Debug.Log("Added New Placement Data: " + newPlacementData);
+                    datas.Add(newPlacementData);
+                }
+                newPlacementData = null;
             }
         }
+        return datas;
     }
 
     private List<CrosswordCluePlacementData> GetCurrentBoardStatePlacementData()
@@ -335,45 +530,38 @@ public class CrosswordBoard : MonoBehaviour
         return newData;
     }
 
-    private bool ValidateGrid()
+    private bool ValidateGrid(List<string> possibleAnswers)
     {
+        // PrintBoardState();
         List<CrosswordCluePlacementData> newData = GetCurrentBoardStatePlacementData();
         foreach (CrosswordCluePlacementData data in newData)
         {
-            if (data.GetCrosswordBoardCells().Count == 2)
+            // Debug.Log("Checking: " + data);
+            if (!possibleAnswers.Contains(data.GetMakeupString()))
             {
+                // Debug.Log(data.GetMakeupString() + ", Not Found Within Possible Answers");
                 return false;
             }
+            // Debug.Log(data.GetMakeupString() + ", Found Within Possible Answers");
         }
+        // Debug.Log("Grid Valid");
         return true;
     }
 
-    private bool CreateBoard(Dictionary<int, Dictionary<char, List<CrosswordClue>>> clues, int targetNumWords, Vector2Int minMaxWordLength, List<CrosswordCluePlacementData> boardPlacements)
+    private bool CreateBoard(List<CrosswordClue> clues, List<string> possibleAnswers, int targetNumWords, int allottedSearchAmount, Vector2Int minMaxWordLength, List<CrosswordCluePlacementData> boardPlacements)
     {
-        int currentNumPlacements = GetCurrentBoardStatePlacementData().Count;
-        // Debug.Log("Current Num Placements: " + currentNumPlacements + ", Target: " + targetNumWords);
-
-        // Reached the targeted number of words
-        if (currentNumPlacements >= targetNumWords)
+        // Debug.Log("Create Board Called: NumWords = " + boardPlacements.Count);
+        // PrintBoardState();
+        if (clues.Count == 0)
         {
-            List<CrosswordCluePlacementData> finalPlacementData = GetCurrentBoardStatePlacementData();
+            Debug.Log("Ran out of Clues; Board Should Likely be Populated");
+            return true;
+        }
 
-            Debug.Log("Grid Created");
-            for (int i = 0; i < finalPlacementData.Count; i++)
-            {
-                Debug.Log(i + ", " + finalPlacementData[i]);
-            }
-
-            List<CrosswordCluePlacementData> newBoardPlacements = GetCurrentBoardStatePlacementData();
-            if (PopulateBoard(clues, newBoardPlacements, 0))
-            {
-                Debug.Log("Full Success");
-                return true;
-            }
-
-            Debug.Log("Created an Impossible Grid - Failed to Populate Board");
-
-            return false;
+        if (boardPlacements.Count >= targetNumWords)
+        {
+            Debug.Log("Placed At Least the Target Amount out of Clues; Board Populated");
+            return true;
         }
 
         if (boardPlacements.Count == 0)
@@ -382,77 +570,115 @@ public class CrosswordBoard : MonoBehaviour
             List<Direction> directions = new List<Direction>() { Direction.DOWN, Direction.RIGHT };
             CrosswordCluePlacementData placementData = new CrosswordCluePlacementData();
             boardPlacements.Add(placementData);
-            ReserveBoardSpaces(cell, RandomHelper.GetRandomFromList(directions), RandomHelper.RandomIntExclusive(minMaxWordLength), placementData);
-            return CreateBoard(clues, targetNumWords, minMaxWordLength, boardPlacements);
+            CrosswordClue used = RandomHelper.GetRandomFromList(clues);
+            // Debug.Log("Clue: " + used);
+            clues.Remove(used);
+            TryPlaceWord(cell, RandomHelper.GetRandomFromList(directions), used, placementData);
+            return CreateBoard(clues, possibleAnswers, targetNumWords, allottedSearchAmount, minMaxWordLength, boardPlacements);
         }
         else
         {
-            boardPlacements.Shuffle();
-            for (int i = 0; i < boardPlacements.Count; i++)
+            int cap = clues.Count > allottedSearchAmount ? allottedSearchAmount : clues.Count;
+            for (int i = 0; i < cap; i++)
             {
-                List<CrosswordBoardCell> possibleCells = boardPlacements[i].GetCrosswordBoardCells();
-                for (int p = 0; p < possibleCells.Count; p++)
+                CrosswordClue clue = RandomHelper.GetRandomFromList(clues);
+                // Debug.Log("Clue: " + clue);
+
+                // Search through the board for matching letters
+                for (int p = 0; p < boardPlacements.Count; p++)
                 {
-                    CrosswordBoardCell cell = RandomHelper.GetRandomFromList(possibleCells);
-                    List<Direction> directions = new List<Direction>() { Direction.DOWN, Direction.UP, Direction.LEFT, Direction.RIGHT };
-                    directions.Shuffle();
-                    CrosswordCluePlacementData placementData = new CrosswordCluePlacementData();
-                    while (directions.Count > 0)
+                    // Debug.Log("Checking Board Placement: " + boardPlacements[p]);
+                    List<CrosswordCharData> checkCharDataResult = boardPlacements[p].GetSharedChars(clue);
+                    if (checkCharDataResult.Count > 0)
                     {
-                        List<int> possibleLengths = new List<int>();
-                        for (int q = minMaxWordLength.x; q > minMaxWordLength.y; q++)
+                        // Common letter between words
+                        for (int q = 0; q < checkCharDataResult.Count; q++)
                         {
-                            possibleLengths.Add(q);
-                            Direction d = directions[0];
-                            if (ReserveBoardSpaces(cell, d, RandomHelper.RandomIntExclusive(minMaxWordLength), placementData))
+                            // Debug.Log("Shares Letter: " + checkCharDataResult[q].Character + " in Cell: " + checkCharDataResult[q].Cell);
+
+                            // Try placing current clue based on this common letter - That would mean placing the current clue perpindicular to it somehow
+
+                            // if successful, remove this clue from the list, move on and repeat this step
+                            CrosswordCluePlacementData placementData = new CrosswordCluePlacementData();
+                            // PrintBoardState();
+                            if (TryPlaceWord(checkCharDataResult[q].Cell, clue, placementData, boardPlacements[p]))
                             {
                                 boardPlacements.Add(placementData);
-                                if (CreateBoard(clues, targetNumWords, minMaxWordLength, boardPlacements))
+                                clues.Remove(clue);
+
+                                // Debug.Log("Successfully Placed Word: " + clue);
+                                // PrintBoardState();
+
+                                if (ValidateGrid(possibleAnswers))
                                 {
-                                    return true;
+                                    // Debug.Log("Down, Valid Grid");
+
+                                    if (CreateBoard(clues, possibleAnswers, targetNumWords, allottedSearchAmount, minMaxWordLength, boardPlacements))
+                                    {
+                                        return true;
+                                    }
                                 }
 
+                                // Debug.Log("Up, Invalid Grid At NumWords = " + boardPlacements.Count);
+                                OnPlacementFailed(placementData);
                                 boardPlacements.Remove(placementData);
+                                clues.Add(clue);
                             }
-                            List<CrosswordBoardCell> changedCells = placementData.GetCrosswordBoardCells();
-                            for (int k = 0; k < changedCells.Count; k++)
-                            {
-                                changedCells[k].RemoveReservedBy(placementData);
-                            }
-                            placementData.GetCrosswordBoardCells().Clear();
-                            directions.RemoveAt(0);
-                            boardPlacements.Remove(placementData);
                         }
-
+                    }
+                    else
+                    {
+                        // if unsuccessful, continue along making sure to reset all changed cells
+                        // Debug.Log("No Shared Chars");
                     }
                 }
+                // Looped through all placed words; no characters shared with the currently selected word, continue
             }
         }
-        Debug.Log("Failed to Create Board");
-
-        for (int i = 0; i < boardPlacements.Count; i++)
-        {
-            Debug.Log(boardPlacements[i]);
-        }
-
+        // Looped through all words and did not trigger a return condition from recursive call, inadequate board
+        // Debug.Log("Did Not Reach Base Case");
         return false;
     }
 
-    private bool ReserveBoardSpaces(CrosswordBoardCell startCell, Direction d, int numCells, CrosswordCluePlacementData placementData)
+    private bool TryPlaceWord(CrosswordBoardCell matchingCharCell, CrosswordClue newClue, CrosswordCluePlacementData newPlacementData, CrosswordCluePlacementData matchingPlacementData)
+    {
+        // Find the cell to start placing the new clue from
+        CrosswordBoardCell cell = matchingCharCell;
+        int numCellOffset = newClue.GetAnswer().IndexOf(matchingCharCell.GetCorrectChar());
+        Direction d = matchingPlacementData.GetAlignment() == Alignment.VERTICAL ? Direction.RIGHT : Direction.DOWN;
+        for (int i = 0; i < numCellOffset; i++)
+        {
+            switch (d)
+            {
+                case Direction.RIGHT:
+                    if (cell.Coordinates.y - 1 < 0) return false;
+                    cell = board[cell.Coordinates.x, cell.Coordinates.y - 1];
+                    break;
+                case Direction.DOWN:
+                    if (cell.Coordinates.x - 1 < 0) return false;
+                    cell = board[cell.Coordinates.x - 1, cell.Coordinates.y];
+                    break;
+            }
+        }
+
+        // We know our starting cell by now
+        // Call other TryPlaceWord Accordingly
+        return TryPlaceWord(cell, d, newClue, newPlacementData);
+    }
+
+    private bool TryPlaceWord(CrosswordBoardCell startCell, Direction d, CrosswordClue clue, CrosswordCluePlacementData placementData)
     {
         // Debug.Log("Reserving " + numCells + " Cells, Direction: " + d + ", Start Cell: " + startCell);
         placementData.SetDirection(d);
+        placementData.SetClue(clue);
+        string answer = clue.GetAnswer();
+
         switch (d)
         {
             case Direction.RIGHT:
-                for (int i = 0; i < numCells; i++)
+                for (int i = 0; i < answer.Length; i++)
                 {
-                    if (!ReserveBoardSpace(startCell, i, 0, placementData))
-                    {
-                        OnPlacementFailed(placementData);
-                        return false;
-                    }
-                    else if (i == numCells - 1 && !ValidateGrid())
+                    if (!PlaceChar(answer[i], startCell, i, 0, placementData))
                     {
                         OnPlacementFailed(placementData);
                         return false;
@@ -460,14 +686,9 @@ public class CrosswordBoard : MonoBehaviour
                 }
                 return true;
             case Direction.LEFT:
-                for (int i = 0; i < numCells; i++)
+                for (int i = 0; i < answer.Length; i++)
                 {
-                    if (!ReserveBoardSpace(startCell, -i, 0, placementData))
-                    {
-                        OnPlacementFailed(placementData);
-                        return false;
-                    }
-                    else if (i == numCells - 1 && !ValidateGrid())
+                    if (!PlaceChar(answer[i], startCell, -i, 0, placementData))
                     {
                         OnPlacementFailed(placementData);
                         return false;
@@ -475,14 +696,9 @@ public class CrosswordBoard : MonoBehaviour
                 }
                 return true;
             case Direction.UP:
-                for (int i = 0; i < numCells; i++)
+                for (int i = 0; i < answer.Length; i++)
                 {
-                    if (!ReserveBoardSpace(startCell, 0, -i, placementData))
-                    {
-                        OnPlacementFailed(placementData);
-                        return false;
-                    }
-                    else if (i == numCells - 1 && !ValidateGrid())
+                    if (!PlaceChar(answer[i], startCell, 0, -i, placementData))
                     {
                         OnPlacementFailed(placementData);
                         return false;
@@ -490,14 +706,9 @@ public class CrosswordBoard : MonoBehaviour
                 }
                 return true;
             case Direction.DOWN:
-                for (int i = 0; i < numCells; i++)
+                for (int i = 0; i < answer.Length; i++)
                 {
-                    if (!ReserveBoardSpace(startCell, 0, i, placementData))
-                    {
-                        OnPlacementFailed(placementData);
-                        return false;
-                    }
-                    else if (i == numCells - 1 && !ValidateGrid())
+                    if (!PlaceChar(answer[i], startCell, 0, i, placementData))
                     {
                         OnPlacementFailed(placementData);
                         return false;
@@ -508,7 +719,7 @@ public class CrosswordBoard : MonoBehaviour
         return false;
     }
 
-    private bool ReserveBoardSpace(CrosswordBoardCell startCell, int colOffset, int rowOffset, CrosswordCluePlacementData placementData)
+    private bool PlaceChar(char c, CrosswordBoardCell startCell, int colOffset, int rowOffset, CrosswordCluePlacementData placementData)
     {
         // Debug.Log("Attempting to Reserve Space: Coordinates: <" + (startCell.Coordinates.x + rowOffset) + ", " + (startCell.Coordinates.y + colOffset) + ">");
         // Guard against out of bounds
@@ -530,24 +741,30 @@ public class CrosswordBoard : MonoBehaviour
         if (cell.CanBeReserved())
         {
             List<CrosswordCluePlacementData> cellReservedBy = cell.GetReservedBy();
-            // bool hasAdjacentParallels = HasAdjacentParallels(cell, placementData);
-            // Debug.Log("Has Adjacent Parallels: " + hasAdjacentParallels);
+
             if (cellReservedBy.Count == 0)
             {
                 // Go Ahead, add cell
                 // Debug.Log("Cell Not Reserved Prior - Successfully Reserved");
-                placementData.AddCell(cell);
+                placementData.AddAffectedCell(cell);
+                placementData.AddIncorperatedCell(cell);
+
                 cell.SetReservedBy(placementData);
+
+                cell.SetCorrectChar(c);
+
                 return true;
             }
             else if (cellReservedBy.Count == 1)
             {
-                if (cell.GetReservedBy()[0].GetAlignment() != placementData.GetAlignment())
+                if (cell.GetCorrectChar().Equals(c) &&
+                    cell.GetReservedBy()[0].GetAlignment() != placementData.GetAlignment())
                 {
                     // Go Ahead, add cell
-                    // Debug.Log("Cell Reserved Prior, Alignment Differs - Successfully Reserved");
-                    placementData.AddCell(cell);
+                    // Debug.Log("Cell Reserved Prior, Same Char, Alignment Differs - Successfully Reserved");
                     cell.SetReservedBy(placementData);
+                    placementData.AddIncorperatedCell(cell);
+
                     return true;
                 }
             }
@@ -556,7 +773,6 @@ public class CrosswordBoard : MonoBehaviour
         {
             // Fail
             // Debug.Log("Cell Fully Reserved Prior - Failed to Reserve Cell: " + cell);
-            cell.RemoveReservedBy(placementData);
             return false;
 
         }
@@ -566,268 +782,33 @@ public class CrosswordBoard : MonoBehaviour
 
     private void OnPlacementFailed(CrosswordCluePlacementData placementData)
     {
-        while (placementData.GetCrosswordBoardCells().Count > 0)
+        // Debug.Log("OnPlacementFailed: " + placementData);
+
+        List<CrosswordBoardCell> affectedCells = placementData.GetAffectedCells();
+        List<CrosswordBoardCell> incorperatedCells = placementData.GetIncorperatedCells();
+
+        while (affectedCells.Count > 0)
         {
-            CrosswordBoardCell cell = placementData.GetCrosswordBoardCells()[0];
-            placementData.RemoveCell(cell);
+            CrosswordBoardCell cell = affectedCells[0];
+            placementData.RemoveAffectedCell(cell);
             cell.Clear();
+            placementData.RemoveIncorperatedCell(cell);
             cell.RemoveReservedBy(placementData);
         }
-    }
 
-    private List<CrosswordCluePlacementData> GetNewBoardPlacementDatas(Alignment directionalAlignment)
-    {
-        List<CrosswordCluePlacementData> datas = new List<CrosswordCluePlacementData>();
-        CrosswordCluePlacementData newPlacementData = null;
-        for (int i = 0; i < board.GetLength(0); i++)
+        while (incorperatedCells.Count > 0)
         {
-            for (int p = 0; p < board.GetLength(1); p++)
-            {
-                CrosswordBoardCell cell = board[directionalAlignment == Alignment.HORIZONTAL ? i : p, directionalAlignment == Alignment.HORIZONTAL ? p : i];
-                if (cell.GetReservedBy().Count > 0)
-                {
-                    if (newPlacementData == null)
-                    {
-                        newPlacementData = new CrosswordCluePlacementData();
-                        newPlacementData.SetDirection(directionalAlignment == Alignment.HORIZONTAL ? Direction.RIGHT : Direction.DOWN);
-                    }
-                    newPlacementData.AddCell(cell);
-                }
-                else
-                {
-                    if (newPlacementData != null)
-                    {
-                        if (newPlacementData.GetCrosswordBoardCells().Count > 1)
-                        {
-                            // Debug.Log("Added New Placement Data: " + newPlacementData);
-                            datas.Add(newPlacementData);
-                        }
-                        newPlacementData = null;
-                    }
-                }
-            }
-            if (newPlacementData != null)
-            {
-                if (newPlacementData.GetCrosswordBoardCells().Count > 1)
-                {
-                    // Debug.Log("Added New Placement Data: " + newPlacementData);
-                    datas.Add(newPlacementData);
-                }
-                newPlacementData = null;
-            }
-        }
-        return datas;
-    }
-
-    private bool WordMatchesData(string s, List<WordPlacementData> mustMatchData)
-    {
-        foreach (WordPlacementData data in mustMatchData)
-        {
-            if (s[data.Position] != data.Character)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private bool PopulateBoard(Dictionary<int, Dictionary<char, List<CrosswordClue>>> clues, List<CrosswordCluePlacementData> placedWords, int filledWords)
-    {
-        // Populate
-        // Debug.Log("Populating: " + filledWords);
-
-        if (filledWords == placedWords.Count)
-        {
-            Debug.Log("Board Populated");
-            for (int i = 0; i < placedWords.Count; i++)
-            {
-                Debug.Log(i + ": " + placedWords[i]);
-            }
-            return true;
+            CrosswordBoardCell cell = incorperatedCells[0];
+            placementData.RemoveIncorperatedCell(cell);
+            cell.RemoveReservedBy(placementData);
         }
 
-        // Get the placement at passed in Index
-        CrosswordCluePlacementData current = placedWords[filledWords];
-        // Debug.Log("Filling In: " + current);
-
-        // Keep a list of Crossword Clues tried so the algorithm knows if there are no possible ones
-        List<CrosswordClue> attemptedClues = new List<CrosswordClue>();
-
-        bool hasPlacedWord = false;
-        int charIndex = 0;
-        while (!hasPlacedWord)
-        {
-            string s = "";
-            List<CrosswordBoardCell> currentBoardCells = current.GetCrosswordBoardCells();
-            List<WordPlacementData> requiredChars = new List<WordPlacementData>();
-            for (int i = 0; i < currentBoardCells.Count; i++)
-            {
-                char currentChar = currentBoardCells[i].GetCorrectChar();
-                if (!currentChar.Equals(CrosswordBoardCell.DefaultChar))
-                    requiredChars.Add(new WordPlacementData(i, currentChar));
-                s += currentChar;
-            }
-            Debug.Log("Currently in Placement" + current + ", " + s);
-
-            // Get a clue that hasn't already been tried
-            CrosswordClue clue = null;
-            List<CrosswordClue> touchedList = null;
-            if (requiredChars.Count > 0)
-            {
-                touchedList = clues[currentBoardCells.Count][requiredChars[charIndex].Character];
-                clue = GetCrosswordClueWithCondition(touchedList, clue =>
-                    !attemptedClues.Contains(clue) && WordMatchesData(clue.GetAnswer(), requiredChars));
-
-                // if the clue returned is null, then there are no matching clues
-                if (clue == null)
-                {
-                    if (++charIndex > requiredChars.Count - 1)
-                    {
-                        Debug.Log("No Matching Clues at filledWords = " + filledWords);
-                        return false;
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-            }
-            else
-            {
-                touchedList = clues[currentBoardCells.Count][_CharList[charIndex]];
-                clue = GetCrosswordClueWithCondition(touchedList, clue =>
-                    !attemptedClues.Contains(clue) && WordMatchesData(clue.GetAnswer(), requiredChars));
-
-                // if the clue returned is null, then there are no matching clues
-                if (clue == null)
-                {
-                    if (++charIndex > _CharList.Count - 1)
-                    {
-                        Debug.Log("No Matching Clues at filledWords = " + filledWords);
-                        return false;
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-            }
-            // Debug.Log("Attempting Clue: " + clue);
-
-            // Try placing the clue
-            hasPlacedWord = TryPlaceWord(clue, current);
-            PrintBoardState();
-            // Debug.Log("Result: " + hasPlacedWord);
-
-            // if the clue fits properly, remove that clue from the total list of clues so that we do not see it again
-            // increment filled words, move onto the next clue
-            // if the clue does not fit properly, add that clue to the list of tried clues and continue looping until either we find a working clue or there are no possible clues remaining
-            if (hasPlacedWord)
-            {
-                // Debug.Log("Success: Removing Clue: " + clue + " From Future Placement Options");
-                touchedList.Remove(clue);
-                if (PopulateBoard(clues, placedWords, ++filledWords))
-                {
-                    Debug.Log("Success at filledWords = " + filledWords);
-                    return true;
-                }
-
-                filledWords -= 1;
-
-                // Re-add word to list of possible words
-                touchedList.Add(clue);
-
-                // Reset
-                List<CrosswordBoardCell> changedCells = current.GetCrosswordBoardCells();
-                for (int i = 0; i < changedCells.Count; i++)
-                {
-                    changedCells[i].SetCorrectChar(CrosswordBoardCell.DefaultChar);
-                    changedCells[i].SetInputtedChar(' ');
-                }
-                current.SetClue(null);
-
-                hasPlacedWord = false;
-            }
-            else
-            {
-                // Debug.Log("Failure: Removing Clue: " + clue + " From Current Options");
-                attemptedClues.Add(clue);
-            }
-        }
-
-        Debug.Log("Failed to Populate Board at filledWords = " + filledWords);
-        return false;
-    }
-
-    private bool TryPlaceWord(CrosswordClue clue, CrosswordCluePlacementData placeInto)
-    {
-        List<CrosswordBoardCell> cells = placeInto.GetCrosswordBoardCells();
-        placeInto.SetClue(clue);
-        string answer = clue.GetAnswer();
-        List<CrosswordBoardCell> changedCells = new List<CrosswordBoardCell>();
-        for (int i = 0; i < cells.Count; i++)
-        {
-            CrosswordBoardCell cell = cells[i];
-            if (cell.GetCorrectChar().Equals(CrosswordBoardCell.DefaultChar))
-            {
-                // Success Case, Correct Char Not Already Within Cell but can be placed there
-                changedCells.Add(cell);
-                cell.SetCorrectChar(answer[i]);
-
-                cell.SetInputtedChar(cells[i].GetCorrectChar());
-            }
-            else if (cell.GetCorrectChar().Equals(answer[i]))
-            {
-                // Success Case, Correct Char Already Within Cell
-                // No need to change Cell
-            }
-            else
-            {
-                // Fail Case, Word cannot be placed into this board place
-                // Reset Previously altered Cells & Remove Data from PlacementData
-                for (int p = 0; p < changedCells.Count; p++)
-                {
-                    changedCells[p].Clear();
-                }
-                placeInto.SetClue(null);
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private CrosswordClue GetCrosswordClueWithCondition(List<CrosswordClue> possibleClues, Func<CrosswordClue, bool> condition)
-    {
-        List<CrosswordClue> disallowedClues = new List<CrosswordClue>();
-        for (int i = 0; i < possibleClues.Count; i++)
-        {
-            CrosswordClue tryingClue = possibleClues[i];
-            if (disallowedClues.Contains(tryingClue)) continue;
-            if (condition(tryingClue)) return tryingClue;
-            disallowedClues.Add(tryingClue);
-        }
-        return null;
-    }
-
-    private List<CrosswordBoardCell> GetSurroundingCells(CrosswordBoardCell centerCell)
-    {
-        List<CrosswordBoardCell> res = new List<CrosswordBoardCell>();
-        Vector2Int center = centerCell.Coordinates;
-        for (int i = -1; i <= 1; i++)
-        {
-            for (int p = -1; p <= 1; p++)
-            {
-                if (center.x + i > board.GetLength(0) - 1 || center.x + i < 0
-                    || center.y + p > board.GetLength(1) - 1 || center.y + p < 0) continue;
-                res.Add(board[center.x + i, center.y + p]);
-            }
-        }
-        return res;
+        placementData.SetClue(null);
     }
 
     private void PrintBoardState()
     {
-        string s = "";
+        string s = "Printing Board State\n";
         for (int i = 0; i < board.GetLength(0); i++)
         {
             for (int p = 0; p < board.GetLength(1); p++)
@@ -881,6 +862,7 @@ public class CrosswordBoard : MonoBehaviour
     {
         foreach (CrosswordBoardCell cell in board)
         {
+            if (cell.GetReservedBy().Count == 0) continue;
             if (!cell.HasCorrectChar()) return false;
         }
         return true;

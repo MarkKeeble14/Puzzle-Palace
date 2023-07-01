@@ -32,4 +32,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Operations.unity
     guid: 6c72c37383d9f5f4b86dd01294eab98d
+  - enabled: 1
+    path: Assets/Scenes/Crossword.unity
+    guid: 044aeec6eb1148e46b5e2644250a43de
   m_configObjects: {}
