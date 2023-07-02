@@ -417,7 +417,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &537062141
 PrefabInstance:
@@ -2056,6 +2056,9 @@ MonoBehaviour:
   beginGameScreen: {fileID: 8908782002247169646}
   endGameScreen: {fileID: 1430815126}
   miniGameLabel: WordoMax
+  multiToolTipDisplayPrefab: {fileID: 7150994426129195454, guid: e62707638f3e64c4b8398156d27e7c07, type: 3}
+  singleToolTipDisplayPrefab: {fileID: 180484867285682595, guid: 12eb229aa18e8304abc82f8df11749ba, type: 3}
+  toolTipHolder: {fileID: 8978390134319232887}
   virtualKeyboard: {fileID: 2088068950}
   adjustAlphaRate: 1
   overrideRandomWord: 0
@@ -2343,7 +2346,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1613141671 stripped
 MonoBehaviour:
@@ -2380,7 +2383,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5144289623586512006, guid: 3abdfafeaa4e6ba42be3dd23ccaa3aa7, type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 5144289623586512006, guid: 3abdfafeaa4e6ba42be3dd23ccaa3aa7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2979,7 +2982,7 @@ PrefabInstance:
       objectReference: {fileID: 1384673067}
     - target: {fileID: 3048204686560962663, guid: 3c8451811b5e2a84ab8ddd43ad865bd0, type: 3}
       propertyPath: m_RootOrder
-      value: 10
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 3048204686560962663, guid: 3c8451811b5e2a84ab8ddd43ad865bd0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3117,7 +3120,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -3441,7 +3444,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 31236585972509199, guid: 946fdfa67a0cff34ba2beb9acc29e584, type: 3}
       propertyPath: m_RootOrder
-      value: 8
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 31236585972509199, guid: 946fdfa67a0cff34ba2beb9acc29e584, type: 3}
       propertyPath: m_AnchorMax.x
@@ -3630,7 +3633,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3428546828185157009, guid: cfc67f6049c43e547b8c36ad672a43d1, type: 3}
       propertyPath: m_RootOrder
-      value: 9
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3428546828185157009, guid: cfc67f6049c43e547b8c36ad672a43d1, type: 3}
       propertyPath: m_AnchorMax.x
@@ -3912,7 +3915,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7244765059387817743, guid: 479de74af784c2b498d8d78748138444, type: 3}
       propertyPath: m_RootOrder
-      value: 7
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7244765059387817743, guid: 479de74af784c2b498d8d78748138444, type: 3}
       propertyPath: m_AnchorMax.x
@@ -4065,7 +4068,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8040785637917832938, guid: 5050e7b40ae1fa3489e133a8299e40c3, type: 3}
       propertyPath: m_RootOrder
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8040785637917832938, guid: 5050e7b40ae1fa3489e133a8299e40c3, type: 3}
       propertyPath: m_AnchorMax.x
@@ -4141,7 +4144,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8040785637917832942, guid: 5050e7b40ae1fa3489e133a8299e40c3, type: 3}
       propertyPath: m_Name
-      value: WordoEndGameCanvas
+      value: EndGameCanvas
       objectReference: {fileID: 0}
     - target: {fileID: 8040785638172048180, guid: 5050e7b40ae1fa3489e133a8299e40c3, type: 3}
       propertyPath: m_AnchorMax.y
@@ -4312,7 +4315,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8908782002327899955, guid: 2c2498dc2afdfe642a80cd0510de4aea, type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8908782002327899955, guid: 2c2498dc2afdfe642a80cd0510de4aea, type: 3}
       propertyPath: m_AnchorMax.x
@@ -4440,7 +4443,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8978390133208649395, guid: d7b80b392d87e94489ab9c8b32e3ad16, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8978390133208649395, guid: d7b80b392d87e94489ab9c8b32e3ad16, type: 3}
       propertyPath: m_AnchorMax.x
@@ -4560,6 +4563,11 @@ PrefabInstance:
       objectReference: {fileID: 1430815126}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d7b80b392d87e94489ab9c8b32e3ad16, type: 3}
+--- !u!224 &8978390134319232887 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 513616971367640027, guid: d7b80b392d87e94489ab9c8b32e3ad16, type: 3}
+  m_PrefabInstance: {fileID: 8978390134319232886}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &8978390134319232889 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8978390132676926185, guid: d7b80b392d87e94489ab9c8b32e3ad16, type: 3}

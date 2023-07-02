@@ -12,6 +12,8 @@ public class ScreenAnimationController : MonoBehaviour
     [SerializeField] private float startingAlpha;
     [SerializeField] private float raycastBlockingThreshold = 0.75f;
 
+    public bool Active => alphaTarget > 0;
+
     private void Awake()
     {
         alphaTarget = startingAlpha;

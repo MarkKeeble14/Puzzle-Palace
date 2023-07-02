@@ -893,8 +893,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Note: When opening a game, the screen may stay black for some time while
-    the game loads & generates. This is especially true for the Crossword.'
+  m_text: 'Note: When opening a game, there will be a delay as the game loads & generates.
+    This can be especially true for Crosswords.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: eaa0394021fef084292232a068fce097, type: 2}
   m_sharedMaterial: {fileID: 3319115297578570464, guid: eaa0394021fef084292232a068fce097, type: 2}
@@ -971,6 +971,140 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 698619395}
   m_CullTransparentMesh: 1
+--- !u!1001 &720948266
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1528820738}
+    m_Modifications:
+    - target: {fileID: 4798115701701436105, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_text
+      value: Crossword (Large)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115701701436105, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_fontSize
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115701701436105, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115701876719965, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115701876719965, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1141388660}
+    - target: {fileID: 4798115701876719965, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: GoToLevel
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115701876719965, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: UIManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115701876719965, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_StringArgument
+      value: CrosswordLarge
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115702626442827, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_Name
+      value: LargeCrossword
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_RootOrder
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+--- !u!224 &720948267 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
+  m_PrefabInstance: {fileID: 720948266}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &774841430 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3048204686560962662, guid: 3c8451811b5e2a84ab8ddd43ad865bd0, type: 3}
@@ -1830,6 +1964,7 @@ RectTransform:
   - {fileID: 1201592062}
   - {fileID: 494845138}
   - {fileID: 1901472608}
+  - {fileID: 720948267}
   m_Father: {fileID: 318726468}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2586,7 +2721,7 @@ GameObject:
   - component: {fileID: 1891218048}
   - component: {fileID: 1891218046}
   m_Layer: 5
-  m_Name: OuterScrollView
+  m_Name: ScrollView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2660,7 +2795,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4798115701701436105, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_text
-      value: Crossword
+      value: Crossword (Small)
       objectReference: {fileID: 0}
     - target: {fileID: 4798115701701436105, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_fontSize
@@ -2688,11 +2823,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4798115701876719965, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_StringArgument
-      value: Crossword
+      value: CrosswordSmall
       objectReference: {fileID: 0}
     - target: {fileID: 4798115702626442827, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_Name
-      value: Crossword
+      value: SmallCrossword
       objectReference: {fileID: 0}
     - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_Pivot.x

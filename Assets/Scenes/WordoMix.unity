@@ -1942,7 +1942,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8040785637917832942, guid: 5050e7b40ae1fa3489e133a8299e40c3, type: 3}
       propertyPath: m_Name
-      value: WordoEndGameCanvas
+      value: EndGameCanvas
       objectReference: {fileID: 0}
     - target: {fileID: 8040785638172048180, guid: 5050e7b40ae1fa3489e133a8299e40c3, type: 3}
       propertyPath: m_AnchorMax.y
@@ -2224,6 +2224,9 @@ MonoBehaviour:
   beginGameScreen: {fileID: 8908782002247169646}
   endGameScreen: {fileID: 1177834461}
   miniGameLabel: WordoMix
+  multiToolTipDisplayPrefab: {fileID: 7150994426129195454, guid: e62707638f3e64c4b8398156d27e7c07, type: 3}
+  singleToolTipDisplayPrefab: {fileID: 180484867285682595, guid: 12eb229aa18e8304abc82f8df11749ba, type: 3}
+  toolTipHolder: {fileID: 8978390134319232887}
   virtualKeyboard: {fileID: 2088068950}
   adjustAlphaRate: 1
   overrideRandomWord: 0
@@ -4272,6 +4275,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d7b80b392d87e94489ab9c8b32e3ad16, type: 3}
+--- !u!224 &8978390134319232887 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 513616971367640027, guid: d7b80b392d87e94489ab9c8b32e3ad16, type: 3}
+  m_PrefabInstance: {fileID: 8978390134319232886}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &8978390134319232889 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8978390132676926185, guid: d7b80b392d87e94489ab9c8b32e3ad16, type: 3}

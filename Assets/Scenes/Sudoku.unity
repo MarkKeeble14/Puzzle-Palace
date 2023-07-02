@@ -1735,7 +1735,8 @@ MonoBehaviour:
   beginGameScreen: {fileID: 8908782002247169646}
   endGameScreen: {fileID: 1060276643}
   miniGameLabel: Sudoku
-  toolTipDisplayPrefab: {fileID: 180484867285682595, guid: 12eb229aa18e8304abc82f8df11749ba, type: 3}
+  multiToolTipDisplayPrefab: {fileID: 7150994426129195454, guid: e62707638f3e64c4b8398156d27e7c07, type: 3}
+  singleToolTipDisplayPrefab: {fileID: 180484867285682595, guid: 12eb229aa18e8304abc82f8df11749ba, type: 3}
   toolTipHolder: {fileID: 1253826447}
   virtualKeyboard: {fileID: 2088068950}
   adjustAlphaRate: 1

@@ -7,39 +7,26 @@ using UnityEngine.UI;
 
 public class CrosswordBoardCell : BoardCell
 {
+    public static char DefaultChar = '0';
     private char correctChar;
     private char inputtedChar;
-
-    public static char DefaultChar = '0';
-
-    [SerializeField] private TextMeshProUGUI entered;
     private List<char> pencilledChars = new List<char>();
-    [SerializeField] private List<PencilledCharDisplay> pencilledCharDisplays = new List<PencilledCharDisplay>();
-    private Dictionary<char, PencilledCharDisplay> assignedCharTextsDict = new Dictionary<char, PencilledCharDisplay>();
-
-    private OperationsGameManager activeSudokuGameManager;
-    private OperationsGameManager activeManager
-    {
-        get
-        {
-            if (activeSudokuGameManager == null)
-                activeSudokuGameManager = (OperationsGameManager)MiniGameManager._Instance;
-            return activeSudokuGameManager;
-        }
-    }
-
-    private bool isSelected;
-    [SerializeField] private Image border;
-
-    [SerializeField] private Color selectedBorderColor;
-    [SerializeField] private Color notSelectedBorderColor;
-
-    private Action<CrosswordBoardCell> OnPressed;
-
-    private bool locked;
     private List<CrosswordCluePlacementData> reservedBy = new List<CrosswordCluePlacementData>();
 
+    [Header("Colors")]
+    [SerializeField] private Color selectedBorderColor;
+    [SerializeField] private Color notSelectedBorderColor;
     [SerializeField] private Color lockedTextColor;
+
+    private Action<CrosswordBoardCell> OnPressed;
+    private bool isSelected;
+    private bool locked;
+
+    [Header("References")]
+    [SerializeField] private Image border;
+    [SerializeField] private TextMeshProUGUI entered;
+    [SerializeField] private List<PencilledCharDisplay> pencilledCharDisplays = new List<PencilledCharDisplay>();
+    private Dictionary<char, PencilledCharDisplay> assignedCharTextsDict = new Dictionary<char, PencilledCharDisplay>();
 
     protected void Start()
     {

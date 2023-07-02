@@ -1,7 +1,23 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
+
+public class ToolTipDataContainer
+{
+    public string text;
+    public Action onConfirm;
+    public Action onCancel;
+
+    public ToolTipDataContainer(string text, Action onConfirm, Action onCancel)
+    {
+        this.text = text;
+        this.onConfirm = onConfirm;
+        this.onCancel = onCancel;
+    }
+}
 
 public abstract class MiniGameManager : MonoBehaviour
 {
@@ -19,12 +35,13 @@ public abstract class MiniGameManager : MonoBehaviour
 
     private string timeTakenHSKey = "Duration";
 
-    [SerializeField] private ToolTipDisplay toolTipDisplayPrefab;
+    [SerializeField] private MultiToolTipDisplayController multiToolTipDisplayPrefab;
+    [SerializeField] private ToolTipDisplay singleToolTipDisplayPrefab;
     [SerializeField] private Transform toolTipHolder;
 
     protected void SpawnToolTip(string text, Action onConfirm, Action onCancel)
     {
-        ToolTipDisplay spawned = Instantiate(toolTipDisplayPrefab, toolTipHolder);
+        ToolTipDisplay spawned = Instantiate(singleToolTipDisplayPrefab, toolTipHolder);
         spawned.SetText(text);
         spawned.AddOnConfirmAction(delegate
         {
@@ -37,6 +54,17 @@ public abstract class MiniGameManager : MonoBehaviour
             Destroy(spawned.gameObject);
             onCancel?.Invoke();
         });
+    }
+
+    protected List<ToolTipDisplay> SpawnToolTips(List<ToolTipDataContainer> buttonsInfo)
+    {
+        MultiToolTipDisplayController spawned = Instantiate(multiToolTipDisplayPrefab, toolTipHolder);
+        List<ToolTipDisplay> toolTips = new List<ToolTipDisplay>();
+        for (int i = 0; i < buttonsInfo.Count; i++)
+        {
+            toolTips.Add(spawned.Add(buttonsInfo[i]));
+        }
+        return toolTips;
     }
 
     private string ConstructHighScoreString(string key)

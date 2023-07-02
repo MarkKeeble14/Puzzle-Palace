@@ -853,7 +853,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   beginGameScreen: {fileID: 8908782002247169646}
   endGameScreen: {fileID: 1430815126}
-  miniGameLabel: 
+  miniGameLabel: Tic Tac Toe
+  multiToolTipDisplayPrefab: {fileID: 7150994426129195454, guid: e62707638f3e64c4b8398156d27e7c07, type: 3}
+  singleToolTipDisplayPrefab: {fileID: 180484867285682595, guid: 12eb229aa18e8304abc82f8df11749ba, type: 3}
+  toolTipHolder: {fileID: 8978390134319232888}
   eogScreenAnimationHelper: {fileID: 1430815126}
   beginGameScreenAnimationHelper: {fileID: 8908782002247169646}
   parentSpawnedTo: {fileID: 8978390134319232887}
@@ -1801,7 +1804,7 @@ PrefabInstance:
       objectReference: {fileID: 2092259455}
     - target: {fileID: 876116573808753564, guid: 71f8df093bae0b6448858a08f1765b1c, type: 3}
       propertyPath: m_Name
-      value: TicTacToeUICanvas
+      value: UICanvas
       objectReference: {fileID: 0}
     - target: {fileID: 876116573808753567, guid: 71f8df093bae0b6448858a08f1765b1c, type: 3}
       propertyPath: m_Pivot.x
@@ -2689,7 +2692,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8978390133208649399, guid: d7b80b392d87e94489ab9c8b32e3ad16, type: 3}
       propertyPath: m_Name
-      value: TicTacToeGameplayCanvas
+      value: GameplayCanvas
       objectReference: {fileID: 0}
     - target: {fileID: 8978390133208649407, guid: d7b80b392d87e94489ab9c8b32e3ad16, type: 3}
       propertyPath: p1Image
@@ -2736,5 +2739,10 @@ PrefabInstance:
 --- !u!224 &8978390134319232887 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8978390132676926185, guid: d7b80b392d87e94489ab9c8b32e3ad16, type: 3}
+  m_PrefabInstance: {fileID: 8978390134319232886}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &8978390134319232888 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 513616971367640027, guid: d7b80b392d87e94489ab9c8b32e3ad16, type: 3}
   m_PrefabInstance: {fileID: 8978390134319232886}
   m_PrefabAsset: {fileID: 0}
