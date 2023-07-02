@@ -197,20 +197,44 @@ public class CrosswordGameManager : UsesVirtualKeyboardMiniGameManager
 
                 // Selected Cell changes
                 // Selected Word does not change
+                // Debug.Log("1");
             }
             else if (cell.GetReservedBy().Count == 2)
             {
+                CrosswordCluePlacementData wordA = cell.GetReservedBy()[0];
+                CrosswordCluePlacementData wordB = cell.GetReservedBy()[1];
+
                 // Clicked on a cell that belongs to the current word as well as another word
-                // Show the word that is different from the current word
-                // Selected Cell changes
-                // Selected Word changes
-                if (cell.GetReservedBy()[0] == selectedWord)
+                if (cell == selectedWord.GetIncorperatedCells()[0] && cell != selectedCell)
                 {
-                    selectedWord = cell.GetReservedBy()[1];
+                    // 
+                    // Debug.Log("2");
+                }
+                else if (selectedWord == wordA && cell == wordB.GetIncorperatedCells()[0] && cell != selectedCell)
+                {
+                    selectedWord = wordB;
+                    // Debug.Log("3");
+                }
+                else if (selectedWord == wordB && cell == wordA.GetIncorperatedCells()[0] && cell != selectedCell)
+                {
+                    selectedWord = wordA;
+                    // Debug.Log("4");
                 }
                 else
                 {
-                    selectedWord = cell.GetReservedBy()[0];
+                    // Show the word that is different from the current word
+                    // Selected Cell changes
+                    // Selected Word changes
+                    if (cell.GetReservedBy()[0] == selectedWord)
+                    {
+                        selectedWord = cell.GetReservedBy()[1];
+                        // Debug.Log("5");
+                    }
+                    else
+                    {
+                        selectedWord = cell.GetReservedBy()[0];
+                        // Debug.Log("6");
+                    }
                 }
             }
         }
@@ -221,21 +245,43 @@ public class CrosswordGameManager : UsesVirtualKeyboardMiniGameManager
             {
                 // Cell belongs to only one word
                 // Selected Cell changes
-                selectedWord = cell.GetReservedBy()[0];
                 // Selected Word changes
+                selectedWord = cell.GetReservedBy()[0];
+                // Debug.Log("7");
             }
             else if (cell.GetReservedBy().Count == 2)
             {
                 // Cell Belongs to more than one word
-                // Default to the Horizontal word
-                // Selected Word changes
-                if (cell.GetReservedBy()[0].GetAlignment() == Alignment.HORIZONTAL)
+                CrosswordCluePlacementData wordA = cell.GetReservedBy()[0];
+                CrosswordCluePlacementData wordB = cell.GetReservedBy()[1];
+
+                bool isFirstCellOfWordA = cell == wordA.GetIncorperatedCells()[0];
+                bool isFirstCellOfWordB = cell == wordB.GetIncorperatedCells()[0];
+
+                if (isFirstCellOfWordA && !isFirstCellOfWordB)
                 {
-                    selectedWord = cell.GetReservedBy()[0];
+                    selectedWord = wordA;
+                    // Debug.Log("8");
+                }
+                else if (!isFirstCellOfWordA && isFirstCellOfWordB)
+                {
+                    selectedWord = wordB;
+                    // Debug.Log("9");
                 }
                 else
                 {
-                    selectedWord = cell.GetReservedBy()[1];
+                    // Default to the Horizontal word
+                    // Selected Word changes
+                    if (wordA.GetAlignment() == Alignment.HORIZONTAL)
+                    {
+                        selectedWord = wordA;
+                        // Debug.Log("10");
+                    }
+                    else
+                    {
+                        selectedWord = wordB;
+                        // Debug.Log("11");
+                    }
                 }
             }
         }
@@ -332,6 +378,12 @@ public class CrosswordGameManager : UsesVirtualKeyboardMiniGameManager
         });
     }
 
+    private void CallToolTipFunc(Action func)
+    {
+        func?.Invoke();
+        spawnedToolTips.Clear();
+    }
+
     protected override IEnumerator GameLoop()
     {
         if (!hasDealtWIthFunctionButtons)
@@ -344,11 +396,11 @@ public class CrosswordGameManager : UsesVirtualKeyboardMiniGameManager
 
             // Tool Tips
             List<ToolTipDataContainer> toolTips = new List<ToolTipDataContainer>();
-            toolTips.Add(new ToolTipDataContainer("Pencil the Correct Letters into the Selected Words Cells", PencilCorrectChars, null));
-            toolTips.Add(new ToolTipDataContainer("Check the Board for Errors", CheckBoard, null));
-            toolTips.Add(new ToolTipDataContainer("Solve the Selected Cell", SolveSelectedCell, null));
-            toolTips.Add(new ToolTipDataContainer("Solve the Selected Word", SolveSelectedWord, null));
-            toolTips.Add(new ToolTipDataContainer("Solve the Board", SolveBoard, null));
+            toolTips.Add(new ToolTipDataContainer("Pencil the Correct Letters into the Selected Words Cells", () => CallToolTipFunc(PencilCorrectChars), null));
+            toolTips.Add(new ToolTipDataContainer("Check the Board for Errors", () => CallToolTipFunc(CheckBoard), null));
+            toolTips.Add(new ToolTipDataContainer("Solve the Selected Cell", () => CallToolTipFunc(SolveSelectedCell), null));
+            toolTips.Add(new ToolTipDataContainer("Solve the Selected Word", () => CallToolTipFunc(SolveSelectedWord), null));
+            toolTips.Add(new ToolTipDataContainer("Solve the Board", () => CallToolTipFunc(SolveBoard), null));
 
             spawnToolTipsButton = virtualKeyboard.GetAdditionalFuncButton("SPAWN_TOOLTIPS");
             additionalFunctionsDict.Add("SPAWN_TOOLTIPS", delegate

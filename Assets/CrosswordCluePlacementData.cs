@@ -89,10 +89,10 @@ public class CrosswordCluePlacementData
         for (int i = 0; i < checkAnswer.Length; i++)
         {
             // loop through each cell in clue and see if it's char matches the char from the clue
-            for (int q = 0; q < affectedCells.Count; q++)
+            for (int q = 0; q < incorperatedCells.Count; q++)
             {
-                if (affectedCells[q].GetCorrectChar().Equals(checkAnswer[i]))
-                    result.Add(new CrosswordCharData(checkAnswer[i], affectedCells[q]));
+                if (incorperatedCells[q].GetCorrectChar().Equals(checkAnswer[i]))
+                    result.Add(new CrosswordCharData(checkAnswer[i], incorperatedCells[q]));
             }
         }
         return result;

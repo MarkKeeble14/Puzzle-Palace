@@ -2085,12 +2085,12 @@ MonoBehaviour:
   delayOnRestart: 1
   boardSize: {x: 6, y: 6}
   minMaxWordSize: {x: 3, y: 5}
-  targetNumWords: 9
-  minNumWords: 4
-  maxAlottedAttemptsPerWord: 4
-  maxRetryAttempts: 2
-  numCluesToParse: 500
-  parseFileIncrement: 8
+  targetNumWords: 10
+  minNumWords: 2
+  maxAlottedAttemptsPerWord: 7
+  maxRetryAttempts: 4
+  numCluesToParse: 750
+  parseFileIncrement: 32
   clueFile: {fileID: 4900000, guid: c68cd3adfcd98e948a072d69caedccde, type: 3}
   timeTakenText: {fileID: 437111213}
   hsTimeTakenText: {fileID: 467609306}

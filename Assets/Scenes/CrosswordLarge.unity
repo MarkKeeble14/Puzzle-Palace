@@ -1748,12 +1748,12 @@ MonoBehaviour:
   delayOnRestart: 1
   boardSize: {x: 9, y: 9}
   minMaxWordSize: {x: 3, y: 8}
-  targetNumWords: 17
-  minNumWords: 10
-  maxAlottedAttemptsPerWord: 10
+  targetNumWords: 16
+  minNumWords: 7
+  maxAlottedAttemptsPerWord: 7
   maxRetryAttempts: 2
   numCluesToParse: 1000
-  parseFileIncrement: 16
+  parseFileIncrement: 32
   clueFile: {fileID: 4900000, guid: c68cd3adfcd98e948a072d69caedccde, type: 3}
   timeTakenText: {fileID: 437111213}
   hsTimeTakenText: {fileID: 467609306}

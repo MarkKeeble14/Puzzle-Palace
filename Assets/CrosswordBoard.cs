@@ -91,7 +91,7 @@ public class CrosswordBoard : MonoBehaviour
         for (int i = 0; i < showCells.Count; i++)
         {
             CrosswordBoardCell cell = showCells[i];
-            cell.SetSymbolAlpha(.8f);
+            cell.SetSymbolAlpha(.75f);
         }
     }
 
@@ -276,6 +276,8 @@ public class CrosswordBoard : MonoBehaviour
     private bool CreateBoard(List<CrosswordClue> clues, List<string> possibleAnswers, int targetNumWords, int minNumWords,
         int allottedSearchAmount, int maxRetryAttempts, Vector2Int minMaxWordLength, List<CrosswordCluePlacementData> boardPlacements)
     {
+        // PrintBoardState("At Start of CreateBoard");
+
         // Debug.Log("Create Board Called: NumWords = " + boardPlacements.Count);
         // PrintBoardState();
         if (clues.Count == 0)
@@ -323,6 +325,7 @@ public class CrosswordBoard : MonoBehaviour
                 // Try to place that word in the top left cell, either rightwards or downwards
                 if (TryPlaceWord(cell, RandomHelper.GetRandomFromList(directions), clue, placementData))
                 {
+                    // PrintBoardState("After TryPlaceWord, No Board Placement");
                     foreach (CrosswordClue attemptedClue in attemptedClues)
                     {
                         if (attemptedClue != clue)
@@ -377,6 +380,8 @@ public class CrosswordBoard : MonoBehaviour
                             // PrintBoardState();
                             if (TryPlaceWord(checkCharDataResult[q].Cell, clue, placementData, boardPlacements[p]))
                             {
+                                // Debug.Log("Successfully Placed Clue: " + clue);
+                                // PrintBoardState("After TryPlaceWord, More Than 0 Board Placement");
                                 boardPlacements.Add(placementData);
                                 clues.Remove(clue);
 
@@ -385,13 +390,15 @@ public class CrosswordBoard : MonoBehaviour
 
                                 if (ValidateGrid(possibleAnswers))
                                 {
-                                    // Debug.Log("Down, Valid Grid");
+                                    // Debug.Log("Valid Grid");
 
                                     if (CreateBoard(clues, possibleAnswers, targetNumWords, minNumWords, allottedSearchAmount, maxRetryAttempts, minMaxWordLength, boardPlacements))
                                     {
                                         return true;
                                     }
                                 }
+
+                                // Debug.Log("Invalid Grid or Failed to Create Board in the Future");
 
                                 // Debug.Log("Up, Invalid Grid At NumWords = " + boardPlacements.Count);
                                 OnPlacementFailed(placementData);
@@ -512,6 +519,7 @@ public class CrosswordBoard : MonoBehaviour
 
         // try to reserve cell
         CrosswordBoardCell cell = board[startCell.Coordinates.x + rowOffset, startCell.Coordinates.y + colOffset];
+        // Debug.Log("Trying to Place Char: " + c + ", Cell: " + cell + ", Cell Char: " + cell.GetCorrectChar());
         if (cell.CanBeReserved())
         {
             List<CrosswordCluePlacementData> cellReservedBy = cell.GetReservedBy();
@@ -580,9 +588,9 @@ public class CrosswordBoard : MonoBehaviour
         placementData.SetClue(null);
     }
 
-    private void PrintBoardState()
+    private void PrintBoardState(string addedDescriptor = "")
     {
-        string s = "Printing Board State\n";
+        string s = "Printing Board State" + (addedDescriptor.Length > 0 ? ": " : "") + addedDescriptor + "\n";
         for (int i = 0; i < board.GetLength(0); i++)
         {
             for (int p = 0; p < board.GetLength(1); p++)
