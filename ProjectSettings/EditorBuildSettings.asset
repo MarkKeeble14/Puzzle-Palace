@@ -9,33 +9,33 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: 0f9e914126c5b844791489d89cb0b747
   - enabled: 1
-    path: Assets/Scenes/TicTacToe.unity
-    guid: 7fffd3baefca6d846aa375f8da1315df
-  - enabled: 1
-    path: Assets/Scenes/UltimateTicTacToe.unity
-    guid: 6638325b49d0d344ba88c08f1102cb58
-  - enabled: 1
-    path: Assets/Scenes/WordoStandard.unity
-    guid: c83ccff2c95dcb341afe70509e056dc3
-  - enabled: 1
-    path: Assets/Scenes/WordoMax.unity
-    guid: 8afd6debdc859ed4386a384024401c36
-  - enabled: 1
-    path: Assets/Scenes/WordoMix.unity
-    guid: a8cd1fe09781de34d87831960600bf39
-  - enabled: 1
-    path: Assets/Scenes/ConnectFour.unity
+    path: Assets/Scenes/Games/ConnectFour.unity
     guid: faa6036ec9f4bad499275a4396ca3d60
   - enabled: 1
-    path: Assets/Scenes/Sudoku.unity
-    guid: 1a6e18a15ade0224f82b999ac73176b8
+    path: Assets/Scenes/Games/CrosswordLarge.unity
+    guid: 90046cc651802d04cb1a1025d3ec347c
   - enabled: 1
-    path: Assets/Scenes/Operations.unity
-    guid: 6c72c37383d9f5f4b86dd01294eab98d
-  - enabled: 1
-    path: Assets/Scenes/CrosswordSmall.unity
+    path: Assets/Scenes/Games/CrosswordSmall.unity
     guid: 044aeec6eb1148e46b5e2644250a43de
   - enabled: 1
-    path: Assets/Scenes/CrosswordLarge.unity
-    guid: 90046cc651802d04cb1a1025d3ec347c
+    path: Assets/Scenes/Games/Operations.unity
+    guid: 6c72c37383d9f5f4b86dd01294eab98d
+  - enabled: 1
+    path: Assets/Scenes/Games/Sudoku.unity
+    guid: 1a6e18a15ade0224f82b999ac73176b8
+  - enabled: 1
+    path: Assets/Scenes/Games/TicTacToe.unity
+    guid: 7fffd3baefca6d846aa375f8da1315df
+  - enabled: 1
+    path: Assets/Scenes/Games/UltimateTicTacToe.unity
+    guid: 6638325b49d0d344ba88c08f1102cb58
+  - enabled: 1
+    path: Assets/Scenes/Games/WordoMax.unity
+    guid: 8afd6debdc859ed4386a384024401c36
+  - enabled: 1
+    path: Assets/Scenes/Games/WordoMix.unity
+    guid: a8cd1fe09781de34d87831960600bf39
+  - enabled: 1
+    path: Assets/Scenes/Games/WordoStandard.unity
+    guid: c83ccff2c95dcb341afe70509e056dc3
   m_configObjects: {}

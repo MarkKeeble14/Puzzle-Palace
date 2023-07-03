@@ -267,7 +267,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_AnchorMax.x
@@ -754,7 +754,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_AnchorMax.x
@@ -1844,7 +1844,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_AnchorMax.x
@@ -1957,10 +1957,10 @@ RectTransform:
   m_Children:
   - {fileID: 1650722567}
   - {fileID: 1555603336}
+  - {fileID: 1310952375}
   - {fileID: 1934571375}
   - {fileID: 358899645}
   - {fileID: 543027407}
-  - {fileID: 1310952375}
   - {fileID: 1201592062}
   - {fileID: 494845138}
   - {fileID: 1901472608}
@@ -3046,7 +3046,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4798115702626442828, guid: a81e1ea7d38c65141ad0dbf6f821373a, type: 3}
       propertyPath: m_AnchorMax.x
@@ -3512,6 +3512,10 @@ PrefabInstance:
     - target: {fileID: 7244765059387817739, guid: 479de74af784c2b498d8d78748138444, type: 3}
       propertyPath: m_Name
       value: TransitionCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 7244765059387817739, guid: 479de74af784c2b498d8d78748138444, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7244765059387817740, guid: 479de74af784c2b498d8d78748138444, type: 3}
       propertyPath: m_AdditionalShaderChannelsFlag

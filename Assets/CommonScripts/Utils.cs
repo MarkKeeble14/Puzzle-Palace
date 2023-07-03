@@ -158,4 +158,27 @@ public class Utils
         return -1;
     }
 
+    public static float TestFunc(string label, Action func, bool printResult)
+    {
+        System.Diagnostics.Stopwatch st = new System.Diagnostics.Stopwatch();
+        st.Start();
+        func?.Invoke();
+        st.Stop();
+        if (printResult)
+            Debug.Log(label + " - Took: " + st.ElapsedMilliseconds + "ms");
+        return st.ElapsedMilliseconds;
+    }
+
+    public static void TestFunc(int repititions, string label, Action func, bool printResult, bool printAvg)
+    {
+        float total = 0;
+        for (int i = 0; i < repititions; i++)
+        {
+            total += TestFunc(label, func, printResult);
+        }
+        if (printAvg)
+        {
+            Debug.Log(label + " - Average: " + (total / repititions) + "ms");
+        }
+    }
 }
