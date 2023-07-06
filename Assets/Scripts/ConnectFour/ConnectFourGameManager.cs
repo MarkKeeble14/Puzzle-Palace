@@ -36,10 +36,27 @@ public class ConnectFourGameManager : MiniGameManager
         return TwoPlayerDataDealer._Instance.GetStateVisualInfo(state);
     }
 
+    [SerializeField] private TwoPlayerGameState defaultTurn;
+
+    public void SetDefaultTurn(int state)
+    {
+        switch (state)
+        {
+            case 0:
+                defaultTurn = TwoPlayerGameState.P1;
+                break;
+            case 1:
+                defaultTurn = TwoPlayerGameState.P2;
+                break;
+            default:
+                throw new System.Exception("Invalid Integer Parameter Passed Through to Set Turn");
+        }
+    }
+
     protected virtual IEnumerator HandleMenu()
     {
         yield return new WaitUntil(() => gameStarted);
-        SetTurn(TwoPlayerGameState.P1);
+        SetTurn(defaultTurn);
         // beginGameScreenAnimationHelper.Fade(0.0f);
     }
 

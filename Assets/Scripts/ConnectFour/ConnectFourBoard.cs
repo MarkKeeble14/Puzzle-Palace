@@ -241,17 +241,16 @@ public class ConnectFourBoard : MonoBehaviour
         {
             check.x -= xChange;
             check.y -= yChange;
+            // Debug.Log("Moving Towards Edge: <" + check.x + ", " + check.y + ">");
         }
 
         ConnectFourBoardCell currentlyChecking = board[check.x, check.y];
-
         while (currentlyChecking != null)
         {
             // Debug.Log(currentlyChecking.Coordinates + ", " + xChange + ", " + yChange);
             if (currentlyChecking.GetState() != checkingCell.GetState())
             {
-                // Debug.Log("Breaking");
-                break;
+                count = 0;
             }
             else
             {
@@ -261,22 +260,23 @@ public class ConnectFourBoard : MonoBehaviour
 
                 if (count >= 4)
                 {
+                    // Debug.Log("Win");
                     return true;
-                }
-
-                check.x += xChange;
-                check.y += yChange;
-                // Debug.Log("X: " + check.x + ", Y: " + check.y);
-                if (check.x > board.GetLength(0) - 1 || check.x < 0 || check.y > board.GetLength(1) - 1 || check.y < 0)
-                {
-                    break;
-                }
-                else
-                {
-                    currentlyChecking = board[check.x, check.y];
                 }
             }
 
+            check.x += xChange;
+            check.y += yChange;
+
+            // Debug.Log("X: " + check.x + ", Y: " + check.y);
+            if (check.x > board.GetLength(0) - 1 || check.x < 0 || check.y > board.GetLength(1) - 1 || check.y < 0)
+            {
+                // Debug.Log("OOB While Checking");
+                break;
+            }
+
+            // Debug.Log("Checking: <" + check.x + ", " + check.y + ">");
+            currentlyChecking = board[check.x, check.y];
         }
         winCellList.Clear();
         return false;
@@ -309,18 +309,21 @@ public class ConnectFourBoard : MonoBehaviour
             GameWon = true;
             rememberWinCells.AddRange(winCellList);
         };
+
         if (CheckForVerticalWin())
         {
             // Debug.Log("Vertical Win");
             GameWon = true;
             rememberWinCells.AddRange(winCellList);
         };
+
         if (CheckForDiagonalWin())
         {
             // Debug.Log("Diagonal Win");
             GameWon = true;
             rememberWinCells.AddRange(winCellList);
         };
+
         winCellList.Clear();
         foreach (ConnectFourBoardCell cell in rememberWinCells)
         {
