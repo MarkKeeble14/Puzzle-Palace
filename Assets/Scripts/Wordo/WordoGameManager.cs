@@ -65,6 +65,8 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
     private bool hasDealtWIthPencilButton;
     protected bool gameHasBeenRestarted;
 
+    protected List<int> autoFillCellIndecies = new List<int>();
+
     public enum InputMode
     {
         INPUT,
@@ -111,13 +113,14 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
     {
         for (int i = 0; i < spawnedRows.Count; i++)
         {
+            WordoRow r = spawnedRows[i];
             if (i == spawnedRows.Count - 1)
             {
-                yield return StartCoroutine(spawnedRows[i].ChangeAlpha(0));
+                yield return StartCoroutine(r.ChangeAlpha(0));
             }
             else
             {
-                StartCoroutine(spawnedRows[i].ChangeAlpha(0));
+                StartCoroutine(r.ChangeAlpha(0));
             }
         }
 
@@ -171,7 +174,6 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
         {
             // Spawn number of cells
             WordoRow spawnedRow = Instantiate(wordoCellRowPrefab, parentSpawnedTo);
-            StartCoroutine(spawnedRow.ChangeAlpha(1));
             spawnedRows.Add(spawnedRow);
 
             // Adjust scroll view so that top & bottoms don't cut off game area due to scaling
@@ -186,9 +188,20 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
             {
                 // Debug.Log(currentWord[i]);
                 WordoCell spawned = Instantiate(wordoCellPrefab, spawnedRow.transform);
+                spawnedRow.AddCell(spawned);
                 spawnedCells[i] = spawned;
                 spawned.Set(currentWord, currentWord[i]);
                 spawned.AddOnPressedAction(SelectCell);
+
+                if (autoFillCellIndecies.Contains(i))
+                {
+                    spawned.SetInputtedChar(spawned.GetCorrectChar());
+                }
+            }
+
+            for (int i = 0; i < spawnedCells.Length; i++)
+            {
+                StartCoroutine(spawnedCells[i].ChangeScale(1));
                 yield return new WaitForSeconds(delayBetweenCellSpawns);
             }
 
@@ -463,7 +476,7 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
             if (allAllowedAnswers.Contains(word))
             {
                 // Debug.Log("Unacceptable Word: " + word + ", Was in Allowed Answers but not Word Map");
-                // wordMap.Remove(word);
+                wordMap.Remove(word);
             }
             else if (wordMap.ContainsKey(word))
             {
@@ -483,12 +496,13 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
 
         allAllowedAnswers = new List<string>();
         allAllowedAnswers.AddRange(allAllowedAnswersFile.text.ToUpper().Split('\n'));
-
         LoadJson();
     }
 
     protected void SetPossibleWords(Func<string, bool> acceptedWord)
     {
+        if (possibleWords != null)
+            possibleWords.Clear();
         possibleWords = new List<string>();
         string treatedString;
         foreach (KeyValuePair<string, string> word in wordMap)
@@ -556,6 +570,7 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
     {
         winText.text = winTextString;
     }
+
     private string GetDefinition(string word)
     {
         if (!treatDefinitions) return wordMap[word];

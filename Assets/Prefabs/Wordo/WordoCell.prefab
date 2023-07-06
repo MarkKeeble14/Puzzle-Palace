@@ -164,7 +164,7 @@ RectTransform:
   m_GameObject: {fileID: 976114636637660184}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 692867795146482823}
@@ -236,7 +236,7 @@ MonoBehaviour:
   - {fileID: 2269304899110340241}
   - {fileID: 1413755301831806114}
   - {fileID: 5654994886351893488}
-  changeColorRate: 1.25
+  changeColorRate: 1.5
   correctColor: {r: 0.5019608, g: 1, b: 0.5019608, a: 1}
   partiallyCorrectColor: {r: 1, g: 1, b: 0.5019608, a: 1}
   incorrectColor: {r: 1, g: 0.5019608, b: 0.5019608, a: 1}
@@ -245,9 +245,11 @@ MonoBehaviour:
   background: {fileID: 2391598203326432984}
   border: {fileID: 976114636637660190}
   text: {fileID: 901451607736251487}
+  backgroundTransform: {fileID: 976114636637660185}
   onCorrect: wc_onCorrect
   onPartialSuccess: wc_onPartiallyCorrect
   onIncorrect: wc_onIncorrect
+  changeScaleSpeed: 5
 --- !u!82 &7121470162264980822
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1533,7 +1535,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -5, y: -5}
+  m_SizeDelta: {x: -10, y: -10}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &314348105643618266
 CanvasRenderer:

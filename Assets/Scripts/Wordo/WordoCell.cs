@@ -27,6 +27,7 @@ public class WordoCell : MonoBehaviour
     [SerializeField] private Image background;
     [SerializeField] private Image border;
     [SerializeField] private TextMeshProUGUI text;
+    [SerializeField] private RectTransform backgroundTransform;
 
     private Action<WordoCell> OnPressed;
     private bool isSelected;
@@ -34,6 +35,8 @@ public class WordoCell : MonoBehaviour
     [SerializeField] private string onCorrect = "wc_onCorrect";
     [SerializeField] private string onPartialSuccess = "wc_onPartiallyCorrect";
     [SerializeField] private string onIncorrect = "wc_onIncorrect";
+
+    [SerializeField] private float changeScaleSpeed = 1f;
 
 
     public void OnPress()
@@ -164,5 +167,15 @@ public class WordoCell : MonoBehaviour
     private IEnumerator ChangeBackgroundColor(Color target)
     {
         yield return StartCoroutine(Utils.ChangeColor(background, target, changeColorRate));
+    }
+
+    public IEnumerator ChangeScale(Vector3 targetScale)
+    {
+        yield return StartCoroutine(Utils.ChangeScale(backgroundTransform, targetScale, changeScaleSpeed));
+    }
+
+    public IEnumerator ChangeScale(float targetScale)
+    {
+        yield return StartCoroutine(ChangeScale(Vector3.one * targetScale));
     }
 }

@@ -2,21 +2,16 @@
 using TMPro;
 using UnityEngine;
 
-public class StandardWordoGameManager : WordoGameManager
+public class WordoSelectGameManager : WordoGameManager
 {
     [Header("Standard Wordo Settings")]
-    [SerializeField] private int wordLength = 5;
-
     private string numGuessesHSKey = "NumGuesses";
 
     [SerializeField] private TextMeshProUGUI hsText;
 
-
-    private new void Start()
+    public void SetWordoLength(int length)
     {
-        base.Start();
-
-        SetPossibleWords(s => s.Length == wordLength);
+        SetPossibleWords(s => s.Length == length);
     }
 
     protected override IEnumerator Setup()
@@ -35,7 +30,7 @@ public class StandardWordoGameManager : WordoGameManager
         numGuesses = 0;
         gameHasBeenRestarted = true;
 
-        yield return StartCoroutine(HideKeyboard());
+        StartCoroutine(HideKeyboard());
 
         yield return StartCoroutine(ClearSpawnedRows());
     }
@@ -48,14 +43,14 @@ public class StandardWordoGameManager : WordoGameManager
         SetNumGuessesText();
 
         // Handle High Score
-        if (TrySetHighScore(numGuessesHSKey, numGuesses, (x, y) => x < y))
+        if (TrySetHighScore(numGuessesHSKey + currentWordLength, numGuesses, (x, y) => x < y))
         {
-            hsText.text = "New High Score!: " + numGuesses + " Guess" + Utils.GetPluralization(numGuesses);
+            hsText.text = "New High Score For Word of Length: " + currentWordLength + "\n" + numGuesses + " Guess" + Utils.GetPluralization(numGuesses);
         }
         else
         {
-            float hs = GetHighScore(numGuessesHSKey);
-            hsText.text = "High Score: " + hs + " Guess" + Utils.GetPluralization(Mathf.RoundToInt(hs));
+            float hs = GetHighScore(numGuessesHSKey + currentWordLength);
+            hsText.text = "High Score For Word of Length " + currentWordLength + ": " + "\n" + hs + " Guess" + Utils.GetPluralization(Mathf.RoundToInt(hs));
         }
 
         yield return null;

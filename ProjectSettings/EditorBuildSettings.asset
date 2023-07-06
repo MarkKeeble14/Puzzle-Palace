@@ -30,12 +30,15 @@ EditorBuildSettings:
     path: Assets/Scenes/Games/UltimateTicTacToe.unity
     guid: 6638325b49d0d344ba88c08f1102cb58
   - enabled: 1
-    path: Assets/Scenes/Games/WordoMax.unity
+    path: Assets/Scenes/Games/WordoSelect.unity
+    guid: c83ccff2c95dcb341afe70509e056dc3
+  - enabled: 1
+    path: Assets/Scenes/Games/WordoAdvance.unity
     guid: 8afd6debdc859ed4386a384024401c36
   - enabled: 1
-    path: Assets/Scenes/Games/WordoMix.unity
-    guid: a8cd1fe09781de34d87831960600bf39
+    path: Assets/Scenes/Games/WordoRetain.unity
+    guid: 1c16657a8b42382438a3b1a94f9d41f6
   - enabled: 1
-    path: Assets/Scenes/Games/WordoStandard.unity
-    guid: c83ccff2c95dcb341afe70509e056dc3
+    path: Assets/Scenes/Games/WordoRandom.unity
+    guid: a8cd1fe09781de34d87831960600bf39
   m_configObjects: {}

@@ -2,7 +2,7 @@
 using TMPro;
 using UnityEngine;
 
-public class WordoMixGameManager : WordoGameManager
+public class RandomWordoGameManager : WordoGameManager
 {
     [Header("Wordo Mix Settings")]
     [SerializeField] private Vector2 minMaxWordLength = new Vector2(3, 8);
@@ -33,7 +33,7 @@ public class WordoMixGameManager : WordoGameManager
         gameHasBeenRestarted = true;
         numGuesses = 0;
 
-        yield return StartCoroutine(HideKeyboard());
+        StartCoroutine(HideKeyboard());
 
         yield return StartCoroutine(ClearSpawnedRows());
     }

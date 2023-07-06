@@ -1,21 +1,25 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class WordoMaxGameManager : WordoGameManager
+public class WordoRetainGameManager : WordoGameManager
 {
-    [Header("Wordo Max Settings")]
-    [SerializeField] private Vector2Int startFinishWordLength = new Vector2Int(3, 8);
+    [Header("Wordo Retain Settings")]
+    [SerializeField] private int wordLength = 5;
+    [SerializeField] private int numLevels = 3;
 
     [SerializeField] private TextMeshProUGUI totalGuessesText;
     [SerializeField] private TextMeshProUGUI endGameButtonText;
+
+    private bool passedAllLevels => currentLevelIndex >= numLevels;
+    private int currentLevelIndex;
 
     [SerializeField] private TextMeshProUGUI overallGuessesHSText;
     [SerializeField] private TextMeshProUGUI timeTakenHSText;
     private string overallGuessesHSKey = "OverallGuesses";
 
     private int numTotalGuesses;
-    private bool passedAllLevels => currentWordLength > startFinishWordLength.y;
 
     private float overallTimer;
 
@@ -24,7 +28,7 @@ public class WordoMaxGameManager : WordoGameManager
     {
         base.Start();
 
-        SetPossibleWords(s => s.Length == startFinishWordLength.x);
+        SetPossibleWords(s => s.Length == wordLength);
     }
 
     protected override IEnumerator Setup()
@@ -42,9 +46,11 @@ public class WordoMaxGameManager : WordoGameManager
         if (passedAllLevels)
         {
             numTotalGuesses = 0;
-            SetPossibleWords(s => s.Length == startFinishWordLength.x);
+            SetPossibleWords(s => s.Length == wordLength);
 
-            yield return StartCoroutine(HideKeyboard());
+            autoFillCellIndecies.Clear();
+
+            StartCoroutine(HideKeyboard());
         }
 
         // 
@@ -84,7 +90,7 @@ public class WordoMaxGameManager : WordoGameManager
         }
         else
         {
-            winText.text = "Level " + (currentWordLength - startFinishWordLength.x) + " " + winTextString;
+            winText.text = "Level " + (currentLevelIndex) + " " + winTextString;
             SetWordText();
             SetDefinitionText();
             numGuessesText.text = "You Guessed the Word in " + numGuesses + " Guess" + (numGuesses > 1 ? "es" : "");
@@ -96,8 +102,14 @@ public class WordoMaxGameManager : WordoGameManager
 
     protected override IEnumerator HandleSuccessfulGuess()
     {
-        currentWordLength++;
-        SetPossibleWords(s => s.Length == currentWordLength);
+        autoFillCellIndecies.Clear();
+
+        int chosenIndex = RandomHelper.RandomIntExclusive(0, wordLength);
+        char c = currentWord[chosenIndex];
+        currentLevelIndex++;
+        autoFillCellIndecies.Add(chosenIndex);
+
+        SetPossibleWords(s => s.Length == currentWordLength && s[chosenIndex].Equals(c));
         numTotalGuesses += numGuesses;
 
         gameStarted = false;

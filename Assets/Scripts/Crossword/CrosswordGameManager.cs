@@ -62,6 +62,8 @@ public class CrosswordGameManager : UsesVirtualKeyboardMiniGameManager
         yield return StartCoroutine(board.Generate(SelectCell, clueDict, clues, possibleAnswers, boardSize,
             minMaxWordSize, targetNumWords, minNumWords, maxAlottedAttemptsPerWord, maxRetryAttempts));
 
+        TransitionManager._Instance.FadeIn();
+
         yield return StartCoroutine(ShowKeyboard());
 
         if (gameHasBeenRestarted)
@@ -71,6 +73,8 @@ public class CrosswordGameManager : UsesVirtualKeyboardMiniGameManager
 
     protected override IEnumerator Restart()
     {
+        TransitionManager._Instance.FadeOut();
+
         hideEndScreenController.Fade(0);
 
         if (spawnedToolTips.Count > 0)
