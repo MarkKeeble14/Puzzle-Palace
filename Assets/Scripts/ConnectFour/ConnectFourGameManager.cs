@@ -163,7 +163,7 @@ public class ConnectFourGameManager : MiniGameManager
         Destroy(board.gameObject);
 
         // Reset the game state to player 1's turn
-        SetTurn(TwoPlayerGameState.P1);
+        SetTurn(defaultTurn);
 
         AllowMove = true;
     }

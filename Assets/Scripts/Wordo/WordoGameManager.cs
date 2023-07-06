@@ -226,7 +226,7 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
                 if (Input.GetKeyDown(KeyCode.Return) || enterPressed)
                 {
                     enterPressed = false;
-                    if (IsAcceptedWord(GetInputtedWord(spawnedCells)))
+                    if (IsAcceptedWord(inputtedWord))
                     {
                         AudioManager._Instance.PlayFromSFXDict(onInput);
                         // Debug.Log("Accepted Word; Breaking");
@@ -454,7 +454,7 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
     {
         // Inputted word is now entered into s
         // Check if this is an accepted word
-        return possibleWords.Contains(s);
+        return allAllowedAnswers.Contains(s) && s.Length == currentWordLength;
     }
 
     private string GetRandomWord()
@@ -476,12 +476,12 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
             if (allAllowedAnswers.Contains(word))
             {
                 // Debug.Log("Unacceptable Word: " + word + ", Was in Allowed Answers but not Word Map");
-                wordMap.Remove(word);
+                // wordMap.Remove(word);
             }
             else if (wordMap.ContainsKey(word))
             {
                 // Debug.Log("Unacceptable Word: " + word + ", Was in Word Map but not Acceptable Answers");
-                allAllowedAnswers.Remove(word);
+                // allAllowedAnswers.Remove(word);
             }
             return GetRandomWord();
         }

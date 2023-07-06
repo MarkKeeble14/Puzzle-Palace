@@ -26,7 +26,7 @@ public abstract class TicTacToeGameManager : MiniGameManager
     [SerializeField] protected float delayOnRestart = 1.0f;
     [SerializeField] protected int numCells;
 
-    [SerializeField] private TwoPlayerGameState defaultTurn;
+    [SerializeField] protected TwoPlayerGameState defaultTurn;
 
     public bool AllowMove { get; protected set; }
 

@@ -26,7 +26,7 @@ public class StandardTicTacToeGameManager : TicTacToeGameManager
         Destroy(board.gameObject);
 
         // Reset the game state to player 1's turn
-        SetTurn(TwoPlayerGameState.P1);
+        SetTurn(defaultTurn);
     }
 
     protected override IEnumerator Setup()
