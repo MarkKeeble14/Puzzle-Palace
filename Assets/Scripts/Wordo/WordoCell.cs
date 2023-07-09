@@ -178,4 +178,9 @@ public class WordoCell : MonoBehaviour
     {
         yield return StartCoroutine(ChangeScale(Vector3.one * targetScale));
     }
+
+    public bool HasCharPencilled(char v)
+    {
+        return pencilledChars.Contains(v);
+    }
 }

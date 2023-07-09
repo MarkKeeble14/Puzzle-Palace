@@ -949,7 +949,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7736b3fe3d7f30499beb83e728ce043, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  confirmButtonInactiveColor: {r: 0, g: 0, b: 0, a: 0}
+  confirmButtonActiveColor: {r: 0, g: 0, b: 0, a: 0}
   text: {fileID: 7573473369944522984}
+  confirmButtonBackdrop: {fileID: 0}
+  confirmButtonCV: {fileID: 0}
 --- !u!1 &7155897765979536451
 GameObject:
   m_ObjectHideFlags: 0

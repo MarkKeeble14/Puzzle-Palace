@@ -1521,7 +1521,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Invalid Word
+  m_text: Unrecognized Word
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: eaa0394021fef084292232a068fce097, type: 2}
   m_sharedMaterial: {fileID: 3319115297578570464, guid: eaa0394021fef084292232a068fce097, type: 2}
@@ -6716,7 +6716,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
       propertyPath: Content.Array.data[1].Data.Array.size
-      value: 10
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
       propertyPath: Content.Array.data[1].Data.Array.data[0].Icon
@@ -6733,6 +6733,14 @@ PrefabInstance:
     - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
       propertyPath: Content.Array.data[1].Data.Array.data[0].Shown
       value: Pencil
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
+      propertyPath: Content.Array.data[1].Data.Array.data[10].Icon
+      value: 
+      objectReference: {fileID: 21300000, guid: b16a816f707362c4ca424486e9ac0d69, type: 3}
+    - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
+      propertyPath: Content.Array.data[1].Data.Array.data[10].Type
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
       propertyPath: Content.Array.data[1].Data.Array.data[1].Shown
@@ -6771,6 +6779,10 @@ PrefabInstance:
       value: L
       objectReference: {fileID: 0}
     - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
+      propertyPath: Content.Array.data[1].Data.Array.data[10].Shown
+      value: SPAWN_TOOLTIPS
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
       propertyPath: Content.Array.data[1].Data.Array.data[9].SizeDelta.x
       value: 50
       objectReference: {fileID: 0}
@@ -6793,6 +6805,14 @@ PrefabInstance:
     - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
       propertyPath: Content.Array.data[2].Data.Array.data[8].sizeDelta.x
       value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
+      propertyPath: Content.Array.data[1].Data.Array.data[10].SizeDelta.x
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 4866995181161698103, guid: 29092b3bd748f544286af897d38ce02b, type: 3}
+      propertyPath: Content.Array.data[1].Data.Array.data[10].SizeDelta.y
+      value: 60
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 29092b3bd748f544286af897d38ce02b, type: 3}

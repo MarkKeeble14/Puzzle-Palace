@@ -19,9 +19,7 @@ public class OperationsGameManager : UsesVirtualKeyboardMiniGameManager
     [SerializeField] private string onInput = "gm_onInput";
 
     private AdditionalFuncVirtualKeyboardButton pencilButton;
-    private AdditionalFuncVirtualKeyboardButton solveCellButton;
-
-    private AdditionalFuncVirtualKeyboardButton solveBoardButton;
+    private AdditionalFuncVirtualKeyboardButton spawnToolTipsButton;
 
     private bool gameHasBeenRestarted;
 
@@ -33,6 +31,7 @@ public class OperationsGameManager : UsesVirtualKeyboardMiniGameManager
     [SerializeField] private float delayBetweenCellsInRestartSequence;
     [SerializeField] protected float delayOnRestart = 1.0f;
 
+    [SerializeField] private SerializableDictionary<MathematicalOperation, int> maxOpsDict = new SerializableDictionary<MathematicalOperation, int>();
     [SerializeField] private List<int> allowedNums = new List<int>();
     [SerializeField] private List<MathematicalOperation> allowedOps = new List<MathematicalOperation>();
     private bool forceChange;
@@ -45,13 +44,7 @@ public class OperationsGameManager : UsesVirtualKeyboardMiniGameManager
         // Generate the board
         board = Instantiate(numbersBoardPrefab, parentSpawnedTo);
 
-        yield return StartCoroutine(board.Generate(SelectCell, allowedNums, allowedOps));
-
-        if (hasDealtWIthFunctionButtons)
-        {
-            solveCellButton.SetState(false);
-            solveCellButton.SetInteractable(false);
-        }
+        yield return StartCoroutine(board.Generate(SelectCell, allowedNums, allowedOps, maxOpsDict));
 
         yield return StartCoroutine(ShowKeyboard());
 
@@ -145,17 +138,6 @@ public class OperationsGameManager : UsesVirtualKeyboardMiniGameManager
         }
     }
 
-    private void ConfirmSolveSelectedCell()
-    {
-        SpawnToolTip("Solve the Selected Cell", SolveSelectedCell, null);
-    }
-
-    private void ConfirmSolveBoard()
-    {
-        SpawnToolTip("Solve the Board", SolveBoard, null);
-    }
-
-
     private void SolveSelectedCell()
     {
         if (selectedCell)
@@ -203,20 +185,32 @@ public class OperationsGameManager : UsesVirtualKeyboardMiniGameManager
             pencilButton = virtualKeyboard.GetAdditionalFuncButton("PENCIL");
             additionalFunctionsDict.Add("PENCIL", ToggleInputMode);
 
-            solveCellButton = virtualKeyboard.GetAdditionalFuncButton("SOLVE_CELL");
-            additionalFunctionsDict.Add("SOLVE_CELL", ConfirmSolveSelectedCell);
+            // Tool Tips
+            List<ToolTipDataContainer> toolTips = new List<ToolTipDataContainer>();
+            toolTips.Add(new ToolTipDataContainer("Solve the Selected Cell", () => CallToolTipFunc(SolveSelectedCell), null));
+            toolTips.Add(new ToolTipDataContainer("Solve the Board", () => CallToolTipFunc(SolveBoard), null));
 
-            solveBoardButton = virtualKeyboard.GetAdditionalFuncButton("SOLVE_BOARD");
-            additionalFunctionsDict.Add("SOLVE_BOARD", ConfirmSolveBoard);
-            solveBoardButton.SetState(true);
+            spawnToolTipsButton = virtualKeyboard.GetAdditionalFuncButton("SPAWN_TOOLTIPS");
+            additionalFunctionsDict.Add("SPAWN_TOOLTIPS", delegate
+            {
+                if (spawnedToolTips.Count > 0)
+                {
+                    Destroy(spawnedToolTips[0].transform.parent.parent.gameObject);
+                    spawnedToolTips.Clear();
+                }
+                else
+                {
+                    spawnedToolTips = SpawnToolTips(toolTips);
+                    // Returned order should be the same as spawned
+                    spawnedToolTips[0].SetState(selectedCell != null);
+                    spawnedToolTips[1].SetState(true);
+                }
+            });
         }
 
         string currentFrameString;
         while (true)
         {
-            solveCellButton.SetState(selectedCell != null);
-            solveCellButton.SetInteractable(selectedCell != null);
-
             if (forceChange)
             {
                 if (board.CheckForWin())

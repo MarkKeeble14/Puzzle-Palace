@@ -109,7 +109,7 @@ public class OperationsBoard : MonoBehaviour
         HasChanged = false;
     }
 
-    public IEnumerator Generate(Action<OperationsBoardCell> onPressCellAction, List<int> acceptedNums, List<MathematicalOperation> acceptedOps)
+    public IEnumerator Generate(Action<OperationsBoardCell> onPressCellAction, List<int> acceptedNums, List<MathematicalOperation> acceptedOps, SerializableDictionary<MathematicalOperation, int> maxOpsDict)
     {
         board = new OperationsBoardCell[6, 6];
         for (int i = 0; i < board.GetLength(0); i++)
@@ -162,7 +162,7 @@ public class OperationsBoard : MonoBehaviour
         });
 
         acceptedNums.Shuffle();
-        PopulateBoard(populateBoardWith, acceptedOps);
+        PopulateBoard(populateBoardWith, acceptedOps, maxOpsDict);
 
         // Lock answer and operation cells
         ActOnEachBoardCell(cell =>
@@ -360,7 +360,7 @@ public class OperationsBoard : MonoBehaviour
         return true;
     }
 
-    private bool PopulateBoard(List<int> acceptedNums, List<MathematicalOperation> acceptedOperations)
+    private bool PopulateBoard(List<int> acceptedNums, List<MathematicalOperation> acceptedOperations, SerializableDictionary<MathematicalOperation, int> maxOperationsDict)
     {
         OperationsBoardCell cell = FindEmptyCell();
         // Debug.Log("Populating Cell: " + cell);
@@ -383,10 +383,11 @@ public class OperationsBoard : MonoBehaviour
                     if (CheckForCellValidity(cell))
                     {
                         acceptedNums.Remove(num);
+
                         // Debug.Log("1. Next: " + cell);
                         // PrintBoardState();
                         // Debug.Log("Placement Valid");
-                        if (PopulateBoard(acceptedNums, acceptedOperations))
+                        if (PopulateBoard(acceptedNums, acceptedOperations, maxOperationsDict))
                         {
                             // Debug.Log("3. Success: " + cell);
                             // Debug.Log("Board Population Successful");
@@ -416,6 +417,20 @@ public class OperationsBoard : MonoBehaviour
 
                     // Debug.Log("Attempting to Place: " + num + " - into: " + cell);
 
+                    bool didRemoveOp = false;
+                    if (maxOperationsDict.ContainsKey(op))
+                    {
+                        maxOperationsDict[op]--;
+                        // Debug.Log("Contains Key: " + op + ", New Value: " + maxOperationsDict[op]);
+                        if (maxOperationsDict[op] <= 0)
+                        {
+                            // Debug.Log("Removing Key: " + op);
+                            maxOperationsDict.RemoveEntry(op);
+                            acceptedOperations.Remove(op);
+                            didRemoveOp = true;
+                        }
+                    }
+
                     cell.SetOperation(op);
 
                     if (CheckForCellValidity(cell))
@@ -423,7 +438,7 @@ public class OperationsBoard : MonoBehaviour
                         // Debug.Log("2. Next: " + cell);
                         // PrintBoardState();
                         // Debug.Log("Placement Valid");
-                        if (PopulateBoard(acceptedNums, acceptedOperations))
+                        if (PopulateBoard(acceptedNums, acceptedOperations, maxOperationsDict))
                         {
                             // Debug.Log("4. Success: " + cell);
                             // Debug.Log("Board Population Successful");
@@ -431,8 +446,21 @@ public class OperationsBoard : MonoBehaviour
                         }
 
                         // Debug.Log("Board Population Unsuccessful; Future Placement Was Invalid");
-                        cell.Clear();
                         // PrintBoardState();
+                    }
+                    cell.Clear();
+
+                    if (didRemoveOp)
+                    {
+                        // Debug.Log("Removed Op: " + op);
+                        maxOperationsDict.Set(op, 1);
+                        acceptedOperations.Add(op);
+                    }
+
+                    if (maxOperationsDict.ContainsKey(op))
+                    {
+                        maxOperationsDict[op]++;
+                        // Debug.Log("Re-Increased Op: " + op + ", New Value: " + maxOperationsDict[op]);
                     }
                 }
                 return false;

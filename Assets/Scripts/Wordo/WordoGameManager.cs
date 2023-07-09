@@ -53,6 +53,7 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
     [SerializeField] private RectTransform scrollViewRect;
     private ScrollRect scrollView;
     [SerializeField] private ScrollRect endGameScrollView;
+    private AdditionalFuncVirtualKeyboardButton spawnToolTipsButton;
 
     [Header("Audio")]
     [SerializeField] private string onInput = "gm_onInput";
@@ -64,6 +65,8 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
     private InputMode currentInputMode;
     private bool hasDealtWIthPencilButton;
     protected bool gameHasBeenRestarted;
+
+    private bool forceUpdate;
 
     protected List<int> autoFillCellIndecies = new List<int>();
 
@@ -154,6 +157,50 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
         selectedCell.Select();
     }
 
+    private void SolveSelectedCell()
+    {
+        if (selectedCell)
+        {
+            selectedCell.SetInputtedChar(selectedCell.GetCorrectChar());
+            currentIndex++;
+            SelectCellBasedOnIndex();
+            forceUpdate = true;
+        }
+
+    }
+
+    private void SolveWord()
+    {
+        for (int i = 0; i < spawnedCells.Length; i++)
+        {
+            WordoCell cell = spawnedCells[i];
+            cell.SetInputtedChar(cell.GetCorrectChar());
+        }
+
+        forceUpdate = true;
+    }
+
+    private void PencilCorrectChars()
+    {
+        List<char> toPencil = new List<char>();
+        for (int i = 0; i < spawnedCells.Length; i++)
+        {
+            toPencil.Add(spawnedCells[i].GetCorrectChar());
+        }
+
+        for (int i = 0; i < spawnedCells.Length; i++)
+        {
+            WordoCell cur = spawnedCells[i];
+            if (!cur.GetInputtedChar().Equals(' ')) continue;
+            toPencil.Shuffle();
+            for (int p = 0; p < toPencil.Count; p++)
+            {
+                if (!cur.HasCharPencilled(toPencil[p]))
+                    cur.TryPencilChar(toPencil[p]);
+            }
+        }
+    }
+
     protected override IEnumerator GameLoop()
     {
         if (!hasDealtWIthPencilButton)
@@ -161,6 +208,30 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
             hasDealtWIthPencilButton = true;
             pencilButton = virtualKeyboard.GetAdditionalFuncButton("PENCIL");
             additionalFunctionsDict.Add("PENCIL", ToggleInputMode);
+
+            // Tool Tips
+            List<ToolTipDataContainer> toolTips = new List<ToolTipDataContainer>();
+            toolTips.Add(new ToolTipDataContainer("Pencil the Correct Letters into the Words Cells", () => CallToolTipFunc(PencilCorrectChars), null));
+            toolTips.Add(new ToolTipDataContainer("Solve the Selected Cell", () => CallToolTipFunc(SolveSelectedCell), null));
+            toolTips.Add(new ToolTipDataContainer("Solve the Word", () => CallToolTipFunc(SolveWord), null));
+
+            spawnToolTipsButton = virtualKeyboard.GetAdditionalFuncButton("SPAWN_TOOLTIPS");
+            additionalFunctionsDict.Add("SPAWN_TOOLTIPS", delegate
+            {
+                if (spawnedToolTips.Count > 0)
+                {
+                    Destroy(spawnedToolTips[0].transform.parent.parent.gameObject);
+                    spawnedToolTips.Clear();
+                }
+                else
+                {
+                    spawnedToolTips = SpawnToolTips(toolTips);
+                    // Returned order should be the same as spawned
+                    spawnedToolTips[0].SetState(true);
+                    spawnedToolTips[1].SetState(selectedCell != null);
+                    spawnedToolTips[2].SetState(true);
+                }
+            });
         }
 
         // Choose Word
@@ -222,6 +293,15 @@ public abstract class WordoGameManager : UsesVirtualKeyboardMiniGameManager
             while (true)
             {
                 inputtedWord = GetInputtedWord(spawnedCells);
+
+                if (forceUpdate)
+                {
+                    if (IsAcceptedWord(inputtedWord))
+                    {
+                        forceUpdate = false;
+                        break;
+                    }
+                }
 
                 if (Input.GetKeyDown(KeyCode.Return) || enterPressed)
                 {
