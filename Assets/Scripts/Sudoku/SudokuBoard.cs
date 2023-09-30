@@ -223,7 +223,7 @@ public class SudokuBoard : MonoBehaviour
 
             for (int i = 0; i < allowedNums.Count; i++)
             {
-                cell.PencilChar(allowedNums[i].ToString()[0]);
+                cell.TryPencilChar(allowedNums[i].ToString()[0]);
             }
         });
     }
@@ -247,7 +247,7 @@ public class SudokuBoard : MonoBehaviour
                 && !CheckIfColContainsChar(c, cell.Coordinates.y)
                 && !CheckIfRegionContainsChar(c, cell.Coordinates.x, cell.Coordinates.y))
                 {
-                    cell.PencilChar(c);
+                    cell.TryPencilChar(c);
                 }
             }
         });
@@ -483,6 +483,7 @@ public class SudokuBoard : MonoBehaviour
         foreach (SudokuBoardCell cell in board)
         {
             cell.SetInputtedChar(cell.GetCorrectChar());
+            cell.Check();
         }
     }
 

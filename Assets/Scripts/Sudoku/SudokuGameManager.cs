@@ -39,6 +39,8 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
     [SerializeField] protected TextMeshProUGUI timeTakenText;
     [SerializeField] protected TextMeshProUGUI hsTimeTakenText;
 
+    string currentFrameString;
+
     protected override IEnumerator Setup()
     {
         // Generate the board
@@ -68,6 +70,8 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
         yield return new WaitForSeconds(delayOnRestart);
 
         Destroy(board.gameObject);
+
+        InputBoardCell._Autocheck = false;
 
         AllowMove = true;
     }
@@ -112,10 +116,12 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
             board.ShowCellsWithChar(selectedCell.GetInputtedChar());
         }
 
-        List<int> pencilledChars = selectedCell.GetPencilledChars();
+        List<char> pencilledChars = selectedCell.GetPencilledChars();
         foreach (int i in allowedNums)
         {
-            virtualKeyboard.BlackoutKey(i.ToString(), pencilledChars.Contains(i));
+            char c;
+            char.TryParse(i.ToString(), out c);
+            virtualKeyboard.BlackoutKey(c.ToString(), pencilledChars.Contains(c));
         }
     }
 
@@ -145,6 +151,8 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
 
             board.RemoveCharFromInvalidLocations(selectedCell, c);
             BlackoutPencilledCharsOfCell(selectedCell, true);
+
+            selectedCell.Check();
         }
     }
 
@@ -168,20 +176,23 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
             BlackoutPencilledCharsOfCell(selectedCell, true);
     }
 
-    private void BlackoutPencilledCharsOfCell(SudokuBoardCell cell, bool b)
+    private void BlackoutPencilledCharsOfCell(SudokuBoardCell cell, bool blackoutIfFound)
     {
-        List<int> pencilledChars = cell.GetPencilledChars();
+        List<char> pencilledChars = cell.GetPencilledChars();
 
         for (int i = 0; i < allowedNums.Count; i++)
         {
             int num = allowedNums[i];
-            if (pencilledChars.Contains(num))
+            char c;
+            char.TryParse(num.ToString(), out c);
+
+            if (pencilledChars.Contains(c))
             {
-                virtualKeyboard.BlackoutKey(num.ToString(), b);
+                virtualKeyboard.BlackoutKey(num.ToString(), blackoutIfFound);
             }
             else
             {
-                virtualKeyboard.BlackoutKey(num.ToString(), !b);
+                virtualKeyboard.BlackoutKey(num.ToString(), !blackoutIfFound);
             }
         }
     }
@@ -190,18 +201,7 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
     {
         board.ActOnEachBoardCell(cell =>
         {
-            if (!cell.GetCorrectChar().Equals(CrosswordBoardCell.DefaultChar) && !cell.GetInputtedChar().Equals(' '))
-            {
-                StartCoroutine(cell.ChangeCoverAlpha(.5f));
-                if (cell.GetInputtedChar().Equals(cell.GetCorrectChar()))
-                {
-                    cell.SetCoverColor(Color.green);
-                }
-                else
-                {
-                    cell.SetCoverColor(Color.red);
-                }
-            }
+            cell.Check();
         });
     }
 
@@ -216,6 +216,7 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
 
             // Tool Tips
             List<ToolTipDataContainer> toolTips = new List<ToolTipDataContainer>();
+            toolTips.Add(new ToolTipDataContainer("Toggle Autocheck", () => CallToolTipFunc(InputBoardCell._ToggleAutocheck), null));
             toolTips.Add(new ToolTipDataContainer("Pencil all 9 Digits into Every Cell", () => CallToolTipFunc(FullyPencilInBoard), null));
             toolTips.Add(new ToolTipDataContainer("Pencil all Possibilities into Every Cell According to Board State", () => CallToolTipFunc(CorrectlyPencilInBoard), null));
             toolTips.Add(new ToolTipDataContainer("Check the Board for Errors", () => CallToolTipFunc(CheckBoard), null));
@@ -237,13 +238,13 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
                     spawnedToolTips[0].SetState(true);
                     spawnedToolTips[1].SetState(true);
                     spawnedToolTips[2].SetState(true);
-                    spawnedToolTips[3].SetState(selectedCell != null);
-                    spawnedToolTips[4].SetState(true);
+                    spawnedToolTips[3].SetState(true);
+                    spawnedToolTips[4].SetState(selectedCell != null);
+                    spawnedToolTips[5].SetState(true);
                 }
             });
         }
 
-        string currentFrameString;
         while (true)
         {
             if (forceChange)
@@ -261,14 +262,13 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
                 {
                     AudioManager._Instance.PlayFromSFXDict(onInput);
                     backPressed = false;
-                    if (!selectedCell.GetInputtedChar().Equals(' '))
-                    {
-                        selectedCell.SetInputtedChar(' ');
-                    }
-                    else
-                    {
-                        selectedCell.SetInputtedChar(' ');
-                    }
+
+                    selectedCell.SetInputtedChar(' ');
+                    selectedCell.ClearPencilledChars();
+                    BlackoutPencilledCharsOfCell(selectedCell, true);
+
+                    selectedCell.SetCoverColor(Color.white);
+                    StartCoroutine(selectedCell.ChangeCoverAlpha(0));
                 }
                 else
                 {
@@ -297,18 +297,14 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
                                         checkCell.SetCoverColor(Color.red);
 
                                         // Invalid Case
-                                        yield return StartCoroutine(checkCell.ChangeCoverAlpha(1));
-
-                                        yield return StartCoroutine(checkCell.ChangeCoverAlpha(0));
+                                        StartCoroutine(checkCell.PulseCoverAlpha());
                                     }
                                     else if ((checkCell = board.CheckIfColContainsChar(c, selectedCell.Coordinates.y)) != null)
                                     {
                                         checkCell.SetCoverColor(Color.red);
 
                                         // Invalid Case
-                                        yield return StartCoroutine(checkCell.ChangeCoverAlpha(1));
-
-                                        yield return StartCoroutine(checkCell.ChangeCoverAlpha(0));
+                                        StartCoroutine(checkCell.PulseCoverAlpha());
 
                                     }
                                     else if ((checkCell = board.CheckIfRegionContainsChar(c, selectedCell.Coordinates.x, selectedCell.Coordinates.y)) != null)
@@ -316,9 +312,7 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
                                         checkCell.SetCoverColor(Color.red);
 
                                         // Invalid Case
-                                        yield return StartCoroutine(checkCell.ChangeCoverAlpha(1));
-
-                                        yield return StartCoroutine(checkCell.ChangeCoverAlpha(0));
+                                        StartCoroutine(checkCell.PulseCoverAlpha());
                                     }
                                     else
                                     {
@@ -327,9 +321,9 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
                                         board.RemoveCharFromInvalidLocations(selectedCell, x.ToString()[0]);
 
                                         selectedCell.SetCoverColor(Color.white);
-                                        StartCoroutine(selectedCell.ChangeCoverAlpha(0));
 
                                         selectedCell.SetInputtedChar(x.ToString()[0]);
+
                                         AudioManager._Instance.PlayFromSFXDict(onInput);
 
                                         if (board.CheckForWin())
@@ -374,4 +368,5 @@ public class SudokuGameManager : UsesVirtualKeyboardMiniGameManager
             yield return null;
         }
     }
+
 }

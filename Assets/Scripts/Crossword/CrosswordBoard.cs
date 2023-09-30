@@ -622,6 +622,7 @@ public class CrosswordBoard : MonoBehaviour
         foreach (CrosswordBoardCell cell in board)
         {
             cell.SetInputtedChar(cell.GetCorrectChar());
+            cell.Check();
         }
     }
 

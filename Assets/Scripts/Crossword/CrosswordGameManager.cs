@@ -54,6 +54,9 @@ public class CrosswordGameManager : UsesVirtualKeyboardMiniGameManager
     private List<CrosswordClue> clues;
     private List<string> possibleAnswers;
     private Dictionary<int, List<CrosswordClue>> clueDict;
+
+    bool autoCheck;
+
     protected override IEnumerator Setup()
     {
         // Generate the board
@@ -99,6 +102,8 @@ public class CrosswordGameManager : UsesVirtualKeyboardMiniGameManager
         yield return new WaitForSeconds(delayOnRestart);
 
         Destroy(board.gameObject);
+
+        InputBoardCell._Autocheck = false;
 
         AllowMove = true;
     }
@@ -489,6 +494,7 @@ public class CrosswordGameManager : UsesVirtualKeyboardMiniGameManager
             selectedCell.SetCoverColor(Color.white);
             StartCoroutine(selectedCell.ChangeCoverAlpha(0));
             forceUpdate = true;
+            selectedCell.Check();
         }
     }
 
@@ -502,6 +508,7 @@ public class CrosswordGameManager : UsesVirtualKeyboardMiniGameManager
                 cell.SetInputtedChar(cell.GetCorrectChar());
                 cell.SetCoverColor(Color.white);
                 StartCoroutine(cell.ChangeCoverAlpha(0));
+                cell.Check();
             }
         }
     }
@@ -539,18 +546,7 @@ public class CrosswordGameManager : UsesVirtualKeyboardMiniGameManager
     {
         board.ActOnEachBoardCell(cell =>
         {
-            if (!cell.GetCorrectChar().Equals(CrosswordBoardCell.DefaultChar) && !cell.GetInputtedChar().Equals(' '))
-            {
-                StartCoroutine(cell.ChangeCoverAlpha(.5f));
-                if (cell.GetInputtedChar().Equals(cell.GetCorrectChar()))
-                {
-                    cell.SetCoverColor(Color.green);
-                }
-                else
-                {
-                    cell.SetCoverColor(Color.red);
-                }
-            }
+            cell.Check();
         });
     }
 
@@ -565,6 +561,7 @@ public class CrosswordGameManager : UsesVirtualKeyboardMiniGameManager
 
             // Tool Tips
             List<ToolTipDataContainer> toolTips = new List<ToolTipDataContainer>();
+            toolTips.Add(new ToolTipDataContainer("Toggle Autocheck", () => CallToolTipFunc(InputBoardCell._ToggleAutocheck), null));
             toolTips.Add(new ToolTipDataContainer("Pencil the Correct Letters into the Selected Words Cells", () => CallToolTipFunc(PencilCorrectChars), null));
             toolTips.Add(new ToolTipDataContainer("Check the Board for Errors", () => CallToolTipFunc(CheckBoard), null));
             toolTips.Add(new ToolTipDataContainer("Solve the Selected Cell", () => CallToolTipFunc(SolveSelectedCell), null));
@@ -583,11 +580,12 @@ public class CrosswordGameManager : UsesVirtualKeyboardMiniGameManager
                 {
                     spawnedToolTips = SpawnToolTips(toolTips);
                     // Returned order should be the same as spawned
-                    spawnedToolTips[0].SetState(selectedCell != null);
-                    spawnedToolTips[1].SetState(true);
-                    spawnedToolTips[2].SetState(selectedCell != null);
+                    spawnedToolTips[0].SetState(true);
+                    spawnedToolTips[1].SetState(selectedCell != null);
+                    spawnedToolTips[2].SetState(true);
                     spawnedToolTips[3].SetState(selectedCell != null);
-                    spawnedToolTips[4].SetState(true);
+                    spawnedToolTips[4].SetState(selectedCell != null);
+                    spawnedToolTips[5].SetState(true);
                 }
             });
         }
@@ -614,6 +612,10 @@ public class CrosswordGameManager : UsesVirtualKeyboardMiniGameManager
                     if (selectedCell)
                     {
                         selectedCell.SetInputtedChar(' ');
+
+                        selectedCell.SetCoverColor(Color.white);
+                        StartCoroutine(selectedCell.ChangeCoverAlpha(0));
+
                         // Determine if there's another cell previous the current
                         List<CrosswordBoardCell> currentClueCells = selectedWord.GetIncorperatedCells();
 
@@ -645,10 +647,9 @@ public class CrosswordGameManager : UsesVirtualKeyboardMiniGameManager
                         switch (currentInputMode)
                         {
                             case InputMode.INPUT:
-                                selectedCell.SetInputtedChar(c);
-
                                 selectedCell.SetCoverColor(Color.white);
-                                StartCoroutine(selectedCell.ChangeCoverAlpha(0));
+
+                                selectedCell.SetInputtedChar(c);
 
                                 AudioManager._Instance.PlayFromSFXDict(onInput);
 
@@ -687,6 +688,7 @@ public class CrosswordGameManager : UsesVirtualKeyboardMiniGameManager
                                 StartCoroutine(selectedCell.ChangeCoverAlpha(0));
 
                                 AudioManager._Instance.PlayFromSFXDict(onInput);
+
                                 break;
                         }
                     }

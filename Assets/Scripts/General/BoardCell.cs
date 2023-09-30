@@ -24,6 +24,11 @@ public abstract class BoardCell : MonoBehaviour
 
     private CellDataDealer cachedCellDataDealer;
 
+    // Coroutines
+    private Coroutine currentScaleCoroutine;
+    private Coroutine currentMainCVAlphaCoroutine;
+    private Coroutine currentCoverCVAlphaCoroutine;
+
     private void Awake()
     {
         backgroundCV = backgroundTransform.GetComponent<CanvasGroup>();
@@ -53,35 +58,45 @@ public abstract class BoardCell : MonoBehaviour
         }
     }
 
-    public IEnumerator ChangeScale(Vector3 targetScale)
-    {
-        yield return StartCoroutine(Utils.ChangeScale(backgroundTransform, targetScale, adjustScaleSpeed));
-    }
-
-    public IEnumerator ChangeScale(float targetScale)
-    {
-        yield return StartCoroutine(ChangeScale(Vector3.one * targetScale));
-    }
-
-    public IEnumerator ChangeAlpha(CanvasGroup cv, float target)
-    {
-        yield return StartCoroutine(Utils.ChangeCanvasGroupAlpha(cv, target, adjustAlphaSpeed));
-    }
-
     public void SetInteractable(bool v)
     {
         symbol.raycastTarget = v;
         SetInteractableColor(v);
     }
 
-    public IEnumerator ChangeCoverColor(Color color)
+    public IEnumerator ChangeScale(Vector3 targetScale)
     {
-        yield return StartCoroutine(Utils.ChangeColor(cover, color, changeColorSpeed));
+        if (currentScaleCoroutine != null) StopCoroutine(currentScaleCoroutine);
+        currentScaleCoroutine = StartCoroutine(Utils.ChangeScale(backgroundTransform, targetScale, adjustScaleSpeed));
+        yield return currentScaleCoroutine;
+    }
+
+    public IEnumerator ChangeScale(float targetScale)
+    {
+        if (currentScaleCoroutine != null) StopCoroutine(currentScaleCoroutine);
+        currentScaleCoroutine = StartCoroutine(ChangeScale(Vector3.one * targetScale));
+        yield return currentScaleCoroutine;
+    }
+
+    private IEnumerator ChangeAlpha(CanvasGroup cv, float target)
+    {
+        if (currentMainCVAlphaCoroutine != null) StopCoroutine(currentMainCVAlphaCoroutine);
+        currentMainCVAlphaCoroutine = StartCoroutine(Utils.ChangeCanvasGroupAlpha(cv, target, adjustAlphaSpeed));
+        yield return currentMainCVAlphaCoroutine;
     }
 
     public IEnumerator ChangeCoverAlpha(float target)
     {
-        yield return StartCoroutine(ChangeAlpha(coverCV, target));
+        if (currentCoverCVAlphaCoroutine != null) StopCoroutine(currentCoverCVAlphaCoroutine);
+        currentCoverCVAlphaCoroutine = StartCoroutine(ChangeAlpha(coverCV, target));
+        yield return currentCoverCVAlphaCoroutine;
+    }
+
+    public IEnumerator PulseCoverAlpha()
+    {
+        yield return StartCoroutine(ChangeCoverAlpha(1));
+
+        yield return StartCoroutine(ChangeCoverAlpha(0));
     }
 
     public void SetCoverColor(Color color)

@@ -69,6 +69,8 @@ public class OperationsGameManager : UsesVirtualKeyboardMiniGameManager
 
         Destroy(board.gameObject);
 
+        InputBoardCell._Autocheck = false;
+
         AllowMove = true;
     }
 
@@ -115,10 +117,12 @@ public class OperationsGameManager : UsesVirtualKeyboardMiniGameManager
                 board.ShowCellsWithChar(selectedCell.GetInputtedChar());
             }
 
-            List<int> pencilledChars = selectedCell.GetPencilledChars();
+            List<char> pencilledChars = selectedCell.GetPencilledChars();
             foreach (int i in allowedNums)
             {
-                virtualKeyboard.BlackoutKey(i.ToString(), pencilledChars.Contains(i));
+                char c;
+                char.TryParse(i.ToString(), out c);
+                virtualKeyboard.BlackoutKey(c.ToString(), pencilledChars.Contains(c));
             }
         }
     }
@@ -149,6 +153,8 @@ public class OperationsGameManager : UsesVirtualKeyboardMiniGameManager
             forceChange = true;
 
             BlackoutPencilledCharsOfCell(selectedCell, true);
+
+            selectedCell.Check();
         }
     }
 
@@ -160,12 +166,15 @@ public class OperationsGameManager : UsesVirtualKeyboardMiniGameManager
 
     private void BlackoutPencilledCharsOfCell(OperationsBoardCell cell, bool b)
     {
-        List<int> pencilledChars = cell.GetPencilledChars();
+        List<char> pencilledChars = cell.GetPencilledChars();
 
         for (int i = 0; i < allowedNums.Count; i++)
         {
             int num = allowedNums[i];
-            if (pencilledChars.Contains(num))
+            char c;
+            char.TryParse(num.ToString(), out c);
+
+            if (pencilledChars.Contains(c))
             {
                 virtualKeyboard.BlackoutKey(num.ToString(), b);
             }
@@ -174,6 +183,15 @@ public class OperationsGameManager : UsesVirtualKeyboardMiniGameManager
                 virtualKeyboard.BlackoutKey(num.ToString(), !b);
             }
         }
+    }
+
+    private void CheckBoard()
+    {
+        board.ActOnEachBoardCell(cell =>
+        {
+            if (cell.CellType == OperationsBoardCellType.NUM)
+                cell.Check();
+        });
     }
 
     protected override IEnumerator GameLoop()
@@ -187,6 +205,8 @@ public class OperationsGameManager : UsesVirtualKeyboardMiniGameManager
 
             // Tool Tips
             List<ToolTipDataContainer> toolTips = new List<ToolTipDataContainer>();
+            toolTips.Add(new ToolTipDataContainer("Toggle Autocheck", () => CallToolTipFunc(InputBoardCell._ToggleAutocheck), null));
+            toolTips.Add(new ToolTipDataContainer("Check the Board for Errors", () => CallToolTipFunc(CheckBoard), null));
             toolTips.Add(new ToolTipDataContainer("Solve the Selected Cell", () => CallToolTipFunc(SolveSelectedCell), null));
             toolTips.Add(new ToolTipDataContainer("Solve the Board", () => CallToolTipFunc(SolveBoard), null));
 
@@ -202,8 +222,10 @@ public class OperationsGameManager : UsesVirtualKeyboardMiniGameManager
                 {
                     spawnedToolTips = SpawnToolTips(toolTips);
                     // Returned order should be the same as spawned
-                    spawnedToolTips[0].SetState(selectedCell != null);
+                    spawnedToolTips[0].SetState(true);
                     spawnedToolTips[1].SetState(true);
+                    spawnedToolTips[2].SetState(selectedCell != null);
+                    spawnedToolTips[3].SetState(true);
                 }
             });
         }
@@ -226,14 +248,11 @@ public class OperationsGameManager : UsesVirtualKeyboardMiniGameManager
                 {
                     AudioManager._Instance.PlayFromSFXDict(onInput);
                     backPressed = false;
-                    if (!selectedCell.GetInputtedChar().Equals(' '))
-                    {
-                        selectedCell.SetInputtedChar(' ');
-                    }
-                    else
-                    {
-                        selectedCell.SetInputtedChar(' ');
-                    }
+
+                    selectedCell.SetInputtedChar(' ');
+
+                    selectedCell.SetCoverColor(Color.white);
+                    StartCoroutine(selectedCell.ChangeCoverAlpha(0));
                 }
                 else
                 {
@@ -260,9 +279,7 @@ public class OperationsGameManager : UsesVirtualKeyboardMiniGameManager
                                     if ((checkCell = board.CheckIfBoardContainsChar(c)) != null)
                                     {
                                         // Invalid Case
-                                        yield return StartCoroutine(checkCell.ChangeCoverAlpha(1));
-
-                                        yield return StartCoroutine(checkCell.ChangeCoverAlpha(0));
+                                        StartCoroutine(checkCell.PulseCoverAlpha());
                                     }
                                     else
                                     {
@@ -270,7 +287,10 @@ public class OperationsGameManager : UsesVirtualKeyboardMiniGameManager
                                         board.UnshowCellsWithChar();
                                         board.RemoveCharFromInvalidLocations(x.ToString()[0]);
 
+                                        selectedCell.SetCoverColor(Color.white);
+
                                         selectedCell.SetInputtedChar(x.ToString()[0]);
+
                                         AudioManager._Instance.PlayFromSFXDict(onInput);
 
                                         if (board.CheckForWin())

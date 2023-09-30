@@ -524,6 +524,7 @@ public class OperationsBoard : MonoBehaviour
             if (cell.CellType == OperationsBoardCellType.NUM)
             {
                 cell.SetInputtedChar(cell.GetCorrectChar());
+                cell.Check();
             }
         }
     }

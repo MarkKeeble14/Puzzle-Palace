@@ -9,6 +9,8 @@ public class KeyVirtualKeyboardButton : VirtualKeyboardButton
     [SerializeField] private Color activeColor;
     [SerializeField] private Color blackedOutColor;
 
+    private Coroutine blackoutCoroutine;
+
     protected void Awake()
     {
         changeColorOf.color = activeColor;
@@ -21,7 +23,8 @@ public class KeyVirtualKeyboardButton : VirtualKeyboardButton
 
     public void Blackout(bool v)
     {
-        StartCoroutine(Utils.ChangeColor(changeColorOf, v ? blackedOutColor : activeColor, changeColorRate));
+        if (blackoutCoroutine != null) StopCoroutine(blackoutCoroutine);
+        blackoutCoroutine = StartCoroutine(Utils.ChangeColor(changeColorOf, v ? blackedOutColor : activeColor, changeColorRate));
         // cv.blocksRaycasts = !v;
     }
 }
